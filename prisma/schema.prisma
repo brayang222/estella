@@ -10,26 +10,30 @@ datasource db {
   provider = "postgresql"
 }
 
-enum ProductCategory {
-  manillas
-  collares
-  anillos
-  aretes
+model Category {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  label     String
+  sortOrder Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  products  Product[]
 }
 
 model Product {
-  id               String          @id @default(cuid())
-  slug             String          @unique
-  referenceCode    String          @unique
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  referenceCode    String   @unique
   name             String
-  category         ProductCategory
+  categoryId       String
+  category         Category @relation(fields: [categoryId], references: [id])
   price            Int
   tag              String
   image            String?
   placeholderLabel String
-  sortOrder        Int             @default(0)
-  createdAt        DateTime        @default(now())
-  updatedAt        DateTime        @updatedAt
+  sortOrder        Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@index([category])
+  @@index([categoryId])
 }

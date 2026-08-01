@@ -14,6 +14,7 @@ const steps = [
     label: "manillas apiladas",
     title: "Apiladas",
     text: "Mezcla grosores en la misma muñeca: una plana, una tejida, una con broche.",
+    src: "/lookbook/manillas-stack-detail.webp",
   },
   {
     angle: 135,
@@ -37,7 +38,14 @@ export function HowItsWorn() {
           {steps.map((step, index) => (
             <Reveal key={step.title} delay={staggerDelay(index)} className="grid gap-4">
               <div className="relative aspect-square overflow-hidden bg-img-3">
-                <PlaceholderImage label={step.label} angle={step.angle} spacing={9} tone={3} />
+                <PlaceholderImage
+                  label={step.label}
+                  angle={step.angle}
+                  spacing={9}
+                  tone={3}
+                  src={"src" in step ? step.src : undefined}
+                  alt={step.label}
+                />
               </div>
               <span className="text-[10px] tracking-[0.3em] text-gold">0{index + 1}</span>
               <h3 className="m-0 font-display text-[21px]">{step.title}</h3>

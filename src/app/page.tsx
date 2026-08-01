@@ -6,16 +6,16 @@ import { Studio } from "@/components/Studio";
 import { Testimonials } from "@/components/Testimonials";
 import { FinalCta } from "@/components/FinalCta";
 import { ProductsJsonLd } from "@/components/JsonLd";
-import { getProducts } from "@/lib/queries";
+import { getCategories, getProducts } from "@/lib/queries";
 
 export default async function Home() {
-  const products = await getProducts();
+  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
 
   return (
     <>
       <ProductsJsonLd products={products} />
       <Hero />
-      <Collection products={products} />
+      <Collection products={products} categories={categories} />
       <HowItsWorn />
       <Lookbook />
       <Studio />

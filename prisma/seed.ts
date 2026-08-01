@@ -1,105 +1,204 @@
-import { prisma } from "../src/lib/db";
+import "dotenv/config";
+import { neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import ws from "ws";
+import { PrismaClient } from "../src/generated/prisma/client";
+
+neonConfig.webSocketConstructor = ws;
+const adapter = new PrismaNeon({ connectionString: process.env.DATABASE_URL });
+const prisma = new PrismaClient({ adapter });
+
+type SeedCategory = {
+  slug: string;
+  label: string;
+  sortOrder: number;
+};
+
+const categories: SeedCategory[] = [
+  { slug: "manillas", label: "Manillas", sortOrder: 0 },
+  { slug: "collares", label: "Collares", sortOrder: 1 },
+  { slug: "anillos", label: "Anillos", sortOrder: 2 },
+  { slug: "aretes", label: "Aretes", sortOrder: 3 },
+];
 
 type SeedProduct = {
   slug: string;
   referenceCode: string;
   name: string;
-  category: "manillas" | "collares" | "anillos" | "aretes";
+  categorySlug: string;
   price: number;
   tag: string;
+  image: string;
   placeholderLabel: string;
   sortOrder: number;
 };
 
 const products: SeedProduct[] = [
   {
-    slug: "manilla-aurora",
-    referenceCode: "MAN-001",
-    name: "Manilla Aurora",
-    category: "manillas",
-    price: 189000,
-    tag: "Serie 01",
-    placeholderLabel: "manilla eslabón fino",
+    slug: "collar-margarita",
+    referenceCode: "COL-001",
+    name: "Collar Margarita",
+    categorySlug: "collares",
+    price: 129000,
+    tag: "Nuevo",
+    image: "/products/collar-margarita.webp",
+    placeholderLabel: "collar margarita",
     sortOrder: 0,
   },
   {
-    slug: "collar-lumiere",
-    referenceCode: "COL-001",
-    name: "Collar Lumière",
-    category: "collares",
-    price: 249000,
-    tag: "Nuevo",
-    placeholderLabel: "collar cadena espejo",
+    slug: "manilla-tenis-clasica",
+    referenceCode: "MAN-001",
+    name: "Manilla Tenis Clásica",
+    categorySlug: "manillas",
+    price: 199000,
+    tag: "Clásico",
+    image: "/products/manilla-tenis-clasica.webp",
+    placeholderLabel: "manilla tenis clásica",
     sortOrder: 1,
   },
   {
-    slug: "anillo-solene",
-    referenceCode: "ANI-001",
-    name: "Anillo Solene",
-    category: "anillos",
-    price: 159000,
-    tag: "Serie 02",
-    placeholderLabel: "anillo banda pulida",
+    slug: "collar-girasol",
+    referenceCode: "COL-002",
+    name: "Collar Girasol",
+    categorySlug: "collares",
+    price: 149000,
+    tag: "Nuevo",
+    image: "/products/collar-girasol.webp",
+    placeholderLabel: "collar girasol",
     sortOrder: 2,
   },
   {
-    slug: "aretes-nuit",
-    referenceCode: "ARE-001",
-    name: "Aretes Nuit",
-    category: "aretes",
-    price: 139000,
+    slug: "manilla-tenis-corazones",
+    referenceCode: "MAN-002",
+    name: "Manilla Tenis Corazones",
+    categorySlug: "manillas",
+    price: 209000,
     tag: "Nuevo",
-    placeholderLabel: "aretes gota",
+    image: "/products/manilla-tenis-corazones.webp",
+    placeholderLabel: "manilla tenis corazones",
     sortOrder: 3,
   },
   {
-    slug: "manilla-riviere",
-    referenceCode: "MAN-002",
-    name: "Manilla Rivière",
-    category: "manillas",
-    price: 219000,
-    tag: "Últimas",
-    placeholderLabel: "manilla tenis",
+    slug: "collar-corazon-rojo",
+    referenceCode: "COL-003",
+    name: "Collar Corazón",
+    categorySlug: "collares",
+    price: 119000,
+    tag: "Serie 01",
+    image: "/products/collar-corazon-rojo.webp",
+    placeholderLabel: "collar corazón rojo",
     sortOrder: 4,
   },
   {
-    slug: "collar-etoile",
-    referenceCode: "COL-002",
-    name: "Collar Étoile",
-    category: "collares",
-    price: 279000,
-    tag: "Serie 03",
-    placeholderLabel: "collar con dije",
+    slug: "manilla-tenis-piedra-de-color",
+    referenceCode: "MAN-003",
+    name: "Manilla Tenis Piedra de Color",
+    categorySlug: "manillas",
+    price: 219000,
+    tag: "Últimas",
+    image: "/products/manilla-tenis-piedra-de-color.webp",
+    placeholderLabel: "manilla tenis piedra de color",
     sortOrder: 5,
   },
   {
-    slug: "anillo-duo",
-    referenceCode: "ANI-002",
-    name: "Anillo Duo",
-    category: "anillos",
-    price: 175000,
+    slug: "collar-abrazo",
+    referenceCode: "COL-004",
+    name: "Collar Abrazo",
+    categorySlug: "collares",
+    price: 169000,
     tag: "Serie 01",
-    placeholderLabel: "anillo doble aro",
+    image: "/products/collar-abrazo.webp",
+    placeholderLabel: "collar abrazo",
     sortOrder: 6,
   },
   {
-    slug: "aretes-perle",
-    referenceCode: "ARE-002",
-    name: "Aretes Perle",
-    category: "aretes",
+    slug: "manilla-dije-corazones",
+    referenceCode: "MAN-004",
+    name: "Manilla Dije Corazones",
+    categorySlug: "manillas",
     price: 149000,
-    tag: "Últimas",
-    placeholderLabel: "aretes huggie",
+    tag: "Serie 01",
+    image: "/products/manilla-dije-corazones.webp",
+    placeholderLabel: "manilla dije corazones",
     sortOrder: 7,
+  },
+  {
+    slug: "collar-eres-mi-mundo",
+    referenceCode: "COL-005",
+    name: "Collar Eres Mi Mundo",
+    categorySlug: "collares",
+    price: 179000,
+    tag: "Serie 02",
+    image: "/products/collar-eres-mi-mundo.webp",
+    placeholderLabel: "collar eres mi mundo",
+    sortOrder: 8,
+  },
+  {
+    slug: "manilla-eslabon",
+    referenceCode: "MAN-005",
+    name: "Manilla Eslabón",
+    categorySlug: "manillas",
+    price: 139000,
+    tag: "Serie 02",
+    image: "/products/manilla-eslabon.webp",
+    placeholderLabel: "manilla eslabón",
+    sortOrder: 9,
+  },
+  {
+    slug: "collar-pareja-alas-de-angel",
+    referenceCode: "COL-006",
+    name: "Collar Pareja Alas de Ángel",
+    categorySlug: "collares",
+    price: 239000,
+    tag: "Set x2",
+    image: "/products/collar-pareja-alas-de-angel.webp",
+    placeholderLabel: "collar pareja alas de ángel",
+    sortOrder: 10,
+  },
+  {
+    slug: "manilla-cuentas-medallon",
+    referenceCode: "MAN-006",
+    name: "Manilla Cuentas Medallón",
+    categorySlug: "manillas",
+    price: 159000,
+    tag: "Nuevo",
+    image: "/products/manilla-cuentas-medallon.webp",
+    placeholderLabel: "manilla cuentas con medallón",
+    sortOrder: 11,
+  },
+  {
+    slug: "collar-inicial-personalizada",
+    referenceCode: "COL-007",
+    name: "Collar Inicial Personalizada",
+    categorySlug: "collares",
+    price: 159000,
+    tag: "Personalizado",
+    image: "/products/collar-inicial-personalizada.webp",
+    placeholderLabel: "collar inicial personalizada",
+    sortOrder: 12,
   },
 ];
 
 async function main() {
-  for (const product of products) {
+  const categoryIdBySlug = new Map<string, string>();
+
+  for (const category of categories) {
+    const row = await prisma.category.upsert({
+      where: { slug: category.slug },
+      update: category,
+      create: category,
+    });
+    categoryIdBySlug.set(row.slug, row.id);
+  }
+  console.log(`Seeded ${categories.length} categories.`);
+
+  for (const { categorySlug, ...product } of products) {
+    const categoryId = categoryIdBySlug.get(categorySlug);
+    if (!categoryId) throw new Error(`Unknown category slug: ${categorySlug}`);
     await prisma.product.upsert({
       where: { slug: product.slug },
-      update: product,
-      create: product,
+      update: { ...product, categoryId },
+      create: { ...product, categoryId },
     });
   }
   console.log(`Seeded ${products.length} products.`);

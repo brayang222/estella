@@ -39,7 +39,7 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
           item: {
             "@type": "Product",
             name: product.name,
-            category: product.category,
+            category: product.category.label,
             sku: product.referenceCode,
             brand: { "@type": "Brand", name: SITE_NAME },
             offers: {

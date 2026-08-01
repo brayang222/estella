@@ -1,14 +1,7 @@
-import type { Product, ProductCategory } from "@/generated/prisma/client";
+import type { Category, Prisma } from "@/generated/prisma/client";
 
-export type { Product, ProductCategory };
-
-export const categoryFilters: { key: "todo" | ProductCategory; label: string }[] = [
-  { key: "todo", label: "Todo" },
-  { key: "manillas", label: "Manillas" },
-  { key: "collares", label: "Collares" },
-  { key: "anillos", label: "Anillos" },
-  { key: "aretes", label: "Aretes" },
-];
+export type Product = Prisma.ProductGetPayload<{ include: { category: true } }>;
+export type { Category };
 
 /** 189000 -> "$189.000" (COP, "." as thousands separator) */
 export function formatPrice(price: number): string {

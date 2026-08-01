@@ -3,15 +3,22 @@
 import { useState } from "react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Reveal } from "./Reveal";
-import { categoryFilters, formatPrice, type Product, type ProductCategory } from "@/lib/products";
+import { formatPrice, type Category, type Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
 import { waLink, waProductMessage } from "@/lib/whatsapp";
 
-export function Collection({ products }: { products: Product[] }) {
-  const [category, setCategory] = useState<"todo" | ProductCategory>("todo");
+export function Collection({
+  products,
+  categories,
+}: {
+  products: Product[];
+  categories: Category[];
+}) {
+  const [category, setCategory] = useState("todo");
+  const filters = [{ slug: "todo", label: "Todo" }, ...categories];
 
   const visibleProducts = products.filter(
-    (p) => category === "todo" || p.category === category
+    (p) => category === "todo" || p.category.slug === category
   );
 
   return (
@@ -24,14 +31,14 @@ export function Collection({ products }: { products: Product[] }) {
           </h2>
         </div>
         <div className="flex flex-wrap gap-[18px]">
-          {categoryFilters.map((f) => (
+          {filters.map((f) => (
             <button
-              key={f.key}
+              key={f.slug}
               type="button"
               className={`cursor-pointer border-0 border-b bg-transparent py-1.5 text-[10.5px] font-light tracking-[0.2em] uppercase transition-[color,border-color] duration-300 ease-out ${
-                category === f.key ? "border-ink text-ink" : "border-transparent text-muted"
+                category === f.slug ? "border-ink text-ink" : "border-transparent text-muted"
               }`}
-              onClick={() => setCategory(f.key)}
+              onClick={() => setCategory(f.slug)}
             >
               {f.label}
             </button>

@@ -30,6 +30,7 @@ const blocks = [
     tone: 2 as const,
     angle: 152,
     label: "lifestyle — manillas apiladas",
+    src: "/lookbook/manillas-stack-wide.webp",
   },
 ];
 
@@ -57,6 +58,8 @@ export function Lookbook() {
               spacing={11}
               tone={block.tone}
               labelPosition="bottom"
+              src={"src" in block ? block.src : undefined}
+              alt={block.label}
             />
           </Curtain>
         ))}
