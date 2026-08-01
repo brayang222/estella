@@ -1,12 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { PlaceholderImage } from "./PlaceholderImage";
+import { ALL_CATEGORIES, CategoryFilters } from "./CategoryFilters";
+import { ProductCard } from "./ProductCard";
 import { Reveal } from "./Reveal";
 import { TransitionLink } from "./TransitionLink";
-import { formatPrice, type Category, type Product } from "@/lib/products";
+import type { Category, Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
-import { waLink, waProductMessage } from "@/lib/whatsapp";
+
+/**
+ * The grid is 2/3/4 columns as it widens, so "two rows" means 4, 6 or 8
+ * cards. All 8 are rendered and the tail is hidden per breakpoint, keeping
+ * the row count exact without measuring anything at runtime.
+ */
+const MAX_PREVIEW = 8;
+
+function previewVisibility(index: number) {
+  if (index < 4) return "";
+  if (index < 6) return "hidden sm:grid";
+  return "hidden lg:grid";
+}
 
 export function Collection({
   products,
@@ -15,12 +28,15 @@ export function Collection({
   products: Product[];
   categories: Category[];
 }) {
-  const [category, setCategory] = useState("todo");
-  const filters = [{ slug: "todo", label: "Todo" }, ...categories];
+  const [category, setCategory] = useState(ALL_CATEGORIES);
 
   const visibleProducts = products.filter(
-    (p) => category === "todo" || p.category.slug === category
+    (p) => category === ALL_CATEGORIES || p.category.slug === category
   );
+  const previewProducts = visibleProducts.slice(0, MAX_PREVIEW);
+
+  const seeAllHref =
+    category === ALL_CATEGORIES ? "/productos" : `/productos?categoria=${category}`;
 
   return (
     <section id="coleccion" className="grid gap-[clamp(26px,3.4vw,44px)] py-section-y px-gutter">
@@ -31,68 +47,29 @@ export function Collection({
             Selección Estella
           </h2>
         </div>
-        <div className="flex flex-wrap gap-[18px]">
-          {filters.map((f) => (
-            <button
-              key={f.slug}
-              type="button"
-              className={`cursor-pointer border-0 border-b bg-transparent py-1.5 text-[10.5px] font-light tracking-[0.2em] uppercase transition-[color,border-color] duration-300 ease-out ${
-                category === f.slug ? "border-ink text-ink" : "border-transparent text-muted"
-              }`}
-              onClick={() => setCategory(f.slug)}
-            >
-              {f.label}
-            </button>
-          ))}
-        </div>
+        <CategoryFilters categories={categories} value={category} onChange={setCategory} />
       </Reveal>
 
       <div className="grid grid-cols-2 gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)] sm:grid-cols-3 lg:grid-cols-4">
-        {visibleProducts.map((p, index) => (
-          <Reveal key={p.id} delay={staggerDelay(index)} className="grid gap-3.5">
-            <div
-              className="group relative aspect-[4/5] overflow-hidden bg-img-1"
-              style={{ viewTransitionName: `product-image-${p.slug}` }}
-            >
-              <TransitionLink href={`/producto/${p.slug}`} className="absolute inset-0 block">
-                <PlaceholderImage
-                  label={p.placeholderLabel}
-                  angle={128}
-                  spacing={10}
-                  tone={1}
-                  labelPosition="center"
-                  className="transition-transform duration-[1100ms] ease-estella group-hover:scale-[1.04]"
-                  src={p.images[0]?.url}
-                  alt={p.name}
-                />
-              </TransitionLink>
-              <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
-                {p.tag}
-              </span>
-              <div className="absolute inset-x-2.5 bottom-2.5 z-[2] translate-y-1.5 opacity-0 transition-[opacity,transform] duration-500 ease-estella group-hover:translate-y-0 group-hover:opacity-100">
-                <a
-                  href={waLink(waProductMessage(p.name, formatPrice(p.price)))}
-                  target="_blank"
-                  rel="noopener"
-                  className="block bg-paper p-[13px] text-center text-[10px] tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"
-                >
-                  Consultar pieza
-                </a>
-              </div>
-            </div>
-            <div className="flex items-baseline justify-between gap-2.5 border-t border-ink/12 pt-0.5">
-              <TransitionLink href={`/producto/${p.slug}`}>
-                <h3 className="mt-2 text-[11px] font-normal tracking-[0.18em] uppercase hover:text-gold">
-                  {p.name}
-                </h3>
-              </TransitionLink>
-              <span className="mt-2 text-[11.5px] tracking-[0.06em] text-muted whitespace-nowrap">
-                {formatPrice(p.price)}
-              </span>
-            </div>
+        {previewProducts.map((product, index) => (
+          <Reveal
+            key={product.id}
+            delay={staggerDelay(index)}
+            className={previewVisibility(index)}
+          >
+            <ProductCard product={product} />
           </Reveal>
         ))}
       </div>
+
+      <Reveal className="flex justify-center">
+        <TransitionLink
+          href={seeAllHref}
+          className="bg-ink px-[clamp(44px,6vw,76px)] py-[clamp(17px,2vw,22px)] text-[11px] tracking-[0.24em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
+        >
+          Ver todos
+        </TransitionLink>
+      </Reveal>
     </section>
   );
 }

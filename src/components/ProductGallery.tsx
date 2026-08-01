@@ -45,7 +45,7 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
               type="button"
               onClick={() => setActiveIndex((i) => (i - 1 + images.length) % images.length)}
               aria-label="Foto anterior"
-              className="absolute top-1/2 left-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+              className="absolute top-1/2 left-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
             >
               ‹
             </button>
@@ -53,7 +53,7 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
               type="button"
               onClick={() => setActiveIndex((i) => (i + 1) % images.length)}
               aria-label="Foto siguiente"
-              className="absolute top-1/2 right-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] opacity-0 transition-opacity duration-300 ease-out group-hover:opacity-100"
+              className="absolute top-1/2 right-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
             >
               ›
             </button>
