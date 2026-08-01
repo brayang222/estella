@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/ProductGallery";
+import { ProductJsonLd } from "@/components/JsonLd";
 import { ProductOrderPanel } from "@/components/ProductOrderPanel";
 import { Reveal } from "@/components/Reveal";
 import { TransitionLink } from "@/components/TransitionLink";
@@ -20,14 +21,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const product = await getProductBySlug(slug);
   if (!product) return { title: "Pieza no encontrada" };
 
+  const image = product.images[0]?.url;
+
   return {
     title: product.name,
-    description: `${product.name} — pieza de la colección ${product.category.label} de Estella, joyería en rodio hecha en Colombia.`,
+    description: product.description,
     alternates: { canonical: `/producto/${product.slug}` },
     openGraph: {
       title: product.name,
+      description: product.description,
       url: `/producto/${product.slug}`,
       type: "website",
+      images: image ? [image] : undefined,
     },
   };
 }
@@ -43,6 +48,8 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <article className="grid gap-x-[clamp(40px,6vw,80px)] gap-y-[clamp(36px,5vw,56px)] pt-[clamp(120px,15vw,168px)] pb-[clamp(88px,11vw,140px)] px-gutter md:grid-cols-2 md:items-start">
+      <ProductJsonLd product={product} />
+
       <Reveal className="flex flex-wrap items-center justify-between gap-3 md:col-span-2">
         <div className="flex flex-wrap items-center gap-2 text-[10px] tracking-[0.2em] text-muted uppercase">
           <TransitionLink href="/" className="hover:text-gold">

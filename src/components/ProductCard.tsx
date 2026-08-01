@@ -119,7 +119,7 @@ export function ProductCard({ product }: { product: Product }) {
             href={waLink(waProductMessage(product.name, formatPrice(product.price)))}
             target="_blank"
             rel="noopener"
-            className="block bg-paper p-[13px] text-center text-[10px] tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"
+            className="cursor-pointer border-2 border-black rounded-md block bg-paper p-[13px] text-center text-sm tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"
           >
             Consultar pieza
           </a>

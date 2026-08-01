@@ -81,8 +81,18 @@ export function Reveal({ delay = 0, className, children }: RevealProps) {
         trigger: el,
         start: "top 94%",
         once: true,
-        onEnter: () =>
-          gsap.to(el, { opacity: 1, y: 0, duration: 1, delay, ease: "estella" }),
+        onEnter: () => {
+          // See Curtain: when a fast scroll overshoots the trigger point, the
+          // staggered entrance plays behind the user instead of ahead of them.
+          const fromBottomEdge = el.getBoundingClientRect().top > window.innerHeight * 0.7;
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            duration: fromBottomEdge ? 1 : 0.3,
+            delay: fromBottomEdge ? delay : 0,
+            ease: fromBottomEdge ? "estella" : "power1.out",
+          });
+        },
       });
       scheduleGlobalRefresh();
     });
@@ -131,13 +141,19 @@ export function Curtain({ delay = 0, className, style, children }: CurtainProps)
         trigger: outer,
         start: "top 94%",
         once: true,
-        onEnter: () =>
+        onEnter: () => {
+          // A fast scroll can carry the element well past its trigger point
+          // before this fires; wiping it open from there just shows a
+          // half-clipped photo in the middle of the screen. Only play the
+          // wipe when the element is still entering from the bottom edge.
+          const fromBottomEdge = outer.getBoundingClientRect().top > window.innerHeight * 0.7;
           gsap.to(inner, {
             clipPath: "inset(0% 0 0% 0)",
-            duration: 1.15,
-            delay,
-            ease: "estella",
-          }),
+            duration: fromBottomEdge ? 0.9 : 0.35,
+            delay: fromBottomEdge ? delay : 0,
+            ease: fromBottomEdge ? "estella" : "power1.out",
+          });
+        },
       });
       scheduleGlobalRefresh();
     });

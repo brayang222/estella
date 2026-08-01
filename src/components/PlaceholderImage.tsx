@@ -42,7 +42,6 @@ export function PlaceholderImage({
         sizes={sizes}
         className={className}
         style={{ objectFit: "cover" }}
-        unoptimized
         priority={priority}
       />
     );

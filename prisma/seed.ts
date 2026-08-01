@@ -28,6 +28,8 @@ type SeedProduct = {
   categorySlug: string;
   price: number;
   tag: string;
+  /** Shown on the detail page and reused as the page's meta description. */
+  description: string;
   /** Ordered front-to-back; index 0 is `order: 1` and becomes the grid thumbnail. Max 4 shown in the gallery. */
   images: string[];
   placeholderLabel: string;
@@ -42,6 +44,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 129000,
     tag: "Nuevo",
+    description:
+      "Collar en rodio con dije de margarita en esmalte blanco y centro dorado, montado sobre cadena veneciana de caída media. Una pieza fresca y femenina para uso diario que no se opaca ni mancha la piel. Ideal para llevar sola o en capas con otros collares Estella.",
     images: ["/products/collar-margarita.webp"],
     placeholderLabel: "collar margarita",
     sortOrder: 0,
@@ -53,6 +57,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 199000,
     tag: "Clásico",
+    description:
+      "Manilla tenis clásica en rodio con línea continua de circonias talla brillante engastadas una a una. El acabado espejo mantiene el brillo con el uso diario y el broche de seguridad evita pérdidas. La pulsera más versátil de la colección: va con jean y con vestido de fiesta.",
     images: ["/products/manilla-tenis-clasica.webp"],
     placeholderLabel: "manilla tenis clásica",
     sortOrder: 1,
@@ -64,6 +70,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 149000,
     tag: "Nuevo",
+    description:
+      "Collar en rodio con dije de girasol tallado en relieve y cadena veneciana delgada. Un símbolo de energía y buena suerte, en una pieza pequeña que se lleva todos los días. Perfecto como regalo de cumpleaños o detalle de agradecimiento.",
     images: ["/products/collar-girasol.webp"],
     placeholderLabel: "collar girasol",
     sortOrder: 2,
@@ -75,6 +83,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 209000,
     tag: "Nuevo",
+    description:
+      "Manilla tenis en rodio con corazones alternados entre circonias, en acabado dorado espejo. Combina el brillo de una tenis clásica con un detalle romántico y discreto. Excelente regalo de aniversario o de San Valentín.",
     images: ["/products/manilla-tenis-corazones.webp"],
     placeholderLabel: "manilla tenis corazones",
     sortOrder: 3,
@@ -86,6 +96,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 119000,
     tag: "Serie 01",
+    description:
+      "Collar en rodio con medallón circular en esmalte blanco y corazón rojo pintado a mano. Una pieza de la Serie 01, en tiraje corto y numerado. Su tamaño moderado lo hace cómodo para uso diario y fácil de combinar en capas.",
     images: ["/products/collar-corazon-rojo.webp"],
     placeholderLabel: "collar corazón rojo",
     sortOrder: 4,
@@ -97,6 +109,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 219000,
     tag: "Últimas",
+    description:
+      "Manilla tenis en rodio con piedras de color engastadas en línea continua, disponible en tonos verde y cristal. Últimas unidades de esta referencia de serie corta. Aporta un acento de color a un look neutro sin recargarlo.",
     images: ["/products/manilla-tenis-piedra-de-color.webp"],
     placeholderLabel: "manilla tenis piedra de color",
     sortOrder: 5,
@@ -108,6 +122,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 169000,
     tag: "Serie 01",
+    description:
+      "Collar en rodio con dije de pareja abrazada, esculpido en volumen sobre cadena veneciana. Una pieza simbólica de la Serie 01, pensada para regalar a quien te acompaña. Acabado espejo hipoalergénico apto para piel sensible.",
     images: ["/products/collar-abrazo.webp"],
     placeholderLabel: "collar abrazo",
     sortOrder: 6,
@@ -119,6 +135,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 149000,
     tag: "Serie 01",
+    description:
+      "Manilla en rodio de eslabón plano con dijes de corazón colgantes que se mueven con la muñeca. Pieza de la Serie 01 en tiraje limitado. Se ve espectacular apilada con una manilla tenis del mismo tono.",
     images: ["/products/manilla-dije-corazones.webp"],
     placeholderLabel: "manilla dije corazones",
     sortOrder: 7,
@@ -130,6 +148,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 179000,
     tag: "Serie 02",
+    description:
+      "Collar en rodio con dije de corazón calado y figura de madre e hijo en el centro, con circonias en el contorno. Una pieza cargada de significado, ideal como regalo del Día de la Madre. Serie 02, en tiraje corto y numerado.",
     images: ["/products/collar-eres-mi-mundo.webp"],
     placeholderLabel: "collar eres mi mundo",
     sortOrder: 8,
@@ -141,6 +161,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 139000,
     tag: "Serie 02",
+    description:
+      "Manilla en rodio de eslabón grueso tipo cadena, con broche reforzado y acabado espejo. Una pieza de carácter que funciona sola como declaración o apilada con piezas más delgadas. Serie 02, en cantidad limitada.",
     images: ["/products/manilla-eslabon.webp"],
     placeholderLabel: "manilla eslabón",
     sortOrder: 9,
@@ -152,6 +174,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 239000,
     tag: "Set x2",
+    description:
+      "Set de dos collares en rodio con alas de ángel complementarias: una en plata envejecida y otra en dorado con circonias. Al unirlas forman un corazón completo, pensado para parejas, madre e hija o mejores amigas. Incluye las dos cadenas venecianas y empaque de regalo.",
     images: ["/products/collar-pareja-alas-de-angel.webp"],
     placeholderLabel: "collar pareja alas de ángel",
     sortOrder: 10,
@@ -163,6 +187,8 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 159000,
     tag: "Nuevo",
+    description:
+      "Manilla en rodio de cuentas facetadas en tonos mixtos con medallón de San Benito. Combina el brillo de las cuentas con un dije de protección tradicional. Cierre ajustable con extensión, se adapta a la mayoría de muñecas.",
     images: ["/products/manilla-cuentas-medallon.webp"],
     placeholderLabel: "manilla cuentas con medallón",
     sortOrder: 11,
@@ -174,6 +200,8 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 159000,
     tag: "Personalizado",
+    description:
+      "Collar en rodio con la inicial que elijas, en tipografía script sobre cadena veneciana delgada. Se produce bajo pedido con la letra que nos indiques por WhatsApp. El regalo personalizado más pedido de Estella: entrega en 2 a 4 días hábiles.",
     images: ["/products/collar-inicial-personalizada.webp"],
     placeholderLabel: "collar inicial personalizada",
     sortOrder: 12,

@@ -23,6 +23,12 @@ export function ProductOrderPanel({ product }: { product: Product }) {
 
       <div className="h-px bg-ink/12" />
 
+      <p className="m-0 max-w-[52ch] text-[14px] leading-[1.85] text-muted text-pretty">
+        {product.description}
+      </p>
+
+      <div className="h-px bg-ink/12" />
+
       <div className="grid gap-2.5">
         <span className="text-[10px] tracking-[0.2em] text-muted uppercase">Cantidad</span>
         <div className="flex items-center gap-2.5">

@@ -55,6 +55,31 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
   );
 }
 
+export function ProductJsonLd({ product }: { product: Product }) {
+  return (
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.description,
+        category: product.category.label,
+        sku: product.referenceCode,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        image: product.images.map((image) => `${SITE_URL}${image.url}`),
+        url: `${SITE_URL}/producto/${product.slug}`,
+        offers: {
+          "@type": "Offer",
+          price: product.price,
+          priceCurrency: "COP",
+          availability: "https://schema.org/InStock",
+          url: `${SITE_URL}/producto/${product.slug}`,
+        },
+      }}
+    />
+  );
+}
+
 export function BlogPostingJsonLd({ post }: { post: BlogPost }) {
   return (
     <JsonLdScript

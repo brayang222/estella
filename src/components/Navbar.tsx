@@ -18,12 +18,11 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
-  // On the homepage the hero already shows a giant "Estella" wordmark, so the
-  // navbar's own wordmark stays hidden until the hero scrolls out of view.
-  // Other routes have no hero to duplicate, so it's always shown regardless
-  // of this (possibly stale) observer state.
-  const [heroOutOfView, setHeroOutOfView] = useState(false);
-  const wordmarkVisible = pathname !== "/" || heroOutOfView;
+  // The wordmark rides the same threshold as the solid navbar background, so
+  // the bar "settling" into its fixed state and the name arriving read as one
+  // move. Other routes have no hero wordmark to defer to, so it shows there
+  // from the start.
+  const wordmarkVisible = pathname !== "/" || scrolled;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -31,18 +30,6 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  useEffect(() => {
-    if (pathname !== "/") return;
-    const hero = document.getElementById("top");
-    if (!hero) return;
-
-    const observer = new IntersectionObserver(([entry]) => setHeroOutOfView(!entry.isIntersecting), {
-      threshold: 0,
-    });
-    observer.observe(hero);
-    return () => observer.disconnect();
-  }, [pathname]);
 
   useEffect(() => {
     // isActive() below already gates on pathname === "/", so a stale
@@ -93,8 +80,8 @@ export function Navbar() {
 
       <Link
         href="/#top"
-        className={`font-display text-[clamp(16px,1.8vw,21px)] tracking-[0.46em] whitespace-nowrap uppercase transition-[opacity,transform] duration-500 ease-estella [text-indent:0.46em] ${
-          wordmarkVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        className={`font-display text-[clamp(16px,1.8vw,21px)] tracking-[0.46em] whitespace-nowrap uppercase transition-[opacity,transform] duration-[900ms] ease-[cubic-bezier(0.33,1,0.68,1)] [text-indent:0.46em] ${
+          wordmarkVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-[3px] opacity-0"
         }`}
         aria-hidden={!wordmarkVisible}
         tabIndex={wordmarkVisible ? undefined : -1}

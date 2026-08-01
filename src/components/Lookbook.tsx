@@ -71,6 +71,7 @@ export function Lookbook() {
               labelPosition="bottom"
               src={block.src}
               alt={block.label}
+              sizes={block.span === "col-span-4" ? "67vw" : "34vw"}
             />
           </Curtain>
         ))}

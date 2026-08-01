@@ -29,6 +29,7 @@ model Product {
   category         Category       @relation(fields: [categoryId], references: [id])
   price            Int
   tag              String
+  description      String
   images           ProductImage[]
   placeholderLabel String
   sortOrder        Int            @default(0)
