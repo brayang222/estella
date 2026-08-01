@@ -1,5 +1,3 @@
-import styles from "./Marquee.module.css";
-
 const items = [
   "Series numeradas",
   "Envío asegurado a todo el país",
@@ -9,10 +7,10 @@ const items = [
 
 function Group() {
   return (
-    <div className={styles.group}>
+    <div className="flex gap-11 pr-11 text-[10px] tracking-[0.28em] text-muted uppercase whitespace-nowrap">
       {items.map((item) => (
         <span key={item}>
-          {item} <span className={styles.dot}>◇</span>
+          {item} <span className="text-gold">◇</span>
         </span>
       ))}
     </div>
@@ -21,8 +19,8 @@ function Group() {
 
 export function Marquee() {
   return (
-    <div className={styles.marquee}>
-      <div className={styles.track}>
+    <div className="overflow-hidden border-y border-ink/12 py-3.5">
+      <div className="flex w-max animate-marquee will-change-transform">
         <Group />
         <Group />
       </div>

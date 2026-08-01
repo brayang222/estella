@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "./Navbar.module.css";
 import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
 
 const sectionLinks = [
@@ -19,6 +18,12 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  // On the homepage the hero already shows a giant "Estella" wordmark, so the
+  // navbar's own wordmark stays hidden until the hero scrolls out of view.
+  // Other routes have no hero to duplicate, so it's always shown regardless
+  // of this (possibly stale) observer state.
+  const [heroOutOfView, setHeroOutOfView] = useState(false);
+  const wordmarkVisible = pathname !== "/" || heroOutOfView;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -26,6 +31,18 @@ export function Navbar() {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    if (pathname !== "/") return;
+    const hero = document.getElementById("top");
+    if (!hero) return;
+
+    const observer = new IntersectionObserver(([entry]) => setHeroOutOfView(!entry.isIntersecting), {
+      threshold: 0,
+    });
+    observer.observe(hero);
+    return () => observer.disconnect();
+  }, [pathname]);
 
   useEffect(() => {
     // isActive() below already gates on pathname === "/", so a stale
@@ -52,13 +69,21 @@ export function Navbar() {
     id === "blog" ? pathname.startsWith("/blog") : pathname === "/" && activeId === id;
 
   return (
-    <nav className={`${styles.nav} ${scrolled ? styles.scrolled : ""}`}>
-      <div className={styles.links}>
+    <nav
+      className={`fixed inset-x-0 top-0 z-[60] grid grid-cols-[1fr_auto_1fr] items-center gap-4 border-b px-gutter transition-all duration-500 ease-out ${
+        scrolled
+          ? "border-ink/12 bg-paper/92 py-[13px] backdrop-blur-[12px]"
+          : "border-transparent bg-paper/0 py-[18px]"
+      }`}
+    >
+      <div className="hidden items-center gap-[clamp(12px,2vw,30px)] min-[820px]:flex">
         {links.map((link) => (
           <Link
             key={link.href}
             href={link.href}
-            className={`${styles.link} ${isActive(link.id) ? styles.linkActive : ""}`}
+            className={`border-b pb-[3px] text-[10.5px] tracking-[0.22em] uppercase transition-[color,border-color] duration-300 ease-out hover:text-gold ${
+              isActive(link.id) ? "border-gold text-gold" : "border-transparent"
+            }`}
             aria-current={isActive(link.id) ? "page" : undefined}
           >
             {link.label}
@@ -66,38 +91,47 @@ export function Navbar() {
         ))}
       </div>
 
-      <Link href="/#top" className={styles.wordmark}>
+      <Link
+        href="/#top"
+        className={`font-display text-[clamp(16px,1.8vw,21px)] tracking-[0.46em] whitespace-nowrap uppercase transition-[opacity,transform] duration-500 ease-estella [text-indent:0.46em] ${
+          wordmarkVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-2 opacity-0"
+        }`}
+        aria-hidden={!wordmarkVisible}
+        tabIndex={wordmarkVisible ? undefined : -1}
+      >
         Estella
       </Link>
 
-      <div className={styles.right}>
+      <div className="flex items-center justify-end gap-[clamp(12px,2vw,24px)]">
         <a
           href={waLink(WA_GENERAL_MESSAGE)}
           target="_blank"
           rel="noopener"
-          className={styles.advisory}
+          className="border-b border-ink/35 pb-[3px] text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold"
         >
           Asesoría
         </a>
         <button
           type="button"
-          className={styles.burger}
+          className="grid w-[22px] cursor-pointer justify-items-end gap-[5px] border-0 bg-transparent py-1.5 min-[820px]:hidden"
           aria-label={open ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}
         >
-          <span />
-          <span />
+          <span className="block h-px w-full bg-ink" />
+          <span className="block h-px w-[65%] bg-ink" />
         </button>
       </div>
 
       {open && (
-        <div className={styles.mobileMenu}>
+        <div className="absolute top-full inset-x-0 grid gap-1 border-y border-ink/12 bg-paper/98 px-gutter pt-[18px] pb-6 backdrop-blur-[12px]">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`${styles.mobileLink} ${isActive(link.id) ? styles.mobileLinkActive : ""}`}
+              className={`py-[10px] text-[11px] tracking-[0.2em] uppercase ${
+                isActive(link.id) ? "text-gold" : ""
+              }`}
               onClick={() => setOpen(false)}
             >
               {link.label}
@@ -107,7 +141,7 @@ export function Navbar() {
             href={waLink(WA_GENERAL_MESSAGE)}
             target="_blank"
             rel="noopener"
-            className={styles.mobileLink}
+            className="py-[10px] text-[11px] tracking-[0.2em] uppercase"
             onClick={() => setOpen(false)}
           >
             Asesoría

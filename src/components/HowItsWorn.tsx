@@ -1,4 +1,3 @@
-import styles from "./HowItsWorn.module.css";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Reveal } from "./Reveal";
 import { staggerDelay } from "@/lib/stagger";
@@ -26,23 +25,23 @@ const steps = [
 
 export function HowItsWorn() {
   return (
-    <section className={styles.section}>
-      <div className={styles.inner}>
-        <Reveal className={styles.headingGroup}>
-          <span className={styles.eyebrow}>Cómo se lleva</span>
-          <h2 className={styles.heading}>
+    <section className="bg-paper-alt py-section-y px-gutter">
+      <div className="grid gap-[clamp(28px,4vw,48px)]">
+        <Reveal className="grid max-w-[40ch] gap-3">
+          <span className="text-[10px] tracking-[0.34em] text-gold uppercase">Cómo se lleva</span>
+          <h2 className="m-0 font-display text-[clamp(26px,3.8vw,50px)] leading-[1.08]">
             Tres formas de <em>combinarlas</em>
           </h2>
         </Reveal>
-        <div className={styles.grid}>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,250px),1fr))] gap-[clamp(18px,2.4vw,34px)]">
           {steps.map((step, index) => (
-            <Reveal key={step.title} delay={staggerDelay(index)} className={styles.item}>
-              <div className={styles.image}>
+            <Reveal key={step.title} delay={staggerDelay(index)} className="grid gap-4">
+              <div className="relative aspect-square overflow-hidden bg-img-3">
                 <PlaceholderImage label={step.label} angle={step.angle} spacing={9} tone={3} />
               </div>
-              <span className={styles.number}>0{index + 1}</span>
-              <h3 className={styles.itemTitle}>{step.title}</h3>
-              <p className={styles.itemText}>{step.text}</p>
+              <span className="text-[10px] tracking-[0.3em] text-gold">0{index + 1}</span>
+              <h3 className="m-0 font-display text-[21px]">{step.title}</h3>
+              <p className="m-0 text-[13px] leading-[1.8] text-muted text-pretty">{step.text}</p>
             </Reveal>
           ))}
         </div>

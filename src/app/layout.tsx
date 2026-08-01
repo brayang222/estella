@@ -66,8 +66,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${playfair.variable} ${poppins.variable}`}>
-      <body>
+    <html
+      lang="es"
+      className={`${playfair.variable} ${poppins.variable} scroll-smooth scroll-pt-[90px]`}
+    >
+      <body className="overflow-x-clip bg-paper font-body font-light text-ink">
         <OrganizationJsonLd />
         <Navbar />
         <main>{children}</main>

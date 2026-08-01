@@ -1,5 +1,4 @@
 import Image from "next/image";
-import styles from "./PlaceholderImage.module.css";
 
 type PlaceholderImageProps = {
   label: string;
@@ -45,17 +44,20 @@ export function PlaceholderImage({
 
   return (
     <div
-      className={`${styles.placeholder}${className ? ` ${className}` : ""}`}
-      style={
-        {
-          "--angle": `${angle}deg`,
-          "--spacing": `${spacing}px`,
-          "--tone": `var(--img-${tone})`,
-        } as React.CSSProperties
-      }
+      className={`absolute inset-0${className ? ` ${className}` : ""}`}
+      style={{
+        backgroundColor: `var(--color-img-${tone})`,
+        backgroundImage: `repeating-linear-gradient(${angle}deg, rgba(20,18,15,.07) 0 1px, rgba(20,18,15,0) 1px ${spacing}px)`,
+      }}
       aria-hidden="true"
     >
-      <span className={labelPosition === "center" ? styles.labelCenter : styles.labelBottom}>
+      <span
+        className={
+          labelPosition === "center"
+            ? "absolute top-1/2 left-1/2 w-[82%] -translate-x-1/2 -translate-y-1/2 text-center font-mono text-[9px] tracking-[0.16em] text-ink/40 uppercase"
+            : "absolute bottom-3 left-3.5 font-mono text-[9px] tracking-[0.16em] text-ink/42 uppercase"
+        }
+      >
         [ {label} ]
       </span>
     </div>

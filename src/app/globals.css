@@ -1,70 +1,27 @@
-:root {
-  --paper: #f6f4f0;
-  --paper-alt: #efeae3;
-  --ink: #14120f;
-  --muted: #6e6862;
-  --gold: #9a7b45;
-  --hairline: rgba(20, 18, 15, 0.12);
-  --img-1: #ede8e1;
-  --img-2: #e9e3da;
-  --img-3: #e5dfd6;
-  --dot-online: #8fcb9b;
+@import "tailwindcss";
 
-  --ease-estella: cubic-bezier(0.16, 1, 0.3, 1);
+@theme {
+  --color-paper: #f6f4f0;
+  --color-paper-alt: #efeae3;
+  --color-ink: #14120f;
+  --color-muted: #6e6862;
+  --color-gold: #9a7b45;
+  --color-img-1: #ede8e1;
+  --color-img-2: #e9e3da;
+  --color-img-3: #e5dfd6;
+  --color-dot-online: #8fcb9b;
 
   --font-display: var(--font-playfair), "Playfair Display", serif;
   --font-body: var(--font-poppins), Poppins, Helvetica, sans-serif;
-}
+  --font-mono: ui-monospace, Menlo, monospace;
 
-* {
-  box-sizing: border-box;
-}
+  --ease-estella: cubic-bezier(0.16, 1, 0.3, 1);
 
-html {
-  scroll-behavior: smooth;
-  /* keeps section headings clear of the fixed navbar when jumping to an anchor */
-  scroll-padding-top: 90px;
-}
+  /* shared fluid section paddings, reused across nearly every section */
+  --spacing-gutter: clamp(16px, 4vw, 56px);
+  --spacing-section-y: clamp(56px, 8vw, 110px);
 
-html,
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--paper);
-}
-
-body {
-  /* overflow-x (not on html): keeps horizontal scrollbar safety without
-     breaking documentElement.scrollHeight, which GSAP ScrollTrigger reads
-     to compute trigger positions. */
-  overflow-x: clip;
-  color: var(--ink);
-  font-family: var(--font-body);
-  font-weight: 300;
-}
-
-a {
-  color: var(--ink);
-  text-decoration: none;
-}
-
-a:hover {
-  color: var(--gold);
-}
-
-::selection {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-button {
-  font: inherit;
-  color: inherit;
-}
-
-:focus-visible {
-  outline: 1px solid var(--gold);
-  outline-offset: 3px;
+  --animate-marquee: est-marquee 34s linear infinite;
 }
 
 @keyframes est-marquee {
@@ -73,6 +30,23 @@ button {
   }
   to {
     transform: translateX(-50%);
+  }
+}
+
+@layer base {
+  a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  ::selection {
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  :focus-visible {
+    outline: 1px solid var(--color-gold);
+    outline-offset: 3px;
   }
 }
 
