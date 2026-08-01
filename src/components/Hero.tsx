@@ -1,32 +1,37 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Marquee } from "./Marquee";
 import { Reveal } from "./Reveal";
 
+/**
+ * The wordmark sits huge, centred and in dark ink (mix-blend-multiply), so a
+ * frame only works if its middle band stays light and quiet. The two photos
+ * here are pre-cropped to the stage ratio (see `pattern` frames below for the
+ * slot that still needs to be shot) — cropping in-browser with object-fit put
+ * the subject dead centre, right under the type.
+ */
 const frames = [
-  { name: "Tierras Claras", slot: "[ campaña — collar en capas, luz de mañana ]" },
-  { name: "Niebla", slot: "[ campaña — manillas apiladas, fondo lino ]" },
-  { name: "Isla", slot: "[ campaña — aretes, piel y sombra ]" },
-];
-
-const frameBackgrounds: React.CSSProperties[] = [
   {
-    backgroundColor: "var(--color-img-2)",
-    backgroundImage:
-      "repeating-linear-gradient(108deg, rgba(20,18,15,.075) 0 1px, rgba(20,18,15,0) 1px 12px)",
+    name: "Tierras Claras",
+    slot: "[ campaña — collares en capas, luz de mañana ]",
+    src: "/lookbook/hero-collares.webp",
+    srcMobile: "/lookbook/hero-collares-mobile.webp",
   },
   {
-    backgroundColor: "#e4dcd1",
-    backgroundImage:
-      "repeating-linear-gradient(58deg, rgba(20,18,15,.075) 0 1px, rgba(20,18,15,0) 1px 12px)",
+    name: "Niebla",
+    slot: "[ campaña — manillas apiladas, luz de tarde ]",
+    src: "/lookbook/hero-manillas.webp",
+    srcMobile: "/lookbook/hero-manillas-mobile.webp",
   },
   {
-    backgroundColor: "var(--color-img-1)",
-    backgroundImage:
-      "repeating-linear-gradient(150deg, rgba(20,18,15,.075) 0 1px, rgba(20,18,15,0) 1px 12px)",
+    name: "Isla",
+    slot: "[ campaña — manilla de cuentas, fondo menta ]",
+    src: "/lookbook/hero-menta.webp",
+    srcMobile: "/lookbook/hero-menta-mobile.webp",
   },
 ];
 
@@ -73,16 +78,57 @@ export function Hero() {
               className={`absolute inset-0 transition-opacity duration-[1100ms] ease-estella ${
                 index === frame ? "opacity-100" : "opacity-0"
               }`}
-              style={frameBackgrounds[index]}
-            />
+            >
+              {/* Art direction: the wide crop loses the piece entirely once a
+                  phone's tall stage crops it, so portrait versions carry the
+                  subject below md. */}
+              <Image
+                src={f.srcMobile}
+                alt=""
+                fill
+                sizes="100vw"
+                priority={index === 0}
+                className="md:hidden"
+                style={{ objectFit: "cover" }}
+              />
+              <Image
+                src={f.src}
+                alt=""
+                fill
+                sizes="100vw"
+                priority={index === 0}
+                className="hidden md:block"
+                style={{ objectFit: "cover" }}
+              />
+            </div>
           ))}
         </div>
+
+        {/* Veil, densest exactly where the wordmark sits, plus a lift along the
+            bottom for the paragraph and controls. Keeps chains and skin
+            visible behind the type instead of flattening the photo. */}
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{
+            background: [
+              // densest right under the wordmark
+              "radial-gradient(115% 85% at 50% 46%, rgba(246,244,240,.62) 0%, rgba(246,244,240,.40) 48%, rgba(246,244,240,.16) 100%)",
+              // lifts the caption block, the link and the arrows off the photo
+              "linear-gradient(to top, rgba(246,244,240,.86) 0%, rgba(246,244,240,.55) 18%, rgba(246,244,240,0) 44%)",
+              // lifts the navbar links and the slot label
+              "linear-gradient(to bottom, rgba(246,244,240,.70) 0%, rgba(246,244,240,0) 22%)",
+            ].join(", "),
+          }}
+        />
 
         <span className="absolute top-[clamp(74px,9vw,104px)] left-[clamp(14px,2.4vw,30px)] z-[1] font-mono text-[9.5px] tracking-[0.18em] text-ink/45 uppercase">
           {frames[frame].slot}
         </span>
 
-        <div className="absolute inset-0 z-[1] grid grid-rows-[1fr_auto_auto] gap-[clamp(26px,5vw,68px)] pt-[clamp(74px,9vw,104px)] pb-[clamp(20px,3vw,40px)] px-[clamp(14px,2.4vw,30px)]">
+        {/* No z-index here on purpose: it would isolate a stacking context and
+            the wordmark's mix-blend-multiply would have nothing to blend with,
+            rendering it a washed grey. DOM order already paints it on top. */}
+        <div className="absolute inset-0 grid grid-rows-[1fr_auto_auto] gap-[clamp(26px,5vw,68px)] pt-[clamp(74px,9vw,104px)] pb-[clamp(20px,3vw,40px)] px-[clamp(14px,2.4vw,30px)]">
           <span />
           <Reveal>
             <h1 className="m-0 pointer-events-none text-center font-display text-[clamp(52px,17vw,250px)] leading-[0.84] tracking-[0.06em] text-ink uppercase mix-blend-multiply [text-indent:0.06em]">
