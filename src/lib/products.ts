@@ -84,3 +84,8 @@ export const categoryFilters: { key: "todo" | ProductCategory; label: string }[]
   { key: "anillos", label: "Anillos" },
   { key: "aretes", label: "Aretes" },
 ];
+
+/** "$189.000" (COP, "." as thousands separator) -> 189000 */
+export function priceToNumber(price: string): number {
+  return Number(price.replace(/[^0-9]/g, ""));
+}

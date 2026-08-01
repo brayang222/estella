@@ -1,0 +1,45 @@
+.section {
+  padding: clamp(140px, 20vw, 220px) clamp(16px, 4vw, 56px) clamp(90px, 12vw, 160px);
+  display: grid;
+  justify-items: center;
+  gap: 20px;
+  text-align: center;
+}
+
+.eyebrow {
+  font-size: 10px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: var(--gold);
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(64px, 10vw, 140px);
+  line-height: 1;
+}
+
+.text {
+  margin: 0;
+  max-width: 42ch;
+  font-size: 13.5px;
+  line-height: 1.85;
+  color: var(--muted);
+}
+
+.link {
+  margin-top: 6px;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(20, 18, 15, 0.4);
+  padding-bottom: 4px;
+  transition: border-color 0.35s ease;
+}
+
+.link:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}

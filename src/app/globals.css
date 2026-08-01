@@ -20,6 +20,12 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+  /* keeps section headings clear of the fixed navbar when jumping to an anchor */
+  scroll-padding-top: 90px;
+}
+
 html,
 body {
   margin: 0;

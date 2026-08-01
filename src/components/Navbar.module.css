@@ -36,6 +36,20 @@
   font-size: 10.5px;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  padding-bottom: 3px;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.link:hover {
+  color: var(--gold);
+}
+
+.linkActive {
+  color: var(--gold);
+  border-bottom-color: var(--gold);
 }
 
 .wordmark {
@@ -91,12 +105,17 @@
 }
 
 .mobileMenu {
-  grid-column: 1 / -1;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   display: grid;
   gap: 4px;
-  padding-top: 18px;
-  margin-top: 14px;
+  padding: 18px clamp(16px, 4vw, 56px) 24px;
+  background: rgba(246, 244, 240, 0.98);
+  backdrop-filter: blur(12px);
   border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
 }
 
 .mobileLink {
@@ -104,6 +123,10 @@
   font-size: 11px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
+}
+
+.mobileLinkActive {
+  color: var(--gold);
 }
 
 @media (min-width: 820px) {

@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { OrganizationJsonLd } from "@/components/JsonLd";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -17,10 +22,42 @@ const poppins = Poppins({
   display: "swap",
 });
 
+const TITLE = `${SITE_NAME} — Joyería en rodio hecha en Colombia`;
+
 export const metadata: Metadata = {
-  title: "Estella — Joyería en rodio",
-  description:
-    "Series cortas de joyería en rodio: manillas, collares, anillos y aretes. Asesoría personalizada por WhatsApp.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "joyería en rodio",
+    "manillas de rodio",
+    "collares de rodio",
+    "anillos de rodio",
+    "aretes de rodio",
+    "joyería Colombia",
+    "accesorios Estella",
+  ],
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+    url: "/",
+    siteName: SITE_NAME,
+    locale: "es_CO",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({
@@ -30,7 +67,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${playfair.variable} ${poppins.variable}`}>
-      <body>{children}</body>
+      <body>
+        <OrganizationJsonLd />
+        <Navbar />
+        <main>{children}</main>
+        <Footer />
+        <WhatsAppFloat />
+      </body>
     </html>
   );
 }

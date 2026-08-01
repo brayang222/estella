@@ -1,6 +1,7 @@
 import styles from "./FinalCta.module.css";
 import { Reveal } from "./Reveal";
 import { staggerDelay } from "@/lib/stagger";
+import { SOCIAL_LINKS } from "@/lib/site";
 import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
 
 export function FinalCta() {
@@ -32,14 +33,14 @@ export function FinalCta() {
       </Reveal>
       <Reveal delay={staggerDelay(4)} className={styles.social}>
         <a
-          href="https://instagram.com"
+          href={SOCIAL_LINKS.instagram}
           target="_blank"
           rel="noopener"
           className={styles.socialLink}
         >
           Instagram
         </a>
-        <a href="https://tiktok.com" target="_blank" rel="noopener" className={styles.socialLink}>
+        <a href={SOCIAL_LINKS.tiktok} target="_blank" rel="noopener" className={styles.socialLink}>
           TikTok
         </a>
       </Reveal>
