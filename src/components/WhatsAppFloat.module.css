@@ -1,0 +1,33 @@
+.float {
+  position: fixed;
+  right: clamp(14px, 2vw, 28px);
+  bottom: clamp(14px, 2vw, 28px);
+  z-index: 70;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 14px 20px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  box-shadow: 0 14px 34px -18px rgba(20, 18, 15, 0.7);
+  transition:
+    background 0.3s ease,
+    transform 0.35s var(--ease-estella);
+}
+
+.float:hover {
+  background: var(--gold);
+  color: var(--paper);
+  transform: translateY(-2px);
+}
+
+.dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--dot-online);
+}

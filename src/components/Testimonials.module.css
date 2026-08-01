@@ -1,0 +1,97 @@
+.section {
+  padding: clamp(56px, 8vw, 110px) clamp(16px, 4vw, 56px);
+  background: var(--paper-alt);
+  display: grid;
+  gap: clamp(24px, 3.2vw, 40px);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.heading {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(26px, 3.8vw, 50px);
+}
+
+.arrows {
+  display: flex;
+  gap: 8px;
+}
+
+.arrowBtn {
+  width: 42px;
+  height: 42px;
+  background: transparent;
+  border: 1px solid rgba(20, 18, 15, 0.2);
+  color: var(--ink);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.arrowBtn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.rail {
+  display: flex;
+  gap: clamp(12px, 1.6vw, 24px);
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.card {
+  flex: 0 0 min(86vw, 400px);
+  scroll-snap-align: start;
+  margin: 0;
+  display: grid;
+  gap: 22px;
+  padding: clamp(22px, 2.6vw, 34px);
+  background: var(--paper);
+}
+
+.stars {
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+
+.quote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(16px, 1.7vw, 21px);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.caption {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hairline);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.captionName {
+  color: var(--ink);
+}

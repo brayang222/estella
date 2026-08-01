@@ -1,0 +1,28 @@
+.marquee {
+  overflow: hidden;
+  border-top: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--hairline);
+  padding: 14px 0;
+}
+
+.track {
+  display: flex;
+  width: max-content;
+  animation: est-marquee 34s linear infinite;
+  will-change: transform;
+}
+
+.group {
+  display: flex;
+  gap: 44px;
+  padding-right: 44px;
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.dot {
+  color: var(--gold);
+}

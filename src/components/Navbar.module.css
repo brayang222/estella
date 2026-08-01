@@ -1,0 +1,117 @@
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 18px clamp(16px, 4vw, 56px);
+  background: rgba(246, 244, 240, 0);
+  border-bottom: 1px solid transparent;
+  transition:
+    background 0.5s ease,
+    border-color 0.5s ease,
+    padding 0.4s ease,
+    backdrop-filter 0.5s ease;
+}
+
+.nav.scrolled {
+  background: rgba(246, 244, 240, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom-color: var(--hairline);
+  padding-top: 13px;
+  padding-bottom: 13px;
+}
+
+.links {
+  display: none;
+  align-items: center;
+  gap: clamp(12px, 2vw, 30px);
+}
+
+.link {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 1.8vw, 21px);
+  letter-spacing: 0.46em;
+  text-indent: 0.46em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: clamp(12px, 2vw, 24px);
+}
+
+.advisory {
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(20, 18, 15, 0.35);
+  padding-bottom: 3px;
+  transition: border-color 0.35s ease;
+}
+
+.advisory:hover {
+  color: var(--gold);
+  border-color: var(--gold);
+}
+
+.burger {
+  display: grid;
+  gap: 5px;
+  width: 22px;
+  justify-items: end;
+  padding: 6px 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: var(--ink);
+}
+
+.burger span:last-child {
+  width: 65%;
+}
+
+.mobileMenu {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 4px;
+  padding-top: 18px;
+  margin-top: 14px;
+  border-top: 1px solid var(--hairline);
+}
+
+.mobileLink {
+  padding: 10px 0;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+@media (min-width: 820px) {
+  .links {
+    display: flex;
+  }
+
+  .burger {
+    display: none;
+  }
+}
