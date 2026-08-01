@@ -3,11 +3,11 @@
 import { useState } from "react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Reveal } from "./Reveal";
-import { categoryFilters, products, type ProductCategory } from "@/lib/products";
+import { categoryFilters, formatPrice, type Product, type ProductCategory } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
 import { waLink, waProductMessage } from "@/lib/whatsapp";
 
-export function Collection() {
+export function Collection({ products }: { products: Product[] }) {
   const [category, setCategory] = useState<"todo" | ProductCategory>("todo");
 
   const visibleProducts = products.filter(
@@ -50,7 +50,7 @@ export function Collection() {
                 tone={1}
                 labelPosition="center"
                 className="transition-transform duration-[1100ms] ease-estella group-hover:scale-[1.04]"
-                src={p.image}
+                src={p.image ?? undefined}
                 alt={p.name}
               />
               <span className="absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
@@ -58,7 +58,7 @@ export function Collection() {
               </span>
               <div className="absolute inset-x-2.5 bottom-2.5 translate-y-1.5 opacity-0 transition-[opacity,transform] duration-500 ease-estella group-hover:translate-y-0 group-hover:opacity-100">
                 <a
-                  href={waLink(waProductMessage(p.name, p.price))}
+                  href={waLink(waProductMessage(p.name, formatPrice(p.price)))}
                   target="_blank"
                   rel="noopener"
                   className="block bg-paper p-[13px] text-center text-[10px] tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"
@@ -70,7 +70,7 @@ export function Collection() {
             <div className="flex items-baseline justify-between gap-2.5 border-t border-ink/12 pt-0.5">
               <h3 className="mt-2 text-[11px] font-normal tracking-[0.18em] uppercase">{p.name}</h3>
               <span className="mt-2 text-[11.5px] tracking-[0.06em] text-muted whitespace-nowrap">
-                {p.price}
+                {formatPrice(p.price)}
               </span>
             </div>
           </Reveal>

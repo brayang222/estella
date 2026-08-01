@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { imageUrl } from "@/lib/images";
 
 type PlaceholderImageProps = {
   label: string;
@@ -29,10 +30,11 @@ export function PlaceholderImage({
   sizes = "100vw",
   className,
 }: PlaceholderImageProps) {
-  if (src) {
+  const resolvedSrc = imageUrl(src);
+  if (resolvedSrc) {
     return (
       <Image
-        src={src}
+        src={resolvedSrc}
         alt={alt}
         fill
         sizes={sizes}

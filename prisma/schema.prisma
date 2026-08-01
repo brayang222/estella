@@ -1,0 +1,35 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum ProductCategory {
+  manillas
+  collares
+  anillos
+  aretes
+}
+
+model Product {
+  id               String          @id @default(cuid())
+  slug             String          @unique
+  referenceCode    String          @unique
+  name             String
+  category         ProductCategory
+  price            Int
+  tag              String
+  image            String?
+  placeholderLabel String
+  sortOrder        Int             @default(0)
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([category])
+}

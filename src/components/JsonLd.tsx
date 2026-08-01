@@ -1,4 +1,4 @@
-import { priceToNumber, products } from "@/lib/products";
+import type { Product } from "@/lib/products";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_LINKS } from "@/lib/site";
 import type { BlogPost } from "@/lib/blog";
 
@@ -27,7 +27,7 @@ export function OrganizationJsonLd() {
   );
 }
 
-export function ProductsJsonLd() {
+export function ProductsJsonLd({ products }: { products: Product[] }) {
   return (
     <JsonLdScript
       data={{
@@ -40,10 +40,11 @@ export function ProductsJsonLd() {
             "@type": "Product",
             name: product.name,
             category: product.category,
+            sku: product.referenceCode,
             brand: { "@type": "Brand", name: SITE_NAME },
             offers: {
               "@type": "Offer",
-              price: priceToNumber(product.price),
+              price: product.price,
               priceCurrency: "COP",
               availability: "https://schema.org/InStock",
             },
