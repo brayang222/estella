@@ -5,9 +5,10 @@ import { staggerDelay } from "@/lib/stagger";
 const steps = [
   {
     angle: 90,
-    label: "capas de collares",
+    label: "collares — variedad",
     title: "En capas",
     text: "Dos o tres largos distintos: choker, media caída y una cadena larga con dije.",
+    src: "/lookbook/collares-capas.webp",
   },
   {
     angle: 45,
@@ -18,9 +19,10 @@ const steps = [
   },
   {
     angle: 135,
-    label: "arete solo",
+    label: "dije — pieza única",
     title: "Una sola pieza",
     text: "Un arete escultural y nada más. El resto del look en silencio.",
+    src: "/lookbook/dije-unico.webp",
   },
 ];
 
@@ -43,7 +45,7 @@ export function HowItsWorn() {
                   angle={step.angle}
                   spacing={9}
                   tone={3}
-                  src={"src" in step ? step.src : undefined}
+                  src={step.src}
                   alt={step.label}
                 />
               </div>

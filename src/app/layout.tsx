@@ -4,6 +4,7 @@ import "./globals.css";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { ViewTransitionReadySignal } from "@/components/ViewTransitionReadySignal";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -68,9 +69,11 @@ export default function RootLayout({
   return (
     <html
       lang="es"
+      data-scroll-behavior="smooth"
       className={`${playfair.variable} ${poppins.variable} scroll-smooth scroll-pt-[90px]`}
     >
       <body className="overflow-x-clip bg-paper font-body font-light text-ink">
+        <ViewTransitionReadySignal />
         <OrganizationJsonLd />
         <Navbar />
         <main>{children}</main>

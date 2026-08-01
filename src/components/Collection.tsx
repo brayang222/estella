@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Reveal } from "./Reveal";
+import { TransitionLink } from "./TransitionLink";
 import { formatPrice, type Category, type Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
 import { waLink, waProductMessage } from "@/lib/whatsapp";
@@ -46,24 +47,29 @@ export function Collection({
         </div>
       </Reveal>
 
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(clamp(165px,22vw,300px),1fr))] gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)]">
+      <div className="grid grid-cols-2 gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)] sm:grid-cols-3 lg:grid-cols-4">
         {visibleProducts.map((p, index) => (
           <Reveal key={p.id} delay={staggerDelay(index)} className="grid gap-3.5">
-            <div className="group relative aspect-[4/5] overflow-hidden bg-img-1">
-              <PlaceholderImage
-                label={p.placeholderLabel}
-                angle={128}
-                spacing={10}
-                tone={1}
-                labelPosition="center"
-                className="transition-transform duration-[1100ms] ease-estella group-hover:scale-[1.04]"
-                src={p.image ?? undefined}
-                alt={p.name}
-              />
-              <span className="absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
+            <div
+              className="group relative aspect-[4/5] overflow-hidden bg-img-1"
+              style={{ viewTransitionName: `product-image-${p.slug}` }}
+            >
+              <TransitionLink href={`/producto/${p.slug}`} className="absolute inset-0 block">
+                <PlaceholderImage
+                  label={p.placeholderLabel}
+                  angle={128}
+                  spacing={10}
+                  tone={1}
+                  labelPosition="center"
+                  className="transition-transform duration-[1100ms] ease-estella group-hover:scale-[1.04]"
+                  src={p.images[0]?.url}
+                  alt={p.name}
+                />
+              </TransitionLink>
+              <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
                 {p.tag}
               </span>
-              <div className="absolute inset-x-2.5 bottom-2.5 translate-y-1.5 opacity-0 transition-[opacity,transform] duration-500 ease-estella group-hover:translate-y-0 group-hover:opacity-100">
+              <div className="absolute inset-x-2.5 bottom-2.5 z-[2] translate-y-1.5 opacity-0 transition-[opacity,transform] duration-500 ease-estella group-hover:translate-y-0 group-hover:opacity-100">
                 <a
                   href={waLink(waProductMessage(p.name, formatPrice(p.price)))}
                   target="_blank"
@@ -75,7 +81,11 @@ export function Collection({
               </div>
             </div>
             <div className="flex items-baseline justify-between gap-2.5 border-t border-ink/12 pt-0.5">
-              <h3 className="mt-2 text-[11px] font-normal tracking-[0.18em] uppercase">{p.name}</h3>
+              <TransitionLink href={`/producto/${p.slug}`}>
+                <h3 className="mt-2 text-[11px] font-normal tracking-[0.18em] uppercase hover:text-gold">
+                  {p.name}
+                </h3>
+              </TransitionLink>
               <span className="mt-2 text-[11.5px] tracking-[0.06em] text-muted whitespace-nowrap">
                 {formatPrice(p.price)}
               </span>

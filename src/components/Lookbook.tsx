@@ -5,32 +5,43 @@ import { staggerDelay } from "@/lib/stagger";
 const blocks = [
   {
     span: "col-span-4",
-    ratio: "aspect-[4/3]",
+    ratio: "aspect-[2/1]",
     tone: 1 as const,
     angle: 118,
-    label: "retrato — collar en capas",
+    label: "collares — variedad de dijes",
+    src: "/lookbook/collares-variedad.webp",
+    // toca a la derecha con B y abajo con C/D
+    // touchBorder: "border-r-2 border-b-2 border-black",
   },
   {
     span: "col-span-2",
-    ratio: "aspect-[2/3]",
+    ratio: "aspect-square",
     tone: 3 as const,
     angle: 62,
-    label: "detalle — anillo",
+    label: "dije — pareja alas de ángel",
+    src: "/lookbook/pareja-alas.webp",
+    // toca a la izquierda con A y abajo con D
+    // touchBorder: "border-l-2 border-b-2 border-black",
   },
   {
     span: "col-span-2",
     ratio: "aspect-square",
     tone: 1 as const,
     angle: 90,
-    label: "aretes",
+    label: "detalle — medallón",
+    src: "/lookbook/medallon-detalle.webp",
+    // toca arriba con A y a la derecha con D
+    // touchBorder: "border-t-2 border-r-2 border-black",
   },
   {
     span: "col-span-4",
-    ratio: "aspect-[16/10]",
+    ratio: "aspect-[2/1]",
     tone: 2 as const,
     angle: 152,
     label: "lifestyle — manillas apiladas",
     src: "/lookbook/manillas-stack-wide.webp",
+    // toca arriba con A/B y a la izquierda con C
+    // touchBorder: "border-t-2 border-l-2 border-black",
   },
 ];
 
@@ -50,7 +61,7 @@ export function Lookbook() {
           <Curtain
             key={block.label}
             delay={staggerDelay(index)}
-            className={`${block.span} ${block.ratio}`}
+            className={`${block.span} ${block.ratio} `}
           >
             <PlaceholderImage
               label={block.label}
@@ -58,7 +69,7 @@ export function Lookbook() {
               spacing={11}
               tone={block.tone}
               labelPosition="bottom"
-              src={"src" in block ? block.src : undefined}
+              src={block.src}
               alt={block.label}
             />
           </Curtain>

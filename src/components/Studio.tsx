@@ -15,10 +15,12 @@ export function Studio() {
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] items-center gap-[clamp(24px,4vw,60px)]">
         <Curtain className="aspect-[5/6]">
           <PlaceholderImage
-            label="estudio — manos armando una pieza"
+            label="estudio — detalle de pieza"
             angle={100}
             spacing={11}
             tone={3}
+            src="/lookbook/estudio-detalle.webp"
+            alt="estudio — detalle de pieza"
           />
         </Curtain>
         <div className="grid gap-[clamp(18px,2.4vw,28px)]">

@@ -11,6 +11,7 @@ type PlaceholderImageProps = {
   alt?: string;
   sizes?: string;
   className?: string;
+  priority?: boolean;
 };
 
 /**
@@ -29,6 +30,7 @@ export function PlaceholderImage({
   alt = "",
   sizes = "100vw",
   className,
+  priority = false,
 }: PlaceholderImageProps) {
   const resolvedSrc = imageUrl(src);
   if (resolvedSrc) {
@@ -40,6 +42,8 @@ export function PlaceholderImage({
         sizes={sizes}
         className={className}
         style={{ objectFit: "cover" }}
+        unoptimized
+        priority={priority}
       />
     );
   }

@@ -28,7 +28,8 @@ type SeedProduct = {
   categorySlug: string;
   price: number;
   tag: string;
-  image: string;
+  /** Ordered front-to-back; index 0 is `order: 1` and becomes the grid thumbnail. Max 4 shown in the gallery. */
+  images: string[];
   placeholderLabel: string;
   sortOrder: number;
 };
@@ -41,7 +42,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 129000,
     tag: "Nuevo",
-    image: "/products/collar-margarita.webp",
+    images: ["/products/collar-margarita.webp"],
     placeholderLabel: "collar margarita",
     sortOrder: 0,
   },
@@ -52,7 +53,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 199000,
     tag: "Clásico",
-    image: "/products/manilla-tenis-clasica.webp",
+    images: ["/products/manilla-tenis-clasica.webp"],
     placeholderLabel: "manilla tenis clásica",
     sortOrder: 1,
   },
@@ -63,7 +64,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 149000,
     tag: "Nuevo",
-    image: "/products/collar-girasol.webp",
+    images: ["/products/collar-girasol.webp"],
     placeholderLabel: "collar girasol",
     sortOrder: 2,
   },
@@ -74,7 +75,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 209000,
     tag: "Nuevo",
-    image: "/products/manilla-tenis-corazones.webp",
+    images: ["/products/manilla-tenis-corazones.webp"],
     placeholderLabel: "manilla tenis corazones",
     sortOrder: 3,
   },
@@ -85,7 +86,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 119000,
     tag: "Serie 01",
-    image: "/products/collar-corazon-rojo.webp",
+    images: ["/products/collar-corazon-rojo.webp"],
     placeholderLabel: "collar corazón rojo",
     sortOrder: 4,
   },
@@ -96,7 +97,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 219000,
     tag: "Últimas",
-    image: "/products/manilla-tenis-piedra-de-color.webp",
+    images: ["/products/manilla-tenis-piedra-de-color.webp"],
     placeholderLabel: "manilla tenis piedra de color",
     sortOrder: 5,
   },
@@ -107,7 +108,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 169000,
     tag: "Serie 01",
-    image: "/products/collar-abrazo.webp",
+    images: ["/products/collar-abrazo.webp"],
     placeholderLabel: "collar abrazo",
     sortOrder: 6,
   },
@@ -118,7 +119,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 149000,
     tag: "Serie 01",
-    image: "/products/manilla-dije-corazones.webp",
+    images: ["/products/manilla-dije-corazones.webp"],
     placeholderLabel: "manilla dije corazones",
     sortOrder: 7,
   },
@@ -129,7 +130,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 179000,
     tag: "Serie 02",
-    image: "/products/collar-eres-mi-mundo.webp",
+    images: ["/products/collar-eres-mi-mundo.webp"],
     placeholderLabel: "collar eres mi mundo",
     sortOrder: 8,
   },
@@ -140,7 +141,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 139000,
     tag: "Serie 02",
-    image: "/products/manilla-eslabon.webp",
+    images: ["/products/manilla-eslabon.webp"],
     placeholderLabel: "manilla eslabón",
     sortOrder: 9,
   },
@@ -151,7 +152,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 239000,
     tag: "Set x2",
-    image: "/products/collar-pareja-alas-de-angel.webp",
+    images: ["/products/collar-pareja-alas-de-angel.webp"],
     placeholderLabel: "collar pareja alas de ángel",
     sortOrder: 10,
   },
@@ -162,7 +163,7 @@ const products: SeedProduct[] = [
     categorySlug: "manillas",
     price: 159000,
     tag: "Nuevo",
-    image: "/products/manilla-cuentas-medallon.webp",
+    images: ["/products/manilla-cuentas-medallon.webp"],
     placeholderLabel: "manilla cuentas con medallón",
     sortOrder: 11,
   },
@@ -173,7 +174,7 @@ const products: SeedProduct[] = [
     categorySlug: "collares",
     price: 159000,
     tag: "Personalizado",
-    image: "/products/collar-inicial-personalizada.webp",
+    images: ["/products/collar-inicial-personalizada.webp"],
     placeholderLabel: "collar inicial personalizada",
     sortOrder: 12,
   },
@@ -192,13 +193,27 @@ async function main() {
   }
   console.log(`Seeded ${categories.length} categories.`);
 
-  for (const { categorySlug, ...product } of products) {
+  for (const { categorySlug, images, ...product } of products) {
     const categoryId = categoryIdBySlug.get(categorySlug);
     if (!categoryId) throw new Error(`Unknown category slug: ${categorySlug}`);
-    await prisma.product.upsert({
+    const row = await prisma.product.upsert({
       where: { slug: product.slug },
       update: { ...product, categoryId },
       create: { ...product, categoryId },
+    });
+
+    const orderedImages = images.slice(0, 4);
+    for (const [index, url] of orderedImages.entries()) {
+      const order = index + 1;
+      await prisma.productImage.upsert({
+        where: { productId_order: { productId: row.id, order } },
+        update: { url },
+        create: { productId: row.id, url, order },
+      });
+    }
+    // Keep re-runs idempotent: drop any images beyond what this seed now lists.
+    await prisma.productImage.deleteMany({
+      where: { productId: row.id, order: { gt: orderedImages.length } },
     });
   }
   console.log(`Seeded ${products.length} products.`);
