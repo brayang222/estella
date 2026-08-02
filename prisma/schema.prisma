@@ -28,8 +28,10 @@ model Product {
   categoryId       String
   category         Category       @relation(fields: [categoryId], references: [id])
   price            Int
+  available        Boolean        @default(true)
   tag              String
   description      String
+  measurements     String?
   images           ProductImage[]
   placeholderLabel String
   sortOrder        Int            @default(0)

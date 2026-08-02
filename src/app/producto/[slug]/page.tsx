@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductJsonLd } from "@/components/JsonLd";
 import { ProductOrderPanel } from "@/components/ProductOrderPanel";
+import { RelatedProducts } from "@/components/RelatedProducts";
 import Link from "next/link";
 import { getProductBySlug, getProducts } from "@/lib/queries";
 
@@ -44,6 +45,9 @@ export default async function ProductPage({ params }: Props) {
   const index = allProducts.findIndex((p) => p.slug === product.slug);
   const previous = index > 0 ? allProducts[index - 1] : undefined;
   const next = index >= 0 && index < allProducts.length - 1 ? allProducts[index + 1] : undefined;
+  const related = allProducts
+    .filter((p) => p.categoryId === product.categoryId && p.slug !== product.slug)
+    .slice(0, 4);
 
   return (
     <article className="grid gap-x-[clamp(40px,6vw,80px)] gap-y-[clamp(36px,5vw,56px)] pt-[clamp(120px,15vw,168px)] pb-[clamp(88px,11vw,140px)] px-gutter md:grid-cols-2 md:items-start">
@@ -88,6 +92,8 @@ export default async function ProductPage({ params }: Props) {
       />
 
       <ProductOrderPanel product={product} />
+
+      <RelatedProducts products={related} />
     </article>
   );
 }

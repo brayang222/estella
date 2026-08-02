@@ -62,6 +62,9 @@ export function Navbar() {
           ? "border-ink/12 bg-paper/92 py-[13px] backdrop-blur-[12px]"
           : "border-transparent bg-paper/0 py-[18px]"
       }`}
+      // Pinned during view transitions (see globals.css) so the bar stays put
+      // instead of crossfading with the page under it.
+      style={{ viewTransitionName: "site-header" }}
     >
       <div className="hidden items-center gap-[clamp(12px,2vw,30px)] min-[820px]:flex">
         {links.map((link) => (

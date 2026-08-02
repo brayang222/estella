@@ -50,6 +50,46 @@
   }
 }
 
+/* ---- View transitions -------------------------------------------------
+   The full-page crossfade is the part that reads as "slow": it fades every
+   pixel of a photo-heavy page. Keep it short so the morph is what the eye
+   follows, and pin the navbar so it never fades with the rest. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 180ms;
+  animation-timing-function: ease-out;
+}
+
+::view-transition-group(.morph) {
+  animation-duration: 380ms;
+  animation-timing-function: var(--ease-estella);
+}
+
+/* A touch of blur mid-flight hides the pixel stretching while the thumbnail's
+   aspect box resolves into the detail one. */
+::view-transition-image-pair(.morph) {
+  animation-name: est-morph-blur;
+  animation-duration: 380ms;
+}
+
+@keyframes est-morph-blur {
+  40% {
+    filter: blur(2.5px);
+  }
+}
+
+/* The navbar is fixed; letting it crossfade makes the whole frame feel loose. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;

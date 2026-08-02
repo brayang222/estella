@@ -46,7 +46,9 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
               "@type": "Offer",
               price: product.price,
               priceCurrency: "COP",
-              availability: "https://schema.org/InStock",
+              availability: product.available
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
             },
           },
         })),

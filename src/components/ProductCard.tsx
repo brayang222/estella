@@ -2,9 +2,10 @@
 
 import { useEffect, useState, ViewTransition } from "react";
 import Link from "next/link";
+import { FavoriteButton } from "./FavoriteButton";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { formatPrice, type Product } from "@/lib/products";
-import { waLink, waProductMessage } from "@/lib/whatsapp";
+import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
 const AUTOPLAY_MS = 1500;
 
@@ -71,7 +72,9 @@ export function ProductCard({ product }: { product: Product }) {
             renderedImages.map((image, i) => (
               <div
                 key={image.id}
-                className="absolute inset-0 transition-[opacity,transform] duration-500 ease-estella group-hover:scale-[1.04]"
+                className={`absolute inset-0 transition-[opacity,transform] duration-500 ease-estella group-hover:scale-[1.04] ${
+                  product.available ? "" : "opacity-70 grayscale-[35%]"
+                }`}
                 style={{ opacity: i === index ? 1 : 0 }}
               >
                 <PlaceholderImage
@@ -89,9 +92,20 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </Link>
 
-        <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
-          {product.tag}
-        </span>
+        {product.available ? (
+          <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
+            {product.tag}
+          </span>
+        ) : (
+          <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] bg-ink px-2 py-1 text-[9px] tracking-[0.2em] text-paper uppercase">
+            Agotado
+          </span>
+        )}
+
+        <FavoriteButton
+          slug={product.slug}
+          className="absolute top-2.5 right-2.5 z-[2] flex h-8 w-8 cursor-pointer items-center justify-center text-ink transition-transform duration-200 ease-out hover:scale-110"
+        />
 
         {canCycle && (
           <>
@@ -116,12 +130,16 @@ export function ProductCard({ product }: { product: Product }) {
 
         <div className="absolute inset-x-2.5 bottom-2.5 z-[2] translate-y-1.5 opacity-0 transition-[opacity,transform] duration-500 ease-estella group-hover:translate-y-0 group-hover:opacity-100">
           <a
-            href={waLink(waProductMessage(product.name, formatPrice(product.price)))}
+            href={waLink(
+              product.available
+                ? waProductMessage(product.name, formatPrice(product.price))
+                : waRestockMessage(product.name)
+            )}
             target="_blank"
             rel="noopener"
             className="cursor-pointer border-2 border-black rounded-md block bg-paper p-[13px] text-center text-sm tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"
           >
-            Consultar pieza
+            {product.available ? "Consultar pieza" : "Avisarme cuando vuelva"}
           </a>
         </div>
       </div>
