@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { useCart, useFavorites } from "@/lib/store";
 import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
 
 const sectionLinks = [
@@ -30,11 +32,59 @@ function AccountIcon() {
   );
 }
 
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      stroke="currentColor"
+      strokeWidth="1.6"
+      aria-hidden="true"
+    >
+      <path d="M12 20.2 4.9 13.3C2.6 11 2.6 7.4 4.9 5.1c2.2-2.2 5.7-2.2 7.9 0l.2.2.2-.2c2.2-2.2 5.7-2.2 7.9 0 2.3 2.3 2.3 5.9 0 8.2L12 20.2Z" />
+    </svg>
+  );
+}
+
+function BagIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      aria-hidden="true"
+    >
+      <path d="M5 7h14l-1.1 13H6.1L5 7Z" />
+      <path d="M9 9V6.5a3 3 0 0 1 6 0V9" />
+    </svg>
+  );
+}
+
+/** Contador flotante sobre los iconos de favoritos y bolsa. */
+function Count({ value }: { value: number }) {
+  if (value <= 0) return null;
+  return (
+    <span className="absolute -top-1.5 -right-2 grid h-[15px] min-w-[15px] place-items-center rounded-full bg-ink px-1 text-[9px] leading-none text-paper tabular-nums">
+      {value > 99 ? "99+" : value}
+    </span>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
+  const { status } = useSession();
+  const { favorites } = useFavorites();
+  const { count: bagCount } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const signedIn = status === "authenticated";
+  const accountHref = signedIn ? "/cuenta" : "/login";
   // The wordmark rides the same threshold as the solid navbar background, so
   // the bar "settling" into its fixed state and the name arriving read as one
   // move. Other routes have no hero wordmark to defer to, so it shows there
@@ -109,18 +159,34 @@ export function Navbar() {
         Estella
       </Link>
 
-      <div className="flex items-center justify-end gap-[clamp(12px,2vw,24px)]">
+      <div className="flex items-center justify-end gap-[clamp(12px,2vw,22px)]">
         <a
           href={waLink(WA_GENERAL_MESSAGE)}
           target="_blank"
           rel="noopener"
-          className="border-b border-ink/35 pb-[3px] text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold"
+          className="hidden border-b border-ink/35 pb-[3px] text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold min-[820px]:block"
         >
           Asesoría
         </a>
         <Link
-          href="/login"
-          aria-label="Iniciar sesión"
+          href="/favoritos"
+          aria-label={`Favoritos${favorites.length > 0 ? ` (${favorites.length})` : ""}`}
+          className="relative flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+        >
+          <HeartIcon filled={favorites.length > 0} />
+          <Count value={favorites.length} />
+        </Link>
+        <Link
+          href="/bolsa"
+          aria-label={`Mi bolsa${bagCount > 0 ? ` (${bagCount})` : ""}`}
+          className="relative flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+        >
+          <BagIcon />
+          <Count value={bagCount} />
+        </Link>
+        <Link
+          href={accountHref}
+          aria-label={signedIn ? "Mi cuenta" : "Iniciar sesión"}
           className="flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
         >
           <AccountIcon />
@@ -161,12 +227,35 @@ export function Navbar() {
             Asesoría
           </a>
           <Link
-            href="/login"
+            href="/favoritos"
             className="py-[10px] text-[11px] tracking-[0.2em] uppercase"
             onClick={() => setOpen(false)}
           >
-            Iniciar sesión
+            Favoritos{favorites.length > 0 ? ` (${favorites.length})` : ""}
           </Link>
+          <Link
+            href="/bolsa"
+            className="py-[10px] text-[11px] tracking-[0.2em] uppercase"
+            onClick={() => setOpen(false)}
+          >
+            Mi bolsa{bagCount > 0 ? ` (${bagCount})` : ""}
+          </Link>
+          <Link
+            href={accountHref}
+            className="py-[10px] text-[11px] tracking-[0.2em] uppercase"
+            onClick={() => setOpen(false)}
+          >
+            {signedIn ? "Mi cuenta" : "Iniciar sesión"}
+          </Link>
+          {!signedIn && (
+            <Link
+              href="/registro"
+              className="py-[10px] text-[11px] tracking-[0.2em] text-gold uppercase"
+              onClick={() => setOpen(false)}
+            >
+              Crear cuenta
+            </Link>
+          )}
         </div>
       )}
     </nav>

@@ -1,11 +1,12 @@
 "use client";
 
-import { useFavorites } from "@/lib/favorites";
+import Link from "next/link";
+import { useFavorites } from "@/lib/store";
 import { formatPrice, type Product } from "@/lib/products";
 import { waFavoritesMessage, waLink } from "@/lib/whatsapp";
 
 export function FavoritesBar({ products }: { products: Product[] }) {
-  const { favorites, toggle } = useFavorites();
+  const { favorites, clear } = useFavorites();
   const items = products.filter((p) => favorites.includes(p.slug));
   if (items.length === 0) return null;
 
@@ -24,6 +25,12 @@ export function FavoritesBar({ products }: { products: Product[] }) {
         </span>
       </div>
       <div className="flex items-center gap-5">
+        <Link
+          href="/favoritos"
+          className="text-[10px] tracking-[0.2em] text-muted uppercase underline-offset-4 hover:text-ink hover:underline"
+        >
+          Ver todos
+        </Link>
         <a
           href={waLink(message)}
           target="_blank"
@@ -34,7 +41,7 @@ export function FavoritesBar({ products }: { products: Product[] }) {
         </a>
         <button
           type="button"
-          onClick={() => items.forEach((p) => toggle(p.slug))}
+          onClick={clear}
           className="cursor-pointer border-0 bg-transparent text-[10px] tracking-[0.2em] text-muted uppercase underline-offset-4 hover:text-ink hover:underline"
         >
           Vaciar

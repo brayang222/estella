@@ -1,15 +1,27 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
+import { useCart } from "@/lib/store";
 import { formatPrice, type Product } from "@/lib/products";
 import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
 const COPY_FEEDBACK_MS = 1600;
+const ADDED_FEEDBACK_MS = 2200;
 
 export function ProductOrderPanel({ product }: { product: Product }) {
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
+  const [added, setAdded] = useState(false);
+  const { add, quantityOf } = useCart();
+  const inBag = quantityOf(product.slug);
+
+  function addToBag() {
+    add(product.slug, quantity);
+    setAdded(true);
+    setTimeout(() => setAdded(false), ADDED_FEEDBACK_MS);
+  }
 
   function copyReference() {
     const flash = () => {
@@ -99,14 +111,31 @@ export function ProductOrderPanel({ product }: { product: Product }) {
             </div>
           </div>
 
-          <a
-            href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity))}
-            target="_blank"
-            rel="noopener"
-            className="block bg-ink py-4 text-center text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
-          >
-            Consultar por WhatsApp
-          </a>
+          <div className="grid gap-2.5">
+            <button
+              type="button"
+              onClick={addToBag}
+              className="cursor-pointer bg-ink py-4 text-center text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
+            >
+              {added ? "Añadida a tu bolsa" : "Agregar a la bolsa"}
+            </button>
+            <a
+              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity))}
+              target="_blank"
+              rel="noopener"
+              className="block border border-ink/25 py-4 text-center text-[11px] tracking-[0.22em] uppercase transition-colors duration-[400ms] ease-estella hover:border-ink hover:bg-paper-alt"
+            >
+              Consultar por WhatsApp
+            </a>
+            {inBag > 0 && (
+              <Link
+                href="/bolsa"
+                className="justify-self-center text-[11px] text-muted underline-offset-4 hover:text-gold hover:underline"
+              >
+                Ya tienes {inBag} {inBag === 1 ? "unidad" : "unidades"} en tu bolsa · verla
+              </Link>
+            )}
+          </div>
         </>
       ) : (
         <a

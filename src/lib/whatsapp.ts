@@ -21,3 +21,19 @@ export function waFavoritesMessage(items: { name: string; price: string }[]) {
   const list = items.map((item) => `- ${item.name} (${item.price})`).join("\n");
   return `Hola Estella, me interesan estas piezas:\n${list}\n¿Me confirmas disponibilidad?`;
 }
+
+/**
+ * Pedido completo desde la bolsa. Incluye referencia y cantidad de cada pieza
+ * para que el pedido llegue listo a confirmar por WhatsApp.
+ */
+export function waCartMessage(
+  items: { name: string; reference: string; price: string; quantity: number }[],
+  total: string,
+  customerName?: string | null
+) {
+  const list = items
+    .map((item) => `- ${item.quantity} × ${item.name} (ref. ${item.reference}) — ${item.price}`)
+    .join("\n");
+  const greeting = customerName ? `Hola Estella, soy ${customerName}.` : "Hola Estella.";
+  return `${greeting} Quiero hacer este pedido:\n${list}\n\nTotal: ${total}\n¿Me confirmas disponibilidad y envío?`;
+}

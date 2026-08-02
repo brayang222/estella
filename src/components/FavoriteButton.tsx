@@ -1,6 +1,6 @@
 "use client";
 
-import { useFavorites } from "@/lib/favorites";
+import { useFavorites } from "@/lib/store";
 
 export function FavoriteButton({ slug, className }: { slug: string; className?: string }) {
   const { isFavorite, toggle } = useFavorites();

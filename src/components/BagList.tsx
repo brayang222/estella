@@ -1,0 +1,190 @@
+"use client";
+
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { PlaceholderImage } from "./PlaceholderImage";
+import { useCart } from "@/lib/store";
+import { MAX_QUANTITY } from "@/lib/account/types";
+import { formatPrice, type Product } from "@/lib/products";
+import { waCartMessage, waLink, WA_GENERAL_MESSAGE } from "@/lib/whatsapp";
+
+const stepperClass =
+  "h-9 w-9 cursor-pointer border border-ink/20 text-[15px] leading-none transition-colors duration-300 ease-out hover:border-ink disabled:cursor-default disabled:opacity-40";
+
+export function BagList({ products }: { products: Product[] }) {
+  const { lines, setQuantity, remove, clear, ready, authenticated } = useCart();
+  const { data: session } = useSession();
+
+  const bySlug = new Map(products.map((product) => [product.slug, product]));
+  // A piece deleted from the catalogue after being added simply drops out.
+  const items = lines
+    .map((line) => ({ product: bySlug.get(line.slug), quantity: line.quantity }))
+    .filter((item): item is { product: Product; quantity: number } => Boolean(item.product));
+
+  const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+
+  if (!ready) {
+    return <p className="m-0 text-[13px] text-muted">Cargando tu bolsa…</p>;
+  }
+
+  if (items.length === 0) {
+    return (
+      <div className="grid place-items-center gap-4 border border-ink/12 py-[clamp(48px,7vw,80px)] text-center">
+        <p className="m-0 max-w-[42ch] text-[14px] leading-[1.8] text-muted text-pretty">
+          Tu bolsa está vacía. Guarda las piezas que te gusten y pídelas todas juntas por
+          WhatsApp cuando estés lista.
+        </p>
+        <Link
+          href="/productos"
+          className="bg-ink px-8 py-3 text-[10px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"
+        >
+          Ver las piezas
+        </Link>
+      </div>
+    );
+  }
+
+  const message = waCartMessage(
+    items.map((item) => ({
+      name: item.product.name,
+      reference: item.product.referenceCode,
+      price: formatPrice(item.product.price * item.quantity),
+      quantity: item.quantity,
+    })),
+    formatPrice(total),
+    session?.user?.name
+  );
+
+  return (
+    <div className="grid gap-[clamp(24px,3vw,38px)]">
+      {!authenticated && (
+        <p className="m-0 border border-ink/12 bg-paper-alt px-5 py-4 text-[12.5px] leading-[1.7] text-muted">
+          Tu bolsa se guarda en este navegador.{" "}
+          <Link href="/login?callbackUrl=%2Fbolsa" className="text-ink underline underline-offset-4">
+            Inicia sesión
+          </Link>{" "}
+          o{" "}
+          <Link href="/registro?callbackUrl=%2Fbolsa" className="text-ink underline underline-offset-4">
+            crea tu cuenta
+          </Link>{" "}
+          para conservarla en cualquier dispositivo.
+        </p>
+      )}
+
+      <ul className="m-0 grid list-none gap-0 p-0">
+        {items.map(({ product, quantity }) => (
+          <li
+            key={product.id}
+            className="grid grid-cols-[76px_1fr] items-start gap-4 border-b border-ink/12 py-5 sm:grid-cols-[96px_1fr_auto] sm:gap-6"
+          >
+            <Link
+              href={`/producto/${product.slug}`}
+              className="relative block aspect-[4/5] overflow-hidden bg-img-1"
+            >
+              <PlaceholderImage
+                label={product.placeholderLabel}
+                angle={128}
+                spacing={10}
+                tone={1}
+                labelPosition="center"
+                src={product.images[0]?.url}
+                alt={product.name}
+                sizes="96px"
+              />
+            </Link>
+
+            <div className="grid gap-2">
+              <div className="grid gap-1">
+                <Link href={`/producto/${product.slug}`}>
+                  <h2 className="m-0 text-[11.5px] font-normal tracking-[0.18em] uppercase hover:text-gold">
+                    {product.name}
+                  </h2>
+                </Link>
+                <span className="text-[11px] text-muted">
+                  Ref. {product.referenceCode} · {formatPrice(product.price)} c/u
+                </span>
+                {!product.available && (
+                  <span className="w-fit bg-ink px-2 py-0.5 text-[9px] tracking-[0.2em] text-paper uppercase">
+                    Agotado
+                  </span>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(product.slug, quantity - 1)}
+                  aria-label={`Restar una unidad de ${product.name}`}
+                  className={stepperClass}
+                >
+                  −
+                </button>
+                <span className="w-8 text-center text-[14px] tabular-nums">{quantity}</span>
+                <button
+                  type="button"
+                  onClick={() => setQuantity(product.slug, quantity + 1)}
+                  disabled={quantity >= MAX_QUANTITY}
+                  aria-label={`Sumar una unidad de ${product.name}`}
+                  className={stepperClass}
+                >
+                  +
+                </button>
+                <button
+                  type="button"
+                  onClick={() => remove(product.slug)}
+                  className="ml-2 cursor-pointer border-0 bg-transparent text-[10px] tracking-[0.2em] text-muted uppercase underline-offset-4 hover:text-ink hover:underline"
+                >
+                  Quitar
+                </button>
+              </div>
+            </div>
+
+            <span className="col-start-2 text-[13px] tabular-nums sm:col-start-3 sm:text-right">
+              {formatPrice(product.price * quantity)}
+            </span>
+          </li>
+        ))}
+      </ul>
+
+      <div className="grid gap-5 sm:justify-items-end">
+        <div className="flex items-baseline gap-4 sm:justify-end">
+          <span className="text-[10px] tracking-[0.2em] text-muted uppercase">Total</span>
+          <span className="font-display text-[26px] tabular-nums">{formatPrice(total)}</span>
+        </div>
+        <p className="m-0 max-w-[46ch] text-[12px] leading-[1.7] text-muted sm:text-right">
+          El pedido se confirma por WhatsApp: allí acordamos el envío y el medio de pago.
+        </p>
+        <div className="flex flex-wrap items-center gap-5 sm:justify-end">
+          <button
+            type="button"
+            onClick={clear}
+            className="cursor-pointer border-0 bg-transparent text-[10px] tracking-[0.2em] text-muted uppercase underline-offset-4 hover:text-ink hover:underline"
+          >
+            Vaciar bolsa
+          </button>
+          <a
+            href={waLink(message)}
+            target="_blank"
+            rel="noopener"
+            className="bg-ink px-8 py-4 text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
+          >
+            Pedir por WhatsApp
+          </a>
+        </div>
+      </div>
+
+      <p className="m-0 text-[12px] text-muted">
+        ¿Dudas antes de pedir?{" "}
+        <a
+          href={waLink(WA_GENERAL_MESSAGE)}
+          target="_blank"
+          rel="noopener"
+          className="text-ink underline underline-offset-4"
+        >
+          Escríbenos
+        </a>
+        .
+      </p>
+    </div>
+  );
+}

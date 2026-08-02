@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useActionState } from "react";
 import Link from "next/link";
-import { getSession, signIn } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { registerCustomer, type RegisterFormState } from "@/lib/account/register";
 
 function GoogleIcon() {
   return (
@@ -31,40 +32,15 @@ const inputClass =
   "border border-ink/20 bg-transparent px-3.5 py-3 text-[14px] focus:border-ink focus:outline-none";
 const labelClass = "text-[10px] tracking-[0.15em] text-muted uppercase";
 
-export function LoginForm({
-  callbackUrl,
-  initialError,
-}: {
-  callbackUrl?: string;
-  initialError?: string;
-}) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(initialError ?? null);
-  const [loading, setLoading] = useState(false);
+export function RegisterForm({ callbackUrl }: { callbackUrl?: string }) {
+  const [state, formAction, pending] = useActionState<RegisterFormState | undefined, FormData>(
+    registerCustomer,
+    undefined
+  );
 
-  const registerHref = callbackUrl
-    ? `/registro?callbackUrl=${encodeURIComponent(callbackUrl)}`
-    : "/registro";
-
-  async function handleSubmit(event: FormEvent) {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
-    const result = await signIn("credentials", { email, password, redirect: false });
-
-    if (!result || result.error) {
-      setLoading(false);
-      setError("Correo o contraseña incorrectos. Si creaste tu cuenta con Google, entra con Google.");
-      return;
-    }
-
-    // Admins land on the panel, customers on their account — unless they were
-    // sent here from a specific page. A full reload (not router.push) so the
-    // fresh session cookie is in place for the very next render.
-    const session = await getSession();
-    window.location.href = callbackUrl ?? (session?.user?.role === "admin" ? "/admin" : "/cuenta");
-  }
+  const loginHref = callbackUrl
+    ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`
+    : "/login";
 
   return (
     <div className="grid gap-6">
@@ -74,57 +50,90 @@ export function LoginForm({
         className="flex cursor-pointer items-center justify-center gap-3 border border-ink/20 bg-transparent py-3.5 text-[11px] tracking-[0.2em] uppercase transition-colors duration-300 ease-out hover:border-ink hover:bg-paper-alt"
       >
         <GoogleIcon />
-        Continuar con Google
+        Crear cuenta con Google
       </button>
 
       <div className="flex items-center gap-3 text-[10px] tracking-[0.2em] text-muted uppercase">
         <span className="h-px flex-1 bg-ink/12" />o<span className="h-px flex-1 bg-ink/12" />
       </div>
 
-      <form onSubmit={handleSubmit} className="grid gap-4">
+      <form action={formAction} className="grid gap-4">
+        {callbackUrl && <input type="hidden" name="callbackUrl" value={callbackUrl} />}
+        <label className="grid gap-1.5">
+          <span className={labelClass}>Nombre</span>
+          <input
+            type="text"
+            name="name"
+            required
+            minLength={2}
+            maxLength={80}
+            autoComplete="name"
+            className={inputClass}
+          />
+        </label>
         <label className="grid gap-1.5">
           <span className={labelClass}>Correo</span>
           <input
             type="email"
+            name="email"
             required
-            autoComplete="username"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
+            autoComplete="email"
             className={inputClass}
+          />
+        </label>
+        <label className="grid gap-1.5">
+          <span className={labelClass}>WhatsApp (opcional)</span>
+          <input
+            type="tel"
+            name="phone"
+            autoComplete="tel"
+            placeholder="+57 300 000 0000"
+            className={`${inputClass} placeholder:text-ink/25`}
           />
         </label>
         <label className="grid gap-1.5">
           <span className={labelClass}>Contraseña</span>
           <input
             type="password"
+            name="password"
             required
-            autoComplete="current-password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
+            minLength={8}
+            autoComplete="new-password"
+            className={inputClass}
+          />
+          <span className="text-[11px] text-muted">Mínimo 8 caracteres.</span>
+        </label>
+        <label className="grid gap-1.5">
+          <span className={labelClass}>Repetir contraseña</span>
+          <input
+            type="password"
+            name="confirm"
+            required
+            minLength={8}
+            autoComplete="new-password"
             className={inputClass}
           />
         </label>
-        {error && (
+
+        {state?.error && (
           <p className="m-0 text-[12px] leading-[1.6] text-red-700" role="alert">
-            {error}
+            {state.error}
           </p>
         )}
+
         <button
           type="submit"
-          disabled={loading}
+          disabled={pending}
           className="mt-1 cursor-pointer bg-ink py-3.5 text-[11px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold disabled:cursor-default disabled:opacity-60"
         >
-          {loading ? "Entrando…" : "Entrar"}
+          {pending ? "Creando cuenta…" : "Crear cuenta"}
         </button>
       </form>
 
       <p className="m-0 text-center text-[12px] leading-[1.7] text-muted">
-        ¿Todavía no tienes cuenta?{" "}
-        <Link
-          href={registerHref}
-          className="text-ink underline-offset-4 hover:text-gold hover:underline"
-        >
-          Créala aquí
+        ¿Ya tienes cuenta?{" "}
+        <Link href={loginHref} className="text-ink underline-offset-4 hover:text-gold hover:underline">
+          Inicia sesión
         </Link>
       </p>
     </div>

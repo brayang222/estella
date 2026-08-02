@@ -24,8 +24,15 @@ model User {
   emailVerified DateTime?
   image         String?
   role          Role      @default(user)
+  // Only set for accounts created with the email+password form. Google
+  // accounts keep it null — that null is what tells the login form to say
+  // "entra con Google" instead of "contraseña incorrecta".
+  passwordHash  String?
+  phone         String?
   accounts      Account[]
   sessions      Session[]
+  favorites     Favorite[]
+  cartItems     CartItem[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 }
@@ -88,12 +95,42 @@ model Product {
   description      String
   measurements     String?
   images           ProductImage[]
+  favorites        Favorite[]
+  cartItems        CartItem[]
   placeholderLabel String
   sortOrder        Int            @default(0)
   createdAt        DateTime       @default(now())
   updatedAt        DateTime       @updatedAt
 
   @@index([categoryId])
+}
+
+// Favoritos y bolsa de un cliente con sesión iniciada. Sin sesión, ambos
+// viven en localStorage (src/lib/store.tsx) y se fusionan aquí al entrar.
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, productId])
+  @@index([userId])
+}
+
+model CartItem {
+  id        String   @id @default(cuid())
+  userId    String
+  productId String
+  quantity  Int      @default(1)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, productId])
+  @@index([userId])
 }
 
 model ProductImage {

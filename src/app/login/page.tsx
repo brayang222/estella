@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { AuthShell } from "@/components/AuthShell";
 import { LoginForm } from "./LoginForm";
 
 export const metadata: Metadata = {
@@ -7,47 +7,34 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function LoginPage() {
-  return (
-    <div className="grid min-h-screen bg-paper md:grid-cols-2">
-      <div className="relative hidden overflow-hidden md:block">
-        <Image
-          src="/lookbook/pareja-alas.webp"
-          alt=""
-          fill
-          priority
-          sizes="50vw"
-          className="object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink/75 via-ink/5 to-ink/15" />
-        <div className="absolute inset-x-0 top-0 p-[clamp(28px,4vw,56px)]">
-          {/* eslint-disable-next-line @next/next/no-img-element -- static local SVG mark, next/image adds nothing here */}
-          <img src="/logo/estella-monograma-blanco.svg" alt="Estella" className="h-9 w-auto" />
-        </div>
-        <div className="absolute inset-x-0 bottom-0 grid gap-2.5 p-[clamp(28px,4vw,56px)]">
-          <span className="text-[10px] tracking-[0.34em] text-gold uppercase">Estella</span>
-          <p className="m-0 max-w-[34ch] font-display text-[22px] leading-[1.35] text-paper">
-            Series cortas y numeradas, hechas a mano en Colombia.
-          </p>
-        </div>
-      </div>
+/** Auth.js error codes that reach us as ?error= on the login page. */
+const ERROR_MESSAGES: Record<string, string> = {
+  OAuthAccountNotLinked:
+    "Ese correo ya tiene una cuenta con contraseña. Entra con tu correo y contraseña.",
+  AccessDenied: "No pudimos completar el acceso. Intenta de nuevo.",
+  Configuration: "Hay un problema de configuración del acceso. Escríbenos por WhatsApp.",
+};
 
-      <div className="grid place-items-center px-gutter py-16">
-        <div className="grid w-full max-w-[360px] gap-9">
-          <div className="grid gap-3 md:hidden">
-            {/* eslint-disable-next-line @next/next/no-img-element -- static local SVG mark */}
-            <img src="/logo/estella-monograma.svg" alt="Estella" className="h-9 w-auto" />
-          </div>
-          <div className="grid gap-2">
-            <span className="text-[10px] tracking-[0.34em] text-gold uppercase">Estella</span>
-            <h1 className="m-0 font-display text-[32px] leading-[1.12]">Iniciar sesión</h1>
-            <p className="m-0 text-[13px] leading-[1.7] text-muted">
-              Con Google o con tu correo. El acceso al panel lo activa el equipo de Estella.
-            </p>
-          </div>
-          <LoginForm />
-        </div>
-      </div>
-    </div>
+type Props = {
+  searchParams: Promise<{ callbackUrl?: string; error?: string }>;
+};
+
+export default async function LoginPage({ searchParams }: Props) {
+  const { callbackUrl, error } = await searchParams;
+  // Only same-origin paths: a ?callbackUrl pointing off-site would turn the
+  // login screen into an open redirect.
+  const safeCallback =
+    callbackUrl?.startsWith("/") && !callbackUrl.startsWith("//") ? callbackUrl : undefined;
+
+  return (
+    <AuthShell
+      title="Iniciar sesión"
+      intro="Entra con Google o con tu correo y guarda tus favoritos y tu bolsa en cualquier dispositivo."
+    >
+      <LoginForm
+        callbackUrl={safeCallback}
+        initialError={error ? (ERROR_MESSAGES[error] ?? "No pudimos iniciar sesión.") : undefined}
+      />
+    </AuthShell>
   );
 }
