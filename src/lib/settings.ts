@@ -22,13 +22,13 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   instagramUrl: "https://instagram.com",
   tiktokUrl: "https://tiktok.com",
   marqueeItems: [
-    "Series numeradas",
+    "Accesorios hechos a mano",
     "Envío asegurado a todo el país",
     "Asesoría 1 a 1 por WhatsApp",
     "Empaque de regalo incluido",
   ].join("\n"),
   productNote:
-    "Series numeradas y limitadas. Empaque de regalo incluido, envío asegurado a todo el país.",
+    "Accesorios hechos a mano en Colombia. Empaque de regalo incluido, envío asegurado a todo el país.",
 };
 
 /** Una frase por línea, sin vacías. */

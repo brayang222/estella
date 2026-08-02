@@ -33,7 +33,7 @@ export function AuthShell({
         <div className="absolute inset-x-0 bottom-0 grid gap-2.5 p-[clamp(28px,4vw,56px)]">
           <span className="text-[10px] tracking-[0.34em] text-gold uppercase">Estella</span>
           <p className="m-0 max-w-[34ch] font-display text-[22px] leading-[1.35] text-paper">
-            Series cortas y numeradas, hechas a mano en Colombia.
+            Accesorios hechos a mano en Colombia.
           </p>
         </div>
       </div>

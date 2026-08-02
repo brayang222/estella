@@ -21,7 +21,7 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const TITLE = `${SITE_NAME} — Series numeradas, hechas a mano en Colombia`;
+const TITLE = `${SITE_NAME} — Accesorios hechos a mano en Colombia`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -31,9 +31,9 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   keywords: [
-    "joyería en rodio",
+    "accesorios hechos a mano",
     "joyería artesanal Colombia",
-    "series numeradas y limitadas",
+    "accesorios artesanales",
     "manillas para regalo",
     "collares minimalistas",
     "anillos minimalistas",

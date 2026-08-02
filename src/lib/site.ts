@@ -9,7 +9,7 @@ export const SITE_NAME = "Estella";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://estella-co.vercel.app";
 
 export const SITE_DESCRIPTION =
-  "Manillas, collares, anillos y aretes en series cortas y numeradas, hechos a mano en Colombia. Asesoría personalizada por WhatsApp y envíos asegurados a todo el país.";
+  "Accesorios hechos a mano en Colombia: manillas, collares, anillos y aretes. Asesoría personalizada por WhatsApp y envíos asegurados a todo el país.";
 
 // Instagram, TikTok y el número de WhatsApp ya no viven aquí: se editan en
 // /admin/ajustes. Ver src/lib/settings.ts.

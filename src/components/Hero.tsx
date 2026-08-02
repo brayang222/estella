@@ -178,7 +178,7 @@ export function Hero() {
                 {frames[frame].name} · Serie 2026
               </span>
               <p className="m-0 text-[clamp(13px,1.3vw,15.5px)] leading-[1.7] text-ink text-pretty">
-                Series cortas de acabado espejo, hechas para llevarse todos los días.
+                Accesorios de acabado espejo, hechos para llevarse todos los días.
               </p>
               <a
                 href="#coleccion"
