@@ -1,5 +1,6 @@
 import type { Product } from "@/lib/products";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL, SOCIAL_LINKS } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { getSiteSettings } from "@/lib/queries";
 import type { BlogPost } from "@/lib/blog";
 
 function JsonLdScript({ data }: { data: object }) {
@@ -12,7 +13,9 @@ function JsonLdScript({ data }: { data: object }) {
   );
 }
 
-export function OrganizationJsonLd() {
+export async function OrganizationJsonLd() {
+  const settings = await getSiteSettings();
+
   return (
     <JsonLdScript
       data={{
@@ -21,7 +24,8 @@ export function OrganizationJsonLd() {
         name: SITE_NAME,
         url: SITE_URL,
         description: SITE_DESCRIPTION,
-        sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.tiktok],
+        sameAs: [settings.instagramUrl, settings.tiktokUrl],
+        telephone: `+${settings.whatsappNumber}`,
       }}
     />
   );

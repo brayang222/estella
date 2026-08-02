@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCart, useFavorites } from "@/lib/store";
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/settings-context";
+import { waLink } from "@/lib/whatsapp";
 
 const sectionLinks = [
   { href: "/#coleccion", id: "coleccion", label: "Colección" },
@@ -76,6 +77,7 @@ function Count({ value }: { value: number }) {
 }
 
 export function Navbar() {
+  const settings = useSiteSettings();
   const pathname = usePathname();
   const { status } = useSession();
   const { favorites } = useFavorites();
@@ -161,7 +163,7 @@ export function Navbar() {
 
       <div className="flex items-center justify-end gap-[clamp(12px,2vw,22px)]">
         <a
-          href={waLink(WA_GENERAL_MESSAGE)}
+          href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
           className="hidden border-b border-ink/35 pb-[3px] text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold min-[820px]:block"
@@ -218,7 +220,7 @@ export function Navbar() {
             </Link>
           ))}
           <a
-            href={waLink(WA_GENERAL_MESSAGE)}
+            href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="py-[10px] text-[11px] tracking-[0.2em] uppercase"

@@ -5,12 +5,14 @@ import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
 import { useCart } from "@/lib/store";
 import { formatPrice, type Product } from "@/lib/products";
+import { useSiteSettings } from "@/lib/settings-context";
 import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
 const COPY_FEEDBACK_MS = 1600;
 const ADDED_FEEDBACK_MS = 2200;
 
 export function ProductOrderPanel({ product }: { product: Product }) {
+  const settings = useSiteSettings();
   const [quantity, setQuantity] = useState(1);
   const [copied, setCopied] = useState(false);
   const [added, setAdded] = useState(false);
@@ -120,7 +122,7 @@ export function ProductOrderPanel({ product }: { product: Product }) {
               {added ? "Añadida a tu bolsa" : "Agregar a la bolsa"}
             </button>
             <a
-              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity))}
+              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity), settings.whatsappNumber)}
               target="_blank"
               rel="noopener"
               className="block border border-ink/25 py-4 text-center text-[11px] tracking-[0.22em] uppercase transition-colors duration-[400ms] ease-estella hover:border-ink hover:bg-paper-alt"
@@ -139,7 +141,7 @@ export function ProductOrderPanel({ product }: { product: Product }) {
         </>
       ) : (
         <a
-          href={waLink(waRestockMessage(product.name))}
+          href={waLink(waRestockMessage(product.name), settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
           className="block bg-ink py-4 text-center text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
@@ -157,8 +159,7 @@ export function ProductOrderPanel({ product }: { product: Product }) {
       </button>
 
       <p className="m-0 text-[12px] leading-[1.8] text-muted">
-        Referencia {product.referenceCode} · Series numeradas y limitadas. Empaque de regalo
-        incluido, envío asegurado a todo el país.
+        Referencia {product.referenceCode} · {settings.productNote}
       </p>
     </div>
   );

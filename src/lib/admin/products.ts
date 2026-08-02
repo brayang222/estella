@@ -40,6 +40,15 @@ async function deleteImageFile(url: string) {
   }
 }
 
+function revalidateStorefront(slug?: string) {
+  revalidatePath("/admin/productos");
+  revalidatePath("/");
+  revalidatePath("/productos");
+  revalidatePath("/bolsa");
+  revalidatePath("/favoritos");
+  if (slug) revalidatePath(`/producto/${slug}`);
+}
+
 function readProductFields(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
   const categoryId = String(formData.get("categoryId") ?? "").trim();
@@ -105,9 +114,7 @@ export async function createProduct(
     await prisma.productImage.create({ data: { productId: product.id, url, order } });
   }
 
-  revalidatePath("/admin/productos");
-  revalidatePath("/");
-  revalidatePath("/productos");
+  revalidateStorefront();
   redirect("/admin/productos");
 }
 
@@ -121,40 +128,18 @@ export async function updateProduct(
   const fields = readProductFields(formData);
   if ("error" in fields) return fields;
 
-  const existing = await prisma.product.findUnique({
-    where: { id },
-    include: { images: true },
-  });
+  const existing = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
   if (!existing) return { error: "Esta pieza ya no existe." };
 
   try {
+    // Las fotos se gestionan aparte (ver addProductImage / moveProductImage),
+    // porque reordenarlas no debería obligar a reenviar todo el formulario.
     await prisma.product.update({ where: { id }, data: fields.data });
   } catch {
     return { error: "Ya existe otra pieza con esa referencia." };
   }
 
-  for (const order of IMAGE_SLOTS) {
-    const current = existing.images.find((image) => image.order === order);
-    const shouldRemove = formData.get(`remove${order}`) === "on";
-    const file = formData.get(`image${order}`);
-    const hasNewFile = file instanceof File && file.size > 0;
-
-    if (!shouldRemove && !hasNewFile) continue;
-
-    if (current) {
-      await prisma.productImage.delete({ where: { id: current.id } });
-      await deleteImageFile(current.url);
-    }
-    if (hasNewFile) {
-      const url = await saveImageFile(file, existing.slug, order);
-      await prisma.productImage.create({ data: { productId: id, url, order } });
-    }
-  }
-
-  revalidatePath("/admin/productos");
-  revalidatePath("/");
-  revalidatePath("/productos");
-  revalidatePath(`/producto/${existing.slug}`);
+  revalidateStorefront(existing.slug);
   redirect("/admin/productos");
 }
 
@@ -167,7 +152,133 @@ export async function deleteProduct(id: string) {
   await Promise.all(product.images.map((image) => deleteImageFile(image.url)));
   await prisma.product.delete({ where: { id } });
 
-  revalidatePath("/admin/productos");
-  revalidatePath("/");
-  revalidatePath("/productos");
+  revalidateStorefront(product.slug);
+}
+
+/* -------------------------------------------------------------------------
+ * Prioridad (orden en que se muestran las piezas en la tienda)
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Sube o baja una pieza una posición. Renumera toda la lista de 0 en
+ * adelante, así los empates heredados (varias piezas con el mismo
+ * sortOrder) quedan resueltos en cuanto se toca el orden una vez.
+ */
+export async function moveProduct(id: string, direction: "up" | "down") {
+  await requireAdmin();
+
+  const all = await prisma.product.findMany({
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: { id: true },
+  });
+  const index = all.findIndex((product) => product.id === id);
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || target < 0 || target >= all.length) return;
+
+  const reordered = [...all];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+
+  await prisma.$transaction(
+    reordered.map((product, position) =>
+      prisma.product.update({ where: { id: product.id }, data: { sortOrder: position } })
+    )
+  );
+
+  revalidateStorefront();
+}
+
+/* -------------------------------------------------------------------------
+ * Fotos de una pieza ya creada
+ * ---------------------------------------------------------------------- */
+
+/**
+ * Reasigna los `order` en dos pasadas dentro de una transacción: primero a
+ * negativos y luego a 1..n. El índice único (productId, order) impide
+ * intercambiar dos posiciones de una sola pasada.
+ */
+async function renumberImages(orderedIds: string[]) {
+  await prisma.$transaction([
+    ...orderedIds.map((id, i) =>
+      prisma.productImage.update({ where: { id }, data: { order: -(i + 1) } })
+    ),
+    ...orderedIds.map((id, i) =>
+      prisma.productImage.update({ where: { id }, data: { order: i + 1 } })
+    ),
+  ]);
+}
+
+export async function addProductImage(productId: string, formData: FormData) {
+  await requireAdmin();
+
+  const file = formData.get("image");
+  if (!(file instanceof File) || file.size === 0) return;
+
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+    include: { images: { orderBy: { order: "asc" } } },
+  });
+  if (!product) return;
+  if (product.images.length >= IMAGE_SLOTS.length) return;
+
+  // Primer hueco libre entre 1 y 4.
+  const used = new Set(product.images.map((image) => image.order));
+  const slot = IMAGE_SLOTS.find((order) => !used.has(order));
+  if (!slot) return;
+
+  const url = await saveImageFile(file, product.slug, slot);
+  await prisma.productImage.create({ data: { productId, url, order: slot } });
+
+  revalidatePath(`/admin/productos/${productId}`);
+  revalidateStorefront(product.slug);
+}
+
+export async function removeProductImage(imageId: string) {
+  await requireAdmin();
+
+  const image = await prisma.productImage.findUnique({
+    where: { id: imageId },
+    include: { product: { select: { id: true, slug: true } } },
+  });
+  if (!image) return;
+
+  await prisma.productImage.delete({ where: { id: imageId } });
+  await deleteImageFile(image.url);
+
+  // Sin huecos: la siguiente foto pasa a ser la miniatura.
+  const rest = await prisma.productImage.findMany({
+    where: { productId: image.product.id },
+    orderBy: { order: "asc" },
+    select: { id: true },
+  });
+  await renumberImages(rest.map((row) => row.id));
+
+  revalidatePath(`/admin/productos/${image.product.id}`);
+  revalidateStorefront(image.product.slug);
+}
+
+/** La foto en primera posición es la miniatura de la tienda. */
+export async function moveProductImage(imageId: string, direction: "up" | "down") {
+  await requireAdmin();
+
+  const image = await prisma.productImage.findUnique({
+    where: { id: imageId },
+    include: { product: { select: { id: true, slug: true } } },
+  });
+  if (!image) return;
+
+  const images = await prisma.productImage.findMany({
+    where: { productId: image.product.id },
+    orderBy: { order: "asc" },
+    select: { id: true },
+  });
+  const index = images.findIndex((row) => row.id === imageId);
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || target < 0 || target >= images.length) return;
+
+  const reordered = [...images];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+  await renumberImages(reordered.map((row) => row.id));
+
+  revalidatePath(`/admin/productos/${image.product.id}`);
+  revalidateStorefront(image.product.slug);
 }

@@ -1,7 +1,8 @@
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Curtain, Reveal } from "./Reveal";
 import { staggerDelay } from "@/lib/stagger";
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/queries";
+import { waLink } from "@/lib/whatsapp";
 
 const stats = [
   { value: "36", label: "Referencias activas" },
@@ -9,7 +10,9 @@ const stats = [
   { value: "1.2k", label: "Clientas en el país" },
 ];
 
-export function Studio() {
+export async function Studio() {
+  const settings = await getSiteSettings();
+
   return (
     <section id="historia" className="border-t border-ink/12 py-section-y px-gutter">
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] items-center gap-[clamp(24px,4vw,60px)]">
@@ -56,7 +59,7 @@ export function Studio() {
           </Reveal>
           <Reveal delay={staggerDelay(4)}>
             <a
-              href={waLink(WA_GENERAL_MESSAGE)}
+              href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
               target="_blank"
               rel="noopener"
               className="justify-self-start border-b border-ink/30 pb-1 text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold"

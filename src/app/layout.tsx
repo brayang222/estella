@@ -4,6 +4,7 @@ import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { getSiteSettings } from "@/lib/queries";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -58,11 +59,15 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Consulta a la base de datos, no una API dinámica: las páginas estáticas
+  // siguen prerenderizándose y se regeneran cuando se guardan los ajustes.
+  const settings = await getSiteSettings();
+
   return (
     <html
       lang="es"
@@ -71,7 +76,7 @@ export default function RootLayout({
     >
       <body className="overflow-x-clip bg-paper font-body font-light text-ink">
         <OrganizationJsonLd />
-        <SiteChrome>{children}</SiteChrome>
+        <SiteChrome settings={settings}>{children}</SiteChrome>
       </body>
     </html>
   );

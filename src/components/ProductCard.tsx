@@ -5,11 +5,13 @@ import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { formatPrice, type Product } from "@/lib/products";
+import { useSiteSettings } from "@/lib/settings-context";
 import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
 const AUTOPLAY_MS = 1500;
 
 export function ProductCard({ product }: { product: Product }) {
+  const settings = useSiteSettings();
   const images = product.images;
   const hasAlternates = images.length > 1;
   const canCycle = images.length > 2;
@@ -134,7 +136,7 @@ export function ProductCard({ product }: { product: Product }) {
               product.available
                 ? waProductMessage(product.name, formatPrice(product.price))
                 : waRestockMessage(product.name)
-            )}
+            , settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="cursor-pointer border-2 border-black rounded-md block bg-paper p-[13px] text-center text-sm tracking-[0.2em] text-ink uppercase transition-colors duration-300 ease-out hover:bg-ink hover:text-paper"

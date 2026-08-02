@@ -8,7 +8,8 @@ import { Reveal } from "./Reveal";
 import Link from "next/link";
 import type { Category, Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/settings-context";
+import { waLink } from "@/lib/whatsapp";
 
 /**
  * The grid is 2/3/4 columns as it widens, so "two rows" means 4, 6 or 8
@@ -30,6 +31,7 @@ export function Collection({
   products: Product[];
   categories: Category[];
 }) {
+  const settings = useSiteSettings();
   const [category, setCategory] = useState(ALL_CATEGORIES);
 
   const visibleProducts = products.filter(
@@ -60,7 +62,7 @@ export function Collection({
             Todavía no hay piezas en esta categoría. Escríbenos si buscas algo en particular.
           </p>
           <a
-            href={waLink(WA_GENERAL_MESSAGE)}
+            href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="bg-ink px-8 py-3 text-[10px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"

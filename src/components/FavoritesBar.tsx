@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { useFavorites } from "@/lib/store";
 import { formatPrice, type Product } from "@/lib/products";
+import { useSiteSettings } from "@/lib/settings-context";
 import { waFavoritesMessage, waLink } from "@/lib/whatsapp";
 
 export function FavoritesBar({ products }: { products: Product[] }) {
+  const settings = useSiteSettings();
   const { favorites, clear } = useFavorites();
   const items = products.filter((p) => favorites.includes(p.slug));
   if (items.length === 0) return null;
@@ -32,7 +34,7 @@ export function FavoritesBar({ products }: { products: Product[] }) {
           Ver todos
         </Link>
         <a
-          href={waLink(message)}
+          href={waLink(message, settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
           className="bg-ink px-5 py-2.5 text-[10px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"

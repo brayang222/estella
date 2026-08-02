@@ -7,7 +7,8 @@ import { ProductCard } from "./ProductCard";
 import { Reveal } from "./Reveal";
 import type { Category, Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/settings-context";
+import { waLink } from "@/lib/whatsapp";
 
 export function ProductsGrid({
   products,
@@ -18,6 +19,7 @@ export function ProductsGrid({
   categories: Category[];
   initialCategory: string;
 }) {
+  const settings = useSiteSettings();
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState("");
 
@@ -66,7 +68,7 @@ export function ProductsGrid({
             Escríbenos y te ayudamos a encontrar lo que buscas.
           </p>
           <a
-            href={waLink(WA_GENERAL_MESSAGE)}
+            href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="bg-ink px-8 py-3 text-[10px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"

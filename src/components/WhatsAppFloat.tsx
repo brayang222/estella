@@ -1,9 +1,14 @@
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+"use client";
+
+import { useSiteSettings } from "@/lib/settings-context";
+import { waLink } from "@/lib/whatsapp";
 
 export function WhatsAppFloat() {
+  const settings = useSiteSettings();
+
   return (
     <a
-      href={waLink(WA_GENERAL_MESSAGE)}
+      href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
       target="_blank"
       rel="noopener"
       aria-label="WhatsApp"

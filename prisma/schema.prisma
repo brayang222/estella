@@ -15,6 +15,22 @@ enum Role {
   admin
 }
 
+/// Ajustes editables del sitio. Fila única (id = "default"): se lee en el
+/// layout raíz y se edita en /admin/ajustes. Si la fila no existe todavía,
+/// getSiteSettings() devuelve los valores por defecto del código.
+model SiteSetting {
+  id               String   @id @default("default")
+  whatsappNumber   String
+  whatsappGreeting String
+  instagramUrl     String?
+  tiktokUrl        String?
+  /// Frases del letrero deslizante de la home, una por línea.
+  marqueeItems     String
+  /// Nota al pie de cada ficha de producto (envíos, empaque, series).
+  productNote      String
+  updatedAt        DateTime @updatedAt
+}
+
 // Canonical Auth.js/NextAuth Prisma-adapter schema — field names and types
 // below must match what @auth/prisma-adapter expects.
 model User {

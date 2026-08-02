@@ -2,8 +2,11 @@ import Link from "next/link";
 import { auth, signOut } from "@/auth";
 
 const links = [
+  { href: "/admin", label: "Panel" },
   { href: "/admin/productos", label: "Productos" },
   { href: "/admin/categorias", label: "Categorías" },
+  { href: "/admin/clientes", label: "Clientes" },
+  { href: "/admin/ajustes", label: "Ajustes" },
 ];
 
 export default async function AdminDashboardLayout({
@@ -33,6 +36,13 @@ export default async function AdminDashboardLayout({
           </nav>
         </div>
         <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            target="_blank"
+            className="text-[11px] tracking-[0.15em] text-muted uppercase hover:text-ink"
+          >
+            Ver tienda ↗
+          </Link>
           <span className="text-[11px] text-muted">{session?.user?.email}</span>
           <form
             action={async () => {

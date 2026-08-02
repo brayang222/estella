@@ -6,7 +6,5 @@ export const SITE_URL = "https://estella.com.co";
 export const SITE_DESCRIPTION =
   "Joyería en rodio hecha en series cortas y numeradas: manillas, collares, anillos y aretes. Asesoría personalizada por WhatsApp, envíos a todo Colombia.";
 
-export const SOCIAL_LINKS = {
-  instagram: "https://instagram.com",
-  tiktok: "https://tiktok.com",
-};
+// Instagram, TikTok y el número de WhatsApp ya no viven aquí: se editan en
+// /admin/ajustes. Ver src/lib/settings.ts.

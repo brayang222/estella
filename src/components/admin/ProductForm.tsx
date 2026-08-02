@@ -14,13 +14,15 @@ export function ProductForm({
   categories,
   product,
   action,
+  withImageUploads = true,
 }: {
   categories: Category[];
   product?: Product;
   action: (state: ProductFormState, formData: FormData) => Promise<ProductFormState>;
+  /** Al crear, las fotos van dentro del formulario; al editar las gestiona ProductImagesManager. */
+  withImageUploads?: boolean;
 }) {
   const [state, formAction, pending] = useActionState(action, {});
-  const images = product?.images ?? [];
 
   return (
     <form action={formAction} className="grid max-w-[640px] gap-5">
@@ -107,41 +109,27 @@ export function ProductForm({
         <span className="text-[12px]">Disponible</span>
       </label>
 
-      <div className="grid gap-3">
-        <span className={labelClass}>Fotos (hasta 4 — la primera es la miniatura)</span>
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          {IMAGE_SLOTS.map((slot) => {
-            const existing = images.find((image) => image.order === slot);
-            return (
+      {withImageUploads && (
+        <div className="grid gap-3">
+          <span className={labelClass}>Fotos (hasta 4 — la primera es la miniatura)</span>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            {IMAGE_SLOTS.map((slot) => (
               <div key={slot} className="grid gap-2">
-                {existing ? (
-                  <div className="relative aspect-square overflow-hidden bg-img-1">
-                    {/* eslint-disable-next-line @next/next/no-img-element -- small local admin thumbnail, next/image is overkill here */}
-                    <img
-                      src={existing.url}
-                      alt=""
-                      className="absolute inset-0 h-full w-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="aspect-square bg-img-1" />
-                )}
+                <div className="aspect-square bg-img-1" />
                 <input
                   type="file"
                   name={`image${slot}`}
                   accept="image/webp,image/jpeg,image/png"
                   className="text-[10px]"
                 />
-                {existing && (
-                  <label className="flex items-center gap-1.5 text-[11px] text-muted">
-                    <input type="checkbox" name={`remove${slot}`} /> Eliminar
-                  </label>
-                )}
               </div>
-            );
-          })}
+            ))}
+          </div>
+          <p className="m-0 text-[11px] text-muted">
+            Puedes subirlas ahora o después, desde la pantalla de edición.
+          </p>
         </div>
-      </div>
+      )}
 
       <button
         type="submit"

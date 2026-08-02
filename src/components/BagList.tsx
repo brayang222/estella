@@ -6,12 +6,14 @@ import { PlaceholderImage } from "./PlaceholderImage";
 import { useCart } from "@/lib/store";
 import { MAX_QUANTITY } from "@/lib/account/types";
 import { formatPrice, type Product } from "@/lib/products";
-import { waCartMessage, waLink, WA_GENERAL_MESSAGE } from "@/lib/whatsapp";
+import { useSiteSettings } from "@/lib/settings-context";
+import { waCartMessage, waLink } from "@/lib/whatsapp";
 
 const stepperClass =
   "h-9 w-9 cursor-pointer border border-ink/20 text-[15px] leading-none transition-colors duration-300 ease-out hover:border-ink disabled:cursor-default disabled:opacity-40";
 
 export function BagList({ products }: { products: Product[] }) {
+  const settings = useSiteSettings();
   const { lines, setQuantity, remove, clear, ready, authenticated } = useCart();
   const { data: session } = useSession();
 
@@ -163,7 +165,7 @@ export function BagList({ products }: { products: Product[] }) {
             Vaciar bolsa
           </button>
           <a
-            href={waLink(message)}
+            href={waLink(message, settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="bg-ink px-8 py-4 text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
@@ -176,7 +178,7 @@ export function BagList({ products }: { products: Product[] }) {
       <p className="m-0 text-[12px] text-muted">
         ¿Dudas antes de pedir?{" "}
         <a
-          href={waLink(WA_GENERAL_MESSAGE)}
+          href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
           className="text-ink underline underline-offset-4"

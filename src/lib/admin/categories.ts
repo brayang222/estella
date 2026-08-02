@@ -68,3 +68,30 @@ export async function deleteCategory(id: string) {
   await prisma.category.delete({ where: { id } });
   revalidateCategoryPages();
 }
+
+/**
+ * Sube o baja una categoría una posición en los filtros de la tienda.
+ * Renumera la lista completa, igual que moveProduct().
+ */
+export async function moveCategory(id: string, direction: "up" | "down") {
+  await requireAdmin();
+
+  const all = await prisma.category.findMany({
+    orderBy: [{ sortOrder: "asc" }, { label: "asc" }],
+    select: { id: true },
+  });
+  const index = all.findIndex((category) => category.id === id);
+  const target = direction === "up" ? index - 1 : index + 1;
+  if (index === -1 || target < 0 || target >= all.length) return;
+
+  const reordered = [...all];
+  [reordered[index], reordered[target]] = [reordered[target], reordered[index]];
+
+  await prisma.$transaction(
+    reordered.map((category, position) =>
+      prisma.category.update({ where: { id: category.id }, data: { sortOrder: position } })
+    )
+  );
+
+  revalidateCategoryPages();
+}

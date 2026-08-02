@@ -7,7 +7,8 @@ import { BlogPostingJsonLd } from "@/components/JsonLd";
 import { getPostBySlug, posts } from "@/lib/blog";
 import { formatPostDate } from "@/lib/blog-date";
 import { staggerDelay } from "@/lib/stagger";
-import { WA_GENERAL_MESSAGE, waLink } from "@/lib/whatsapp";
+import { getSiteSettings } from "@/lib/queries";
+import { waLink } from "@/lib/whatsapp";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -40,6 +41,7 @@ export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) notFound();
+  const settings = await getSiteSettings();
 
   return (
     <article className="mx-auto grid max-w-[760px] gap-[clamp(32px,4vw,52px)] pt-[clamp(110px,14vw,160px)] pb-[clamp(72px,10vw,130px)] px-gutter">
@@ -94,7 +96,7 @@ export default async function BlogPostPage({ params }: Props) {
         </span>
         <h2 className="m-0 font-display text-[clamp(22px,3vw,30px)]">Hablemos por WhatsApp</h2>
         <a
-          href={waLink(WA_GENERAL_MESSAGE)}
+          href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
           className="bg-ink px-[30px] py-[15px] text-[10.5px] tracking-[0.2em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"

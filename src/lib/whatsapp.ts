@@ -1,12 +1,14 @@
-// TODO: reemplazar por el número real de WhatsApp Business de Estella antes de publicar.
-export const WHATSAPP_NUMBER = "573126177800";
+import { normalizeWhatsappNumber } from "./settings";
 
-export function waLink(message: string) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+/**
+ * Enlace a WhatsApp con mensaje prellenado. El número ya no está escrito en
+ * el código: viene de los ajustes del sitio (/admin/ajustes), así que hay que
+ * pasarlo — `useSiteSettings()` en componentes de cliente, `getSiteSettings()`
+ * en los de servidor.
+ */
+export function waLink(message: string, number: string) {
+  return `https://wa.me/${normalizeWhatsappNumber(number)}?text=${encodeURIComponent(message)}`;
 }
-
-export const WA_GENERAL_MESSAGE =
-  "Hola Estella, quiero ver las piezas disponibles.";
 
 export function waProductMessage(name: string, price: string, quantity = 1) {
   const piece = quantity > 1 ? `${quantity} unidades de la ${name}` : `la ${name}`;

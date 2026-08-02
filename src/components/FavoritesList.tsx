@@ -6,9 +6,11 @@ import { Reveal } from "./Reveal";
 import { useFavorites } from "@/lib/store";
 import { formatPrice, type Product } from "@/lib/products";
 import { staggerDelay } from "@/lib/stagger";
+import { useSiteSettings } from "@/lib/settings-context";
 import { waFavoritesMessage, waLink } from "@/lib/whatsapp";
 
 export function FavoritesList({ products }: { products: Product[] }) {
+  const settings = useSiteSettings();
   const { favorites, clear, ready, authenticated } = useFavorites();
 
   // Se respeta el orden en que se guardaron, no el del catálogo.
@@ -76,7 +78,7 @@ export function FavoritesList({ products }: { products: Product[] }) {
             Vaciar
           </button>
           <a
-            href={waLink(message)}
+            href={waLink(message, settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
             className="bg-ink px-6 py-3 text-[10px] tracking-[0.2em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"
