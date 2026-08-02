@@ -21,7 +21,7 @@ const poppins = Poppins({
   display: "swap",
 });
 
-const TITLE = `${SITE_NAME} — Joyería en rodio hecha en Colombia`;
+const TITLE = `${SITE_NAME} — Series numeradas, hechas a mano en Colombia`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -32,11 +32,11 @@ export const metadata: Metadata = {
   description: SITE_DESCRIPTION,
   keywords: [
     "joyería en rodio",
-    "manillas de rodio",
-    "collares de rodio",
-    "anillos de rodio",
-    "aretes de rodio",
-    "joyería Colombia",
+    "joyería artesanal Colombia",
+    "series numeradas y limitadas",
+    "manillas para regalo",
+    "collares minimalistas",
+    "anillos minimalistas",
     "accesorios Estella",
   ],
   alternates: { canonical: "/" },
@@ -48,10 +48,12 @@ export const metadata: Metadata = {
     locale: "es_CO",
     type: "website",
   },
+  // Sin title/description propios a propósito: Next.js los toma de openGraph
+  // cuando faltan aquí, así cada página (producto, blog) trae los suyos
+  // sin tener que repetirlos — solo images necesitaba ese mismo respaldo,
+  // que ya venía cayendo bien.
   twitter: {
     card: "summary_large_image",
-    title: TITLE,
-    description: SITE_DESCRIPTION,
   },
   robots: {
     index: true,

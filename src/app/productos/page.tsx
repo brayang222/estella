@@ -6,7 +6,7 @@ import { getCategories, getProducts } from "@/lib/queries";
 export const metadata: Metadata = {
   title: "Todas las piezas",
   description:
-    "Catálogo completo de Estella: manillas, collares, anillos y aretes en rodio, en series cortas y numeradas.",
+    "Catálogo completo de Estella: manillas, collares, anillos y aretes en series cortas y numeradas, hechos a mano en Colombia.",
   alternates: { canonical: "/productos" },
   openGraph: {
     title: "Todas las piezas",

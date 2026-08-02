@@ -7,12 +7,12 @@ import { posts } from "@/lib/blog";
 export const metadata: Metadata = {
   title: "Blog",
   description:
-    "Cuidado de joyería en rodio, guías de estilo y todo lo que pasa detrás de cada serie de Estella.",
+    "Guías de cuidado, estilo y todo lo que pasa detrás de cada serie de Estella.",
   alternates: { canonical: "/blog" },
   openGraph: {
     title: "Blog · Estella",
     description:
-      "Cuidado de joyería en rodio, guías de estilo y todo lo que pasa detrás de cada serie de Estella.",
+      "Guías de cuidado, estilo y todo lo que pasa detrás de cada serie de Estella.",
     url: "/blog",
     type: "website",
   },
