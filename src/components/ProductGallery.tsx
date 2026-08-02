@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ViewTransition } from "react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import type { ProductImage } from "@/lib/products";
 
@@ -19,10 +19,8 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
 
   return (
     <div className="grid gap-3">
-      <div
-        className="group relative aspect-[4/5] overflow-hidden bg-img-1"
-        style={{ viewTransitionName: `product-image-${slug}` }}
-      >
+      <ViewTransition name={`product-image-${slug}`} share="morph">
+      <div className="group relative aspect-[4/5] overflow-hidden bg-img-1">
         <PlaceholderImage
           key={active?.id ?? "placeholder"}
           label={placeholderLabel}
@@ -60,6 +58,7 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
           </>
         )}
       </div>
+      </ViewTransition>
 
       {hasMultiple && (
         <div className="grid grid-cols-4 gap-3">

@@ -17,6 +17,10 @@ if (imageBaseUrl) {
 
 const nextConfig: NextConfig = {
   images: { remotePatterns },
+  // Lets React's <ViewTransition> drive route navigations, so the morph starts
+  // when the new page is actually ready instead of freezing the old one behind
+  // a snapshot while we wait on the network.
+  experimental: { viewTransition: true },
 };
 
 export default nextConfig;

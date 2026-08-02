@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, ViewTransition } from "react";
+import Link from "next/link";
 import { PlaceholderImage } from "./PlaceholderImage";
-import { TransitionLink } from "./TransitionLink";
 import { formatPrice, type Product } from "@/lib/products";
 import { waLink, waProductMessage } from "@/lib/whatsapp";
 
@@ -50,13 +50,13 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <div className="grid gap-3.5">
+      <ViewTransition name={`product-image-${product.slug}`} share="morph">
       <div
         className="group relative aspect-[4/5] overflow-hidden bg-img-1"
-        style={{ viewTransitionName: `product-image-${product.slug}` }}
         onMouseEnter={handleEnter}
         onMouseLeave={handleLeave}
       >
-        <TransitionLink href={`/producto/${product.slug}`} className="absolute inset-0 block">
+        <Link href={`/producto/${product.slug}`} className="absolute inset-0 block">
           {images.length === 0 ? (
             <PlaceholderImage
               label={product.placeholderLabel}
@@ -87,7 +87,7 @@ export function ProductCard({ product }: { product: Product }) {
               </div>
             ))
           )}
-        </TransitionLink>
+        </Link>
 
         <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
           {product.tag}
@@ -125,13 +125,14 @@ export function ProductCard({ product }: { product: Product }) {
           </a>
         </div>
       </div>
+      </ViewTransition>
 
       <div className="flex items-baseline justify-between gap-2.5 border-t border-ink/12 pt-0.5">
-        <TransitionLink href={`/producto/${product.slug}`}>
+        <Link href={`/producto/${product.slug}`}>
           <h3 className="mt-2 text-[11px] font-normal tracking-[0.18em] uppercase hover:text-gold">
             {product.name}
           </h3>
-        </TransitionLink>
+        </Link>
         <span className="mt-2 text-[11.5px] tracking-[0.06em] text-muted whitespace-nowrap">
           {formatPrice(product.price)}
         </span>

@@ -13,7 +13,7 @@ export function Studio() {
   return (
     <section id="historia" className="border-t border-ink/12 py-section-y px-gutter">
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,300px),1fr))] items-center gap-[clamp(24px,4vw,60px)]">
-        <Curtain className="aspect-[5/6]">
+        <Curtain className="aspect-[6/6]">
           <PlaceholderImage
             label="estudio — detalle de pieza"
             angle={100}
