@@ -13,6 +13,23 @@ const sectionLinks = [
 
 const links = [...sectionLinks, { href: "/blog", id: "blog", label: "Blog" }];
 
+function AccountIcon() {
+  return (
+    <svg
+      width="17"
+      height="17"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+    </svg>
+  );
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
@@ -101,6 +118,13 @@ export function Navbar() {
         >
           Asesoría
         </a>
+        <Link
+          href="/login"
+          aria-label="Iniciar sesión"
+          className="flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+        >
+          <AccountIcon />
+        </Link>
         <button
           type="button"
           className="grid w-[22px] cursor-pointer justify-items-end gap-[5px] border-0 bg-transparent py-1.5 min-[820px]:hidden"
@@ -136,6 +160,13 @@ export function Navbar() {
           >
             Asesoría
           </a>
+          <Link
+            href="/login"
+            className="py-[10px] text-[11px] tracking-[0.2em] uppercase"
+            onClick={() => setOpen(false)}
+          >
+            Iniciar sesión
+          </Link>
         </div>
       )}
     </nav>

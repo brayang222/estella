@@ -28,9 +28,14 @@ export function Footer() {
           </Link>
         </div>
       </div>
-      <span className="text-[10px] tracking-[0.14em] text-ink/42">
-        © 2026 Estella · Hecho con cuidado en Colombia
-      </span>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <span className="text-[10px] tracking-[0.14em] text-ink/42">
+          © 2026 Estella · Hecho con cuidado en Colombia
+        </span>
+        <Link href="/login" className={linkClass}>
+          Iniciar sesión
+        </Link>
+      </div>
     </footer>
   );
 }

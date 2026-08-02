@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Poppins } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
-import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+import { SiteChrome } from "@/components/SiteChrome";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 
@@ -73,10 +71,7 @@ export default function RootLayout({
     >
       <body className="overflow-x-clip bg-paper font-body font-light text-ink">
         <OrganizationJsonLd />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
-        <WhatsAppFloat />
+        <SiteChrome>{children}</SiteChrome>
       </body>
     </html>
   );
