@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import type { ProductFormState } from "@/lib/admin/products";
-import type { Category, Product } from "@/lib/products";
+import { LOW_STOCK_THRESHOLD, type Category, type Product } from "@/lib/products";
 
 const IMAGE_SLOTS = [1, 2, 3, 4] as const;
 
@@ -102,6 +102,23 @@ export function ProductForm({
           placeholder="Cadena: 42 cm + 5 cm de extensor."
           className={inputClass}
         />
+      </label>
+
+      <label className="grid gap-1.5">
+        <span className={labelClass}>Stock (opcional)</span>
+        <input
+          name="stock"
+          type="number"
+          min="0"
+          step="1"
+          defaultValue={product?.stock ?? ""}
+          placeholder="Sin seguimiento de unidades"
+          className={`${inputClass} placeholder:text-ink/25`}
+        />
+        <span className="text-[11px] text-muted">
+          Déjalo vacío para no llevar conteo. Con un número, la tienda muestra “¡Quedan pocas!”
+          cuando bajen de {LOW_STOCK_THRESHOLD}, y 0 marca la pieza como agotada automáticamente.
+        </span>
       </label>
 
       <label className="flex items-center gap-2.5">

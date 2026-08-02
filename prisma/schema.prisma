@@ -107,6 +107,9 @@ model Product {
   category         Category       @relation(fields: [categoryId], references: [id])
   price            Int
   available        Boolean        @default(true)
+  /// Unidades restantes, solo para piezas con conteo activado. Null = sin
+  /// seguimiento de stock — se muestra igual que hoy (solo available/agotado).
+  stock            Int?
   tag              String
   description      String
   measurements     String?

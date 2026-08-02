@@ -91,7 +91,7 @@ export default async function ProductPage({ params }: Props) {
         placeholderLabel={product.placeholderLabel}
       />
 
-      <ProductOrderPanel product={product} />
+      <ProductOrderPanel product={product} related={related.slice(0, 3)} />
 
       <RelatedProducts products={related} />
     </article>

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { PlaceholderImage } from "./PlaceholderImage";
+import { WhatsAppIcon } from "./WhatsAppIcon";
 import { useCart } from "@/lib/store";
 import { MAX_QUANTITY } from "@/lib/account/types";
 import { formatPrice, type Product } from "@/lib/products";
@@ -187,6 +188,29 @@ export function BagList({ products }: { products: Product[] }) {
         </a>
         .
       </p>
+
+      {/* Barra fija solo en móvil: con varias piezas la lista puede ser larga
+          y el resumen de arriba queda lejos — el total y el botón de pedir
+          siempre quedan a la mano mientras se revisa la bolsa. */}
+      <div
+        className="fixed inset-x-0 bottom-0 z-[65] flex items-center gap-3 border-t border-ink/12 bg-paper/95 px-gutter py-3 backdrop-blur-md md:hidden"
+        style={{ paddingBottom: "max(12px, env(safe-area-inset-bottom))" }}
+      >
+        <div className="grid min-w-0 flex-1 leading-tight">
+          <span className="text-[10px] tracking-[0.15em] text-muted uppercase">Total</span>
+          <span className="text-[15px]">{formatPrice(total)}</span>
+        </div>
+        <a
+          href={waLink(message, settings.whatsappNumber)}
+          target="_blank"
+          rel="noopener"
+          className="flex shrink-0 cursor-pointer items-center gap-2 bg-ink px-5 py-2.5 text-[10px] tracking-[0.15em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"
+        >
+          <WhatsAppIcon className="size-[18px] text-white" />
+          Pedir
+        </a>
+      </div>
+      <div className="h-[76px] md:hidden" aria-hidden="true" />
     </div>
   );
 }

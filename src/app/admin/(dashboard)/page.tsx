@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { formatPrice } from "@/lib/products";
+import { formatPrice, LOW_STOCK_THRESHOLD } from "@/lib/products";
 import { getSiteSettings } from "@/lib/queries";
 import { DEFAULT_SITE_SETTINGS, marqueeLines, normalizeWhatsappNumber } from "@/lib/settings";
 
@@ -112,6 +112,7 @@ export default async function AdminHomePage() {
         price: true,
         tag: true,
         categoryId: true,
+        stock: true,
         _count: { select: { images: true } },
       },
     }),
@@ -164,6 +165,9 @@ export default async function AdminHomePage() {
     .filter((p) => p._count.images === 0)
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   const onePhoto = allProducts.filter((p) => p._count.images === 1);
+  const lowStock = allProducts
+    .filter((p) => p.available && p.stock !== null && p.stock > 0 && p.stock <= LOW_STOCK_THRESHOLD)
+    .sort((a, b) => (a.stock ?? 0) - (b.stock ?? 0));
   const totalImages = allProducts.reduce((sum, p) => sum + p._count.images, 0);
   const avgImages = products > 0 ? totalImages / products : 0;
 
@@ -376,9 +380,31 @@ export default async function AdminHomePage() {
         )}
       </section>
 
-      {(noPhotos.length > 0 || onePhoto.length > 0) && (
+      {(noPhotos.length > 0 || onePhoto.length > 0 || lowStock.length > 0) && (
         <section className={cardClass}>
           <h2 className={sectionTitleClass}>Necesita tu atención</h2>
+
+          {lowStock.length > 0 && (
+            <div className="grid gap-1.5">
+              <p className="m-0 text-[12.5px] text-muted">
+                <span className="text-red-700">{lowStock.length}</span>{" "}
+                {lowStock.length === 1 ? "pieza tiene" : "piezas tienen"} pocas unidades — piensa en
+                reponer stock.
+              </p>
+              <ul className="m-0 flex flex-wrap gap-x-5 gap-y-1.5 list-none p-0">
+                {lowStock.slice(0, 6).map((product) => (
+                  <li key={product.id}>
+                    <Link href={`/admin/productos/${product.id}`} className={rowLinkClass}>
+                      {product.name} ({product.stock})
+                    </Link>
+                  </li>
+                ))}
+                {lowStock.length > 6 && (
+                  <li className="text-[12px] text-muted">+{lowStock.length - 6} más</li>
+                )}
+              </ul>
+            </div>
+          )}
 
           {noPhotos.length > 0 && (
             <div className="grid gap-1.5">

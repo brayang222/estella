@@ -35,10 +35,45 @@ const frames = [
   },
 ];
 
+const AUTOPLAY_MS = 3000;
+/** Menos que esto se lee como un toque, no como un gesto de deslizar. */
+const SWIPE_THRESHOLD_PX = 40;
+
 export function Hero() {
   const [frame, setFrame] = useState(0);
   const stageRef = useRef<HTMLDivElement>(null);
   const framesRef = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+
+  const changeFrame = (dir: number) => {
+    setFrame((current) => (current + dir + frames.length) % frames.length);
+  };
+
+  // Se reinicia cada vez que cambia el frame (manual o automático), así un
+  // cambio del usuario siempre le da los 3s completos antes del siguiente auto-avance.
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const id = setInterval(() => changeFrame(1), AUTOPLAY_MS);
+    return () => clearInterval(id);
+  }, [frame]);
+
+  function handleTouchStart(event: React.TouchEvent) {
+    const touch = event.touches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+  }
+
+  function handleTouchEnd(event: React.TouchEvent) {
+    const start = touchStart.current;
+    touchStart.current = null;
+    if (!start) return;
+
+    const touch = event.changedTouches[0];
+    const dx = touch.clientX - start.x;
+    const dy = touch.clientY - start.y;
+    // Un arrastre mayormente vertical es scroll de la página, no un swipe.
+    if (Math.abs(dx) < SWIPE_THRESHOLD_PX || Math.abs(dx) < Math.abs(dy)) return;
+    changeFrame(dx < 0 ? 1 : -1);
+  }
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -64,13 +99,14 @@ export function Hero() {
     };
   }, []);
 
-  const changeFrame = (dir: number) => {
-    setFrame((current) => (current + dir + frames.length) % frames.length);
-  };
-
   return (
     <section id="top" className="grid gap-0 p-0">
-      <div ref={stageRef} className="relative h-[min(86svh,760px)] min-h-[460px] overflow-hidden bg-img-2">
+      <div
+        ref={stageRef}
+        className="relative h-[min(86svh,760px)] min-h-[460px] touch-pan-y overflow-hidden bg-img-2"
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <div ref={framesRef} className="absolute inset-x-0 inset-y-[-9%] will-change-transform">
           {frames.map((f, index) => (
             <div

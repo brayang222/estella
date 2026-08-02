@@ -21,6 +21,9 @@ export function SiteChrome({
 }) {
   const pathname = usePathname();
   const bare = pathname.startsWith("/admin") || BARE_ROUTES.includes(pathname);
+  // Estas rutas traen su propia barra fija de compra en móvil (ver
+  // ProductOrderPanel/BagList) — el flotante de WhatsApp se aparta ahí.
+  const hasMobileBuyBar = pathname.startsWith("/producto/") || pathname === "/bolsa";
 
   // The providers wrap everything — including the panel and the login screen —
   // so session, bag and settings survive any navigation between sections.
@@ -35,7 +38,7 @@ export function SiteChrome({
               <Navbar />
               <main>{children}</main>
               <Footer />
-              <WhatsAppFloat />
+              <WhatsAppFloat hiddenOnMobile={hasMobileBuyBar} />
             </>
           )}
         </StoreProvider>

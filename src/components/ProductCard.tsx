@@ -4,7 +4,7 @@ import { useEffect, useState, ViewTransition } from "react";
 import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
 import { PlaceholderImage } from "./PlaceholderImage";
-import { formatPrice, type Product } from "@/lib/products";
+import { LOW_STOCK_THRESHOLD, SOCIAL_PROOF_THRESHOLD, formatPrice, type Product } from "@/lib/products";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
@@ -13,6 +13,9 @@ const AUTOPLAY_MS = 1500;
 export function ProductCard({ product }: { product: Product }) {
   const settings = useSiteSettings();
   const images = product.images;
+  const lowStock =
+    product.available && product.stock !== null && product.stock > 0 && product.stock <= LOW_STOCK_THRESHOLD;
+  const showSocialProof = product._count.favorites >= SOCIAL_PROOF_THRESHOLD;
   const hasAlternates = images.length > 1;
   const canCycle = images.length > 2;
 
@@ -94,15 +97,23 @@ export function ProductCard({ product }: { product: Product }) {
           )}
         </Link>
 
-        {product.available ? (
-          <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] text-[9px] tracking-[0.2em] text-muted uppercase">
-            {product.tag}
-          </span>
-        ) : (
-          <span className="pointer-events-none absolute top-2.5 left-2.5 z-[1] bg-ink px-2 py-1 text-[9px] tracking-[0.2em] text-paper uppercase">
-            Agotado
-          </span>
-        )}
+        <div className="pointer-events-none absolute top-2.5 left-2.5 z-[1] grid gap-1">
+          {product.available ? (
+            <span className="text-[9px] tracking-[0.2em] text-muted uppercase">
+              {product.tag}
+              {lowStock && <span className="text-gold"> · quedan {product.stock}</span>}
+            </span>
+          ) : (
+            <span className="w-fit bg-ink px-2 py-1 text-[9px] tracking-[0.2em] text-paper uppercase">
+              Agotado
+            </span>
+          )}
+          {showSocialProof && (
+            <span className="w-fit bg-paper/90 px-2 py-1 text-[9px] tracking-[0.15em] text-ink uppercase">
+              ♥ Favorito de la casa
+            </span>
+          )}
+        </div>
 
         <FavoriteButton
           slug={product.slug}

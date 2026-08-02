@@ -58,13 +58,27 @@ function readProductFields(formData: FormData) {
   const tag = String(formData.get("tag") ?? "").trim() || "Nuevo";
   const description = String(formData.get("description") ?? "").trim();
   const measurements = String(formData.get("measurements") ?? "").trim();
-  const available = formData.get("available") === "on";
+  const stockRaw = String(formData.get("stock") ?? "").trim();
+  let available = formData.get("available") === "on";
 
   if (!name || !categoryId || !referenceCode || !description) {
     return { error: "Nombre, categoría, referencia y descripción son obligatorios." } as const;
   }
   if (!Number.isFinite(price) || price <= 0) {
     return { error: "El precio debe ser un número mayor a 0." } as const;
+  }
+
+  // Vacío = sin seguimiento de stock, se comporta como hoy (solo el check de
+  // disponible). Con un número, 0 unidades siempre implica agotado — evita
+  // que quede marcada "disponible" con 0 en existencia.
+  let stock: number | null = null;
+  if (stockRaw !== "") {
+    const parsed = Number(stockRaw);
+    if (!Number.isInteger(parsed) || parsed < 0) {
+      return { error: "El stock debe ser un número entero de 0 en adelante (o déjalo vacío)." } as const;
+    }
+    stock = parsed;
+    if (stock === 0) available = false;
   }
 
   return {
@@ -76,6 +90,7 @@ function readProductFields(formData: FormData) {
       tag,
       description,
       measurements: measurements || null,
+      stock,
       available,
     },
   } as const;

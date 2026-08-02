@@ -6,7 +6,11 @@ import { DEFAULT_SITE_SETTINGS, type SiteSettings } from "./settings";
 const PRODUCT_IMAGES_INCLUDE = { orderBy: { order: "asc" as const }, take: 4 };
 
 /** Everything a ProductCard/gallery needs. Matches the `Product` type in lib/products.ts. */
-export const PRODUCT_INCLUDE = { category: true, images: PRODUCT_IMAGES_INCLUDE };
+export const PRODUCT_INCLUDE = {
+  category: true,
+  images: PRODUCT_IMAGES_INCLUDE,
+  _count: { select: { favorites: true } },
+};
 
 export function getProducts() {
   return prisma.product.findMany({
