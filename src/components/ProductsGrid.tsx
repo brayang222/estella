@@ -10,6 +10,14 @@ import { staggerDelay } from "@/lib/stagger";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waLink } from "@/lib/whatsapp";
 
+type Sort = "relevancia" | "precio-asc" | "precio-desc";
+
+const SORTS: { value: Sort; label: string }[] = [
+  { value: "relevancia", label: "Relevancia" },
+  { value: "precio-asc", label: "Precio: menor a mayor" },
+  { value: "precio-desc", label: "Precio: mayor a menor" },
+];
+
 export function ProductsGrid({
   products,
   categories,
@@ -22,16 +30,24 @@ export function ProductsGrid({
   const settings = useSiteSettings();
   const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState("");
+  const [sort, setSort] = useState<Sort>("relevancia");
+  const [onlyAvailable, setOnlyAvailable] = useState(false);
 
   const normalizedQuery = query.trim().toLowerCase();
-  const visibleProducts = products.filter((p) => {
-    const inCategory = category === ALL_CATEGORIES || p.category.slug === category;
-    const matchesQuery =
-      normalizedQuery === "" ||
-      p.name.toLowerCase().includes(normalizedQuery) ||
-      p.referenceCode.toLowerCase().includes(normalizedQuery);
-    return inCategory && matchesQuery;
-  });
+  const visibleProducts = products
+    .filter((p) => {
+      const inCategory = category === ALL_CATEGORIES || p.category.slug === category;
+      const matchesQuery =
+        normalizedQuery === "" ||
+        p.name.toLowerCase().includes(normalizedQuery) ||
+        p.referenceCode.toLowerCase().includes(normalizedQuery);
+      return inCategory && matchesQuery && (!onlyAvailable || p.available);
+    })
+    .sort((a, b) => {
+      if (sort === "precio-asc") return a.price - b.price;
+      if (sort === "precio-desc") return b.price - a.price;
+      return 0;
+    });
 
   return (
     <section className="grid gap-[clamp(26px,3.4vw,44px)] pt-[clamp(120px,15vw,168px)] pb-section-y px-gutter">
@@ -48,14 +64,39 @@ export function ProductsGrid({
           <CategoryFilters categories={categories} value={category} onChange={setCategory} />
         </div>
 
-        <input
-          type="search"
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="Buscar por nombre o referencia…"
-          aria-label="Buscar piezas"
-          className="w-full max-w-[360px] border-0 border-b border-ink/20 bg-transparent py-2 text-[13px] text-ink placeholder:text-muted focus:border-ink focus:outline-none"
-        />
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <input
+            type="search"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Buscar por nombre o referencia…"
+            aria-label="Buscar piezas"
+            className="w-full max-w-[360px] border-0 border-b border-ink/20 bg-transparent py-2 text-[13px] text-ink placeholder:text-muted focus:border-ink focus:outline-none"
+          />
+
+          <select
+            value={sort}
+            onChange={(event) => setSort(event.target.value as Sort)}
+            aria-label="Ordenar por"
+            className="cursor-pointer border-0 border-b border-ink/20 bg-transparent py-2 text-[13px] text-ink focus:border-ink focus:outline-none"
+          >
+            {SORTS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+
+          <label className="flex cursor-pointer items-center gap-2 text-[13px] text-ink">
+            <input
+              type="checkbox"
+              checked={onlyAvailable}
+              onChange={(event) => setOnlyAvailable(event.target.checked)}
+              className="size-[15px] cursor-pointer accent-ink"
+            />
+            Solo disponibles
+          </label>
+        </div>
       </Reveal>
 
       <FavoritesBar products={products} />

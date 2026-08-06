@@ -1,23 +1,51 @@
 "use client";
 
-import { useRef, useTransition } from "react";
-import {
-  addProductImage,
-  moveProductImage,
-  removeProductImage,
-} from "@/lib/admin/products";
+import { useRef, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { moveProductImage, removeProductImage } from "@/lib/admin/products";
 import type { ProductImage } from "@/lib/products";
 
 const MAX_IMAGES = 4;
+const MAX_DIMENSION = 1920;
+const WEBP_QUALITY = 0.85;
+
+/** Redimensiona y convierte a WebP en el cliente. Fotos de celular de 10 MB quedan en < 500 KB. */
+async function compressImage(file: File): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      let { width, height } = img;
+      if (width <= MAX_DIMENSION && height <= MAX_DIMENSION && file.type === "image/webp") {
+        resolve(file);
+        return;
+      }
+      const ratio = Math.min(MAX_DIMENSION / width, MAX_DIMENSION / height, 1);
+      width = Math.round(width * ratio);
+      height = Math.round(height * ratio);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext("2d")!.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) { resolve(file); return; }
+          const name = file.name.replace(/\.[^.]+$/, ".webp");
+          resolve(new File([blob], name, { type: "image/webp" }));
+        },
+        "image/webp",
+        WEBP_QUALITY,
+      );
+    };
+    img.onerror = () => { URL.revokeObjectURL(objectUrl); resolve(file); };
+    img.src = objectUrl;
+  });
+}
 
 const smallButton =
   "grid h-7 w-7 cursor-pointer place-items-center border border-ink/20 bg-paper text-[12px] leading-none transition-colors duration-200 ease-out hover:border-ink disabled:cursor-default disabled:opacity-25";
 
-/**
- * Fotos de una pieza ya creada: subir, reordenar y eliminar, cada acción por
- * su cuenta. Está fuera del formulario de datos a propósito — mover una foto
- * no debería obligar a reenviar precio, descripción y todo lo demás.
- */
 export function ProductImagesManager({
   productId,
   images,
@@ -25,14 +53,42 @@ export function ProductImagesManager({
   productId: string;
   images: ProductImage[];
 }) {
+  const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const sorted = [...images].sort((a, b) => a.order - b.order);
 
-  function upload(formData: FormData) {
-    startTransition(async () => {
-      await addProductImage(productId, formData);
-      if (fileInput.current) fileInput.current.value = "";
+  async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0] ?? null;
+    if (!file) return;
+
+    setUploadError(null);
+    setUploading(true);
+
+    const compressed = await compressImage(file);
+
+    const formData = new FormData();
+    formData.set("image", compressed);
+    formData.set("productId", productId);
+
+    const res = await fetch("/api/admin/upload-product-image", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (fileInput.current) fileInput.current.value = "";
+    setUploading(false);
+
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({})) as { error?: string };
+      setUploadError(data.error ?? "Error al subir la foto");
+      return;
+    }
+
+    startTransition(() => {
+      router.refresh();
     });
   }
 
@@ -47,6 +103,10 @@ export function ProductImagesManager({
           cambiar el orden.
         </p>
       </div>
+
+      {uploadError && (
+        <p className="m-0 bg-red-50 p-3 text-[12px] text-red-700">{uploadError}</p>
+      )}
 
       {sorted.length > 0 && (
         <ul className="m-0 grid list-none grid-cols-2 gap-4 p-0 sm:grid-cols-4">
@@ -103,25 +163,43 @@ export function ProductImagesManager({
         </ul>
       )}
 
-      {sorted.length < MAX_IMAGES ? (
-        <form action={upload} className="flex flex-wrap items-center gap-3">
+      {sorted.length < MAX_IMAGES && (
+        <div className="grid gap-2">
+          {/* input sr-only: accesible, fuera de pantalla, incluido en FormData */}
           <input
             ref={fileInput}
             type="file"
-            name="image"
-            required
             accept="image/webp,image/jpeg,image/png"
-            className="text-[11px]"
+            className="sr-only"
+            disabled={uploading || pending}
+            onChange={handleFileSelect}
           />
+
           <button
-            type="submit"
-            disabled={pending}
-            className="cursor-pointer border border-ink/20 px-4 py-2 text-[10px] tracking-[0.2em] uppercase transition-colors duration-300 ease-out hover:border-ink disabled:opacity-50"
+            type="button"
+            disabled={uploading || pending}
+            onClick={() => fileInput.current?.click()}
+            className="group relative block aspect-square w-full max-w-[120px] cursor-pointer overflow-hidden bg-img-1 transition-opacity hover:opacity-75 disabled:cursor-default disabled:opacity-50"
+            aria-label="Añadir foto"
           >
-            {pending ? "Subiendo…" : "Añadir foto"}
+            {uploading ? (
+              <span className="absolute inset-0 flex items-center justify-center text-[10px] tracking-[0.1em] text-muted uppercase">
+                Subiendo…
+              </span>
+            ) : (
+              <span className="absolute inset-0 flex items-center justify-center text-2xl text-ink/20 select-none group-hover:text-ink/40">
+                +
+              </span>
+            )}
           </button>
-        </form>
-      ) : (
+
+          <p className="m-0 text-[11px] text-muted">
+            {uploading ? "Guardando foto…" : "Haz clic en el recuadro para añadir una foto."}
+          </p>
+        </div>
+      )}
+
+      {sorted.length >= MAX_IMAGES && (
         <p className="m-0 text-[11px] text-muted">
           Máximo {MAX_IMAGES} fotos. Quita una para poder subir otra.
         </p>

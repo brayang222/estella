@@ -30,6 +30,26 @@ export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
+/** Productos que aparecen en /arma-tu-cadena. */
+export function getCustomizableProducts() {
+  return prisma.product.findMany({
+    where: { customizable: true, available: true },
+    orderBy: { sortOrder: "asc" },
+    include: PRODUCT_INCLUDE,
+  });
+}
+
+/** Cadenas y dijes sueltos son piezas de /arma-tu-cadena, no del catálogo general. */
+const BUILDER_CATEGORY_SLUGS = new Set(["cadenas", "dijes"]);
+
+export function inCatalog<T extends { category: { slug: string } }>(items: T[]): T[] {
+  return items.filter((item) => !BUILDER_CATEGORY_SLUGS.has(item.category.slug));
+}
+
+export function catalogCategories<T extends { slug: string }>(categories: T[]): T[] {
+  return categories.filter((category) => !BUILDER_CATEGORY_SLUGS.has(category.slug));
+}
+
 /**
  * Ajustes del sitio, con los valores del código como respaldo. Nunca lanza:
  * una tienda sin número de WhatsApp configurado sigue mostrando el que traía

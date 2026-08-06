@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductJsonLd } from "@/components/JsonLd";
 import { ProductOrderPanel } from "@/components/ProductOrderPanel";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
 import { RelatedProducts } from "@/components/RelatedProducts";
+import { ReviewsSection } from "@/components/ReviewsSection";
+import { RecordRecentlyViewed } from "@/lib/recently-viewed";
 import Link from "next/link";
 import { getProductBySlug, getProducts } from "@/lib/queries";
 
@@ -52,6 +55,7 @@ export default async function ProductPage({ params }: Props) {
   return (
     <article className="grid gap-x-[clamp(40px,6vw,80px)] gap-y-[clamp(36px,5vw,56px)] pt-[clamp(120px,15vw,168px)] pb-[clamp(88px,11vw,140px)] px-gutter md:grid-cols-2 md:items-start">
       <ProductJsonLd product={product} />
+      <RecordRecentlyViewed slug={product.slug} />
 
       {/* No scroll-reveal wrappers here: this content is above the fold on
           arrival, and starting it at opacity 0 made the view transition morph
@@ -94,6 +98,8 @@ export default async function ProductPage({ params }: Props) {
       <ProductOrderPanel product={product} related={related.slice(0, 3)} />
 
       <RelatedProducts products={related} />
+      <ReviewsSection productId={product.id} slug={product.slug} />
+      <RecentlyViewed products={allProducts} exclude={product.slug} />
     </article>
   );
 }

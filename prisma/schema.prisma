@@ -34,23 +34,26 @@ model SiteSetting {
 // Canonical Auth.js/NextAuth Prisma-adapter schema — field names and types
 // below must match what @auth/prisma-adapter expects.
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String    @unique
-  emailVerified DateTime?
-  image         String?
-  role          Role      @default(user)
+  id              String           @id @default(cuid())
+  name            String?
+  email           String           @unique
+  emailVerified   DateTime?
+  image           String?
+  role            Role             @default(user)
   // Only set for accounts created with the email+password form. Google
   // accounts keep it null — that null is what tells the login form to say
   // "entra con Google" instead of "contraseña incorrecta".
-  passwordHash  String?
-  phone         String?
-  accounts      Account[]
-  sessions      Session[]
-  favorites     Favorite[]
-  cartItems     CartItem[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  passwordHash    String?
+  phone           String?
+  accounts        Account[]
+  sessions        Session[]
+  favorites       Favorite[]
+  cartItems       CartItem[]
+  restockRequests RestockRequest[]
+  reviews         Review[]
+  orders          Order[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model Account {
@@ -99,14 +102,14 @@ model Category {
 }
 
 model Product {
-  id               String         @id @default(cuid())
-  slug             String         @unique
-  referenceCode    String         @unique
+  id               String           @id @default(cuid())
+  slug             String           @unique
+  referenceCode    String           @unique
   name             String
   categoryId       String
-  category         Category       @relation(fields: [categoryId], references: [id])
+  category         Category         @relation(fields: [categoryId], references: [id])
   price            Int
-  available        Boolean        @default(true)
+  available        Boolean          @default(true)
   /// Unidades restantes, solo para piezas con conteo activado. Null = sin
   /// seguimiento de stock — se muestra igual que hoy (solo available/agotado).
   stock            Int?
@@ -116,10 +119,21 @@ model Product {
   images           ProductImage[]
   favorites        Favorite[]
   cartItems        CartItem[]
+  restockRequests  RestockRequest[]
+  reviews          Review[]
+  orderItems       OrderItem[]
   placeholderLabel String
-  sortOrder        Int            @default(0)
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  sortOrder        Int              @default(0)
+  /// Aparece en /arma-tu-cadena. Para cadenas guarda también el punto de caída del dije.
+  customizable     Boolean          @default(false)
+  /// Cuántos dijes puede llevar esta cadena (1 = solo uno, 2+ = varios).
+  maxCharms        Int              @default(1)
+  /// Coordenada X (%) donde cuelga el dije en la foto de la cadena.
+  dropPointX       Float?
+  /// Coordenada Y (%) donde cuelga el dije en la foto de la cadena.
+  dropPointY       Float?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 
   @@index([categoryId])
 }
@@ -162,4 +176,65 @@ model ProductImage {
 
   @@unique([productId, order])
   @@index([productId])
+}
+
+/// Clic en "Avisarme cuando vuelva" de una pieza agotada. El pedido en sí
+/// sigue siendo por WhatsApp — esto solo le da al admin visibilidad de qué
+/// tanto se está pidiendo cada pieza sin depender de revisar los chats.
+model RestockRequest {
+  id        String   @id @default(cuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+}
+
+/// Reseña enviada desde la ficha de producto. No se muestra en la tienda
+/// hasta que el admin la aprueba en /admin/resenas.
+model Review {
+  id         String   @id @default(cuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  userId     String?
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  authorName String
+  rating     Int
+  comment    String
+  approved   Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([productId, approved])
+}
+
+/// Pedido registrado a mano por el admin una vez se confirma por WhatsApp —
+/// no hay checkout en el sitio. Sirve para que la clienta vea su historial
+/// en /cuenta y el admin no dependa de buscar en chats viejos.
+model Order {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items     OrderItem[]
+  total     Int
+  note      String?
+  createdAt DateTime    @default(now())
+
+  @@index([userId])
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  /// Referencia opcional al producto vivo; si se borra, el pedido conserva
+  /// nombre y precio tal como quedaron al momento de la venta.
+  product   Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
+  name      String
+  price     Int
+  quantity  Int
+
+  @@index([orderId])
 }

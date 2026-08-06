@@ -6,10 +6,12 @@ import { Studio } from "@/components/Studio";
 import { Testimonials } from "@/components/Testimonials";
 import { FinalCta } from "@/components/FinalCta";
 import { ProductsJsonLd } from "@/components/JsonLd";
-import { getCategories, getProducts } from "@/lib/queries";
+import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
 
 export default async function Home() {
-  const [products, categories] = await Promise.all([getProducts(), getCategories()]);
+  const [allProducts, allCategories] = await Promise.all([getProducts(), getCategories()]);
+  const products = inCatalog(allProducts);
+  const categories = catalogCategories(allCategories);
 
   return (
     <>

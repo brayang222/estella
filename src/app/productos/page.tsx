@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import { ProductsJsonLd } from "@/components/JsonLd";
-import { getCategories, getProducts } from "@/lib/queries";
+import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Todas las piezas",
@@ -20,11 +20,13 @@ type Props = {
 };
 
 export default async function ProductosPage({ searchParams }: Props) {
-  const [{ categoria }, products, categories] = await Promise.all([
+  const [{ categoria }, allProducts, allCategories] = await Promise.all([
     searchParams,
     getProducts(),
     getCategories(),
   ]);
+  const products = inCatalog(allProducts);
+  const categories = catalogCategories(allCategories);
 
   const isKnownCategory = categories.some((c) => c.slug === categoria);
 
