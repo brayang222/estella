@@ -145,7 +145,7 @@ export function ChainBuilder({ chains, charms }: { chains: Product[]; charms: Pr
                     type="button"
                     onClick={() => toggleCharm(charm.slug)}
                     aria-label={`Quitar ${charm.name}`}
-                    className="absolute -top-1 -right-1 z-[1] flex size-5 cursor-pointer items-center justify-center rounded-full bg-ink text-[10px] text-paper"
+                    className="absolute -top-1 -right-1 z-1 flex size-5 cursor-pointer items-center justify-center rounded-full bg-ink text-[10px] text-paper"
                   >
                     ✕
                   </button>
