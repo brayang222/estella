@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import { ProductsJsonLd } from "@/components/JsonLd";
 import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
+import { OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Todas las piezas",
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
     title: "Todas las piezas",
     url: "/productos",
     type: "website",
+    images: [OG_IMAGE],
   },
 };
 

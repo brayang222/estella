@@ -9,6 +9,7 @@ import { formatPostDate } from "@/lib/blog-date";
 import { staggerDelay } from "@/lib/stagger";
 import { catalogCategories, getCategories, getSiteSettings } from "@/lib/queries";
 import { waLink } from "@/lib/whatsapp";
+import { OG_IMAGE } from "@/lib/site";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -33,6 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: `/blog/${post.slug}`,
       type: "article",
       publishedTime: post.date,
+      images: [post.coverImage ?? OG_IMAGE],
     },
   };
 }

@@ -131,13 +131,19 @@ export function ProductsGrid({
           </a>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)] sm:grid-cols-3 lg:grid-cols-4">
-          {visibleProducts.map((product, index) => (
-            <Reveal key={product.id} delay={staggerDelay(index)}>
-              <ProductCard product={product} />
-            </Reveal>
-          ))}
-        </div>
+        <>
+          {/* Solo para lectores de pantalla: las tarjetas usan h3 (correcto
+              cuando cuelgan de un h2, como en el inicio), y sin este nivel
+              intermedio el catálogo saltaría de h1 a h3. */}
+          <h2 className="sr-only">Piezas</h2>
+          <div className="grid grid-cols-2 gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)] sm:grid-cols-3 lg:grid-cols-4">
+            {visibleProducts.map((product, index) => (
+              <Reveal key={product.id} delay={staggerDelay(index)}>
+                <ProductCard product={product} />
+              </Reveal>
+            ))}
+          </div>
+        </>
       )}
     </section>
   );

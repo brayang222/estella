@@ -1,7 +1,53 @@
 import type { Product } from "@/lib/products";
+import { imageUrl } from "@/lib/images";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
 import { getSiteSettings } from "@/lib/queries";
 import type { BlogPost } from "@/lib/blog";
+
+/**
+ * URLs absolutas de las fotos de una pieza, que es como Google las exige en
+ * los datos estructurados. Pasa por `imageUrl()` para respetar
+ * NEXT_PUBLIC_IMAGE_BASE_URL: si algún día las fotos viven en un CDN ya vienen
+ * absolutas y no hay que anteponerles nada — concatenar SITE_URL a ciegas
+ * generaría rutas rotas.
+ */
+function absoluteImages(product: Product): string[] {
+  return product.images
+    .map((image) => imageUrl(image.url))
+    .filter((url): url is string => Boolean(url))
+    .map((url) => (url.startsWith("http") ? url : `${SITE_URL}${url}`));
+}
+
+/** Descarta vacíos y URLs de solo dominio, que no identifican una cuenta. */
+function profileUrls(urls: (string | null | undefined)[]): string[] {
+  return urls.filter((url): url is string => {
+    if (!url) return false;
+    try {
+      return new URL(url).pathname.replace(/\/+$/, "").length > 0;
+    } catch {
+      return false;
+    }
+  });
+}
+
+/**
+ * Política de devoluciones, tal como la definió Estella: se aceptan bajo el
+ * derecho de retracto de la Ley 1480 (5 días hábiles en ventas a distancia) y
+ * el envío de vuelta corre por cuenta del comprador.
+ *
+ * `merchantReturnDays` no distingue hábiles de calendario, así que 5 es el
+ * número de la norma. `ReturnFeesCustomerResponsibility` es justo el valor
+ * para "el comprador paga el envío" y, a diferencia de ReturnShippingFees, no
+ * exige declarar un monto — que aquí no existe porque varía por destino.
+ */
+const RETURN_POLICY = {
+  "@type": "MerchantReturnPolicy",
+  applicableCountry: "CO",
+  returnPolicyCategory: "https://schema.org/MerchantReturnFiniteReturnWindow",
+  merchantReturnDays: 5,
+  returnMethod: "https://schema.org/ReturnByMail",
+  returnFees: "https://schema.org/ReturnFeesCustomerResponsibility",
+};
 
 function JsonLdScript({ data }: { data: object }) {
   return (
@@ -29,7 +75,10 @@ export async function OrganizationJsonLd() {
         url: SITE_URL,
         logo: `${SITE_URL}/logo/estella-lockup.svg`,
         description: SITE_DESCRIPTION,
-        sameAs: [settings.instagramUrl, settings.tiktokUrl],
+        // Solo perfiles reales: una URL sin ruta ("https://tiktok.com") no
+        // vincula ninguna cuenta y le dice a Google que la marca "es la misma
+        // entidad que" el sitio entero de TikTok. Mejor omitirla.
+        sameAs: profileUrls([settings.instagramUrl, settings.tiktokUrl]),
         telephone: `+${settings.whatsappNumber}`,
         areaServed: { "@type": "Country", name: "Colombia" },
       }}
@@ -49,6 +98,12 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
           item: {
             "@type": "Product",
             name: product.name,
+            // `image` es obligatorio para las fichas de comerciante: sin él,
+            // Search Console marca cada pieza como elemento no válido y
+            // ninguna puede salir en resultados enriquecidos.
+            image: absoluteImages(product),
+            description: product.description,
+            url: `${SITE_URL}/producto/${product.slug}`,
             category: product.category.label,
             sku: product.referenceCode,
             brand: { "@type": "Brand", name: SITE_NAME },
@@ -59,6 +114,7 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
               availability: product.available
                 ? "https://schema.org/InStock"
                 : "https://schema.org/OutOfStock",
+              hasMerchantReturnPolicy: RETURN_POLICY,
             },
           },
         })),
@@ -98,7 +154,7 @@ export function ProductJsonLd({
         category: product.category.label,
         sku: product.referenceCode,
         brand: { "@type": "Brand", name: SITE_NAME },
-        image: product.images.map((image) => `${SITE_URL}${image.url}`),
+        image: absoluteImages(product),
         url: `${SITE_URL}/producto/${product.slug}`,
         offers: {
           "@type": "Offer",
@@ -108,6 +164,7 @@ export function ProductJsonLd({
             ? "https://schema.org/InStock"
             : "https://schema.org/OutOfStock",
           url: `${SITE_URL}/producto/${product.slug}`,
+          hasMerchantReturnPolicy: RETURN_POLICY,
         },
       }}
     />

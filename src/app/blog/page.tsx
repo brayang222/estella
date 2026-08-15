@@ -3,6 +3,7 @@ import { BlogCard } from "@/components/BlogCard";
 import { Reveal } from "@/components/Reveal";
 import { staggerDelay } from "@/lib/stagger";
 import { posts } from "@/lib/blog";
+import { OG_IMAGE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -15,6 +16,7 @@ export const metadata: Metadata = {
       "Guías de cuidado, estilo y todo lo que pasa detrás de cada serie de Estella.",
     url: "/blog",
     type: "website",
+    images: [OG_IMAGE],
   },
 };
 
@@ -31,6 +33,9 @@ export default function BlogPage() {
           relleno, directo al punto.
         </p>
       </Reveal>
+      {/* Igual que en el catálogo: las tarjetas usan h3 y sin este nivel
+          intermedio el listado saltaría de h1 a h3. */}
+      <h2 className="sr-only">Artículos</h2>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-[clamp(24px,3vw,44px)]">
         {posts.map((post, index) => (
           <Reveal key={post.slug} delay={staggerDelay(index)}>

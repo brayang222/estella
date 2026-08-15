@@ -18,3 +18,11 @@ export const SITE_DESCRIPTION =
 
 // Instagram, TikTok y el número de WhatsApp ya no viven aquí: se editan en
 // /admin/ajustes. Ver src/lib/settings.ts.
+
+/**
+ * Imagen de vista previa al compartir. Hay que pasarla explícitamente en toda
+ * página que declare su propio `openGraph`: Next solo hereda ese objeto del
+ * layout cuando la página no lo define, y al definirlo lo reemplaza entero —
+ * incluidas las imágenes. Sin esto, el enlace se comparte sin foto.
+ */
+export const OG_IMAGE = "/opengraph-image.jpg";

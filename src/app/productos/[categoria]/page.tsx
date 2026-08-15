@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import { ProductsJsonLd } from "@/components/JsonLd";
 import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
+import { OG_IMAGE } from "@/lib/site";
 
 type Props = {
   params: Promise<{ categoria: string }>;
@@ -53,6 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `/productos/${category.slug}`,
       type: "website",
+      images: [OG_IMAGE],
     },
   };
 }

@@ -19,8 +19,12 @@ export type SiteSettings = {
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   whatsappNumber: "573126177800",
   whatsappGreeting: "Hola Estella, quiero ver las piezas disponibles.",
-  instagramUrl: "https://instagram.com",
-  tiktokUrl: "https://tiktok.com",
+  // Perfil real, sin los parámetros de rastreo que Instagram añade al
+  // compartir (igsh, utm_source): en `sameAs` deben ir URLs canónicas.
+  instagramUrl: "https://www.instagram.com/estella__co",
+  // Sin cuenta de TikTok todavía. Se deja vacío a propósito: apuntar a
+  // tiktok.com no vincula ninguna cuenta y ensucia el sameAs.
+  tiktokUrl: "",
   marqueeItems: [
     "Accesorios hechos a mano",
     "Envío asegurado a todo el país",
