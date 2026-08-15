@@ -21,14 +21,18 @@ const SORTS: { value: Sort; label: string }[] = [
 export function ProductsGrid({
   products,
   categories,
-  initialCategory,
+  category,
+  heading,
+  intro,
 }: {
   products: Product[];
   categories: Category[];
-  initialCategory: string;
+  /** Viene de la ruta, no del estado: cada categoría es su propia URL. */
+  category: string;
+  heading: string;
+  intro?: string;
 }) {
   const settings = useSiteSettings();
-  const [category, setCategory] = useState(initialCategory);
   const [query, setQuery] = useState("");
   const [sort, setSort] = useState<Sort>("relevancia");
   const [onlyAvailable, setOnlyAvailable] = useState(false);
@@ -58,10 +62,19 @@ export function ProductsGrid({
               La colección
             </span>
             <h1 className="m-0 font-display text-[clamp(28px,4.2vw,56px)] leading-[1.06] tracking-[-0.01em]">
-              Todas las piezas
+              {heading}
             </h1>
+            {intro && (
+              <p className="m-0 max-w-[54ch] text-[13.5px] leading-[1.85] text-muted text-pretty">
+                {intro}
+              </p>
+            )}
           </div>
-          <CategoryFilters categories={categories} value={category} onChange={setCategory} />
+          <CategoryFilters
+            categories={categories}
+            value={category}
+            hrefFor={(slug) => (slug === ALL_CATEGORIES ? "/productos" : `/productos/${slug}`)}
+          />
         </div>
 
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">

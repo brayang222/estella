@@ -4,7 +4,7 @@ import "./globals.css";
 import { SiteChrome } from "@/components/SiteChrome";
 import { OrganizationJsonLd } from "@/components/JsonLd";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
-import { getSiteSettings } from "@/lib/queries";
+import { catalogCategories, getCategories, getSiteSettings } from "@/lib/queries";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -69,6 +69,9 @@ export default async function RootLayout({
   // Consulta a la base de datos, no una API dinámica: las páginas estáticas
   // siguen prerenderizándose y se regeneran cuando se guardan los ajustes.
   const settings = await getSiteSettings();
+  // El footer las enlaza en todas las páginas: es el enlazado interno del que
+  // Google saca los sitelinks de categoría bajo el resultado principal.
+  const categories = catalogCategories(await getCategories());
 
   return (
     <html
@@ -78,7 +81,9 @@ export default async function RootLayout({
     >
       <body className="overflow-x-clip bg-paper font-body font-light text-ink">
         <OrganizationJsonLd />
-        <SiteChrome settings={settings}>{children}</SiteChrome>
+        <SiteChrome settings={settings} categories={categories}>
+          {children}
+        </SiteChrome>
       </body>
     </html>
   );

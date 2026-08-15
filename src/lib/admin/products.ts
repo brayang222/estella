@@ -58,6 +58,7 @@ type FormValues = {
   measurements: string;
   stock: string;
   available: boolean;
+  published: boolean;
   customizable: boolean;
   maxCharms: string;
   dropPointX: string;
@@ -81,6 +82,7 @@ function extractFormValues(formData: FormData): FormValues {
     measurements: String(formData.get("measurements") ?? ""),
     stock: String(formData.get("stock") ?? ""),
     available: formData.get("available") === "on",
+    published: formData.get("published") === "on",
     customizable: formData.get("customizable") === "on",
     maxCharms: String(formData.get("maxCharms") ?? "1"),
     dropPointX: String(formData.get("dropPointX") ?? ""),
@@ -111,6 +113,7 @@ function readProductFields(formData: FormData) {
   const measurements = String(formData.get("measurements") ?? "").trim();
   const stockRaw = String(formData.get("stock") ?? "").trim();
   let available = formData.get("available") === "on";
+  const published = formData.get("published") === "on";
   const customizable = formData.get("customizable") === "on";
   const maxCharmsRaw = String(formData.get("maxCharms") ?? "").trim();
   const maxCharms = maxCharmsRaw !== "" && Number.isInteger(Number(maxCharmsRaw)) && Number(maxCharmsRaw) >= 1
@@ -151,6 +154,7 @@ function readProductFields(formData: FormData) {
       measurements: measurements || null,
       stock,
       available,
+      published,
       customizable,
       maxCharms,
       dropPointX,

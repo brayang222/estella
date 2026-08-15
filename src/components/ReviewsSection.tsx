@@ -1,4 +1,5 @@
 import { ReviewForm } from "./ReviewForm";
+import { ScrollToHash } from "./ScrollToHash";
 import { ReviewStars } from "./ReviewStars";
 import { getApprovedReviews } from "@/lib/reviews/queries";
 import { getCustomer } from "@/lib/account/session";
@@ -12,7 +13,13 @@ export async function ReviewsSection({ productId, slug }: { productId: string; s
     : 0;
 
   return (
-    <section className="grid gap-[clamp(20px,2.6vw,32px)] border-t border-ink/12 pt-[clamp(40px,5vw,64px)] md:col-span-2 md:max-w-[560px]">
+    // El id permite enlazar directo aquí (/producto/x#resenas) desde el
+    // mensaje de WhatsApp que se le manda a la clienta tras la entrega.
+    <section
+      id="resenas"
+      className="grid scroll-mt-[110px] gap-[clamp(20px,2.6vw,32px)] border-t border-ink/12 pt-[clamp(40px,5vw,64px)] md:col-span-2 md:max-w-[560px]"
+    >
+      <ScrollToHash id="resenas" />
       <div className="grid gap-2">
         <h2 className="m-0 font-display text-[clamp(22px,3vw,32px)] leading-[1.1]">Reseñas</h2>
         {reviews.length > 0 && (

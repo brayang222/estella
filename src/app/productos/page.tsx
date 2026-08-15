@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import { ProductsJsonLd } from "@/components/JsonLd";
 import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
@@ -28,7 +29,11 @@ export default async function ProductosPage({ searchParams }: Props) {
   const products = inCatalog(allProducts);
   const categories = catalogCategories(allCategories);
 
-  const isKnownCategory = categories.some((c) => c.slug === categoria);
+  // Los enlaces viejos (?categoria=collares) van a su página propia en vez de
+  // servir el mismo contenido en dos URLs, que es lo que divide las señales.
+  if (categoria && categories.some((c) => c.slug === categoria)) {
+    redirect(`/productos/${categoria}`);
+  }
 
   return (
     <>
@@ -36,7 +41,8 @@ export default async function ProductosPage({ searchParams }: Props) {
       <ProductsGrid
         products={products}
         categories={categories}
-        initialCategory={isKnownCategory ? categoria! : "todo"}
+        category="todo"
+        heading="Todas las piezas"
       />
     </>
   );

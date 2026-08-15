@@ -5,6 +5,7 @@ import { SessionProvider } from "next-auth/react";
 import { StoreProvider } from "@/lib/store";
 import { SiteSettingsProvider } from "@/lib/settings-context";
 import type { SiteSettings } from "@/lib/settings";
+import type { Category } from "@/lib/products";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { WhatsAppFloat } from "./WhatsAppFloat";
@@ -14,9 +15,11 @@ const BARE_ROUTES = ["/login", "/registro"];
 
 export function SiteChrome({
   settings,
+  categories,
   children,
 }: {
   settings: SiteSettings;
+  categories: Category[];
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
@@ -37,7 +40,7 @@ export function SiteChrome({
             <>
               <Navbar />
               <main>{children}</main>
-              <Footer />
+              <Footer categories={categories} />
               <WhatsAppFloat hiddenOnMobile={hasMobileBuyBar} />
             </>
           )}

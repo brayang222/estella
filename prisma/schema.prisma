@@ -110,6 +110,10 @@ model Product {
   category         Category         @relation(fields: [categoryId], references: [id])
   price            Int
   available        Boolean          @default(true)
+  /// Visible en la tienda. Distinto de `available`: una pieza despublicada no
+  /// existe para el visitante (ni ficha, ni sitemap, ni listados), mientras
+  /// que una agotada sí se muestra, marcada como tal.
+  published        Boolean          @default(true)
   /// Unidades restantes, solo para piezas con conteo activado. Null = sin
   /// seguimiento de stock — se muestra igual que hoy (solo available/agotado).
   stock            Int?

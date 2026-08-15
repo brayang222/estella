@@ -16,6 +16,12 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL?.toLowerCase();
 export const ENV_ADMIN_ID = "admin-credentials";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  // Sin esto, next-auth confía solo en AUTH_URL para armar la URL de
+  // callback — si esa variable quedó fija al dominio de Vercel, todo el
+  // login de Google (y sus cookies host-only) se va para allá aunque el
+  // usuario haya entrado por el dominio propio. trustHost hace que cada
+  // request use su propio host real.
+  trustHost: true,
   adapter: PrismaAdapter(prisma),
   providers: [
     Google({

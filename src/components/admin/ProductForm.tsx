@@ -167,6 +167,21 @@ export function ProductForm({
         <span className="text-[12px]">Disponible</span>
       </label>
 
+      <label className="grid gap-1">
+        <span className="flex items-center gap-2.5">
+          <input
+            type="checkbox"
+            name="published"
+            defaultChecked={v ? v.published : (product?.published ?? true)}
+          />
+          <span className="text-[12px]">Publicada en la tienda</span>
+        </span>
+        <span className="pl-[26px] text-[11px] text-muted">
+          Sin marcar, la pieza solo existe aquí: no aparece en la tienda, ni en el buscador de
+          Google, y su enlace directo muestra “página no encontrada”.
+        </span>
+      </label>
+
       {withImageUploads && (
         <div className="grid gap-3">
           <div className="grid gap-0.5">

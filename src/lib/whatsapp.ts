@@ -19,6 +19,21 @@ export function waRestockMessage(name: string) {
   return `Hola Estella, la ${name} aparece agotada. ¿Saben cuándo vuelve a haber disponibilidad?`;
 }
 
+/**
+ * Mensaje para pedirle la reseña a una clienta después de la entrega. Lleva el
+ * enlace directo al formulario de cada pieza que compró — es la forma legítima
+ * de conseguir reseñas reales (y con ellas las estrellas en Google): pedírselas
+ * a quien sí compró, no inventarlas.
+ */
+export function waReviewMessage(
+  customerName: string | null | undefined,
+  items: { name: string; url: string }[]
+) {
+  const greeting = customerName ? `Hola ${customerName}` : "Hola";
+  const list = items.map((item) => `• ${item.name}\n${item.url}`).join("\n\n");
+  return `${greeting}, ¡gracias por tu compra en Estella! ✨\n\n¿Nos cuentas cómo te fue? Puedes dejar tu reseña aquí:\n\n${list}\n\nToma menos de un minuto y nos ayuda muchísimo a seguir creciendo.`;
+}
+
 export function waFavoritesMessage(items: { name: string; price: string }[]) {
   const list = items.map((item) => `- ${item.name} (${item.price})`).join("\n");
   return `Hola Estella, me interesan estas piezas:\n${list}\n¿Me confirmas disponibilidad?`;

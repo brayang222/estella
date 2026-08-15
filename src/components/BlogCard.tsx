@@ -13,6 +13,8 @@ export function BlogCard({ post }: { post: BlogPost }) {
           spacing={11}
           tone={post.coverTone}
           labelPosition="center"
+          src={post.coverImage}
+          sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
           className="transition-transform duration-[1100ms] ease-estella group-hover:scale-[1.04]"
           alt={post.title}
         />

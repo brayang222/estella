@@ -2,8 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DeleteButton } from "@/components/admin/DeleteButton";
 import { OrderItemsManager } from "@/components/admin/OrderItemsManager";
+import { RequestReview } from "@/components/admin/RequestReview";
 import { deleteOrder } from "@/lib/admin/orders";
 import { prisma } from "@/lib/db";
+import { SITE_URL } from "@/lib/site";
 
 const dateFormat = new Intl.DateTimeFormat("es-CO", {
   day: "2-digit",
@@ -19,8 +21,8 @@ export default async function OrderDetailPage({ params }: Props) {
     prisma.order.findUnique({
       where: { id },
       include: {
-        user: { select: { name: true, email: true } },
-        items: { orderBy: { id: "asc" } },
+        user: { select: { name: true, email: true, phone: true } },
+        items: { orderBy: { id: "asc" }, include: { product: { select: { slug: true } } } },
       },
     }),
     prisma.product.findMany({ orderBy: { name: "asc" }, select: { id: true, name: true, price: true } }),
@@ -50,6 +52,19 @@ export default async function OrderDetailPage({ params }: Props) {
       <div className="border border-ink/12 p-5">
         <OrderItemsManager orderId={order.id} items={order.items} products={products} />
       </div>
+
+      <RequestReview
+        customerName={order.user.name}
+        phone={order.user.phone}
+        items={order.items
+          // Sin producto vivo no hay ficha a la que enlazar: la pieza se
+          // borró del catálogo y el pedido solo guarda su nombre.
+          .filter((item) => item.product)
+          .map((item) => ({
+            name: item.name,
+            url: `${SITE_URL}/producto/${item.product!.slug}#resenas`,
+          }))}
+      />
 
       <Link
         href="/admin/pedidos"

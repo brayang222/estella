@@ -7,7 +7,7 @@ import { BlogPostingJsonLd } from "@/components/JsonLd";
 import { getPostBySlug, posts } from "@/lib/blog";
 import { formatPostDate } from "@/lib/blog-date";
 import { staggerDelay } from "@/lib/stagger";
-import { getSiteSettings } from "@/lib/queries";
+import { catalogCategories, getCategories, getSiteSettings } from "@/lib/queries";
 import { waLink } from "@/lib/whatsapp";
 
 type Props = {
@@ -41,7 +41,12 @@ export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
   if (!post) notFound();
-  const settings = await getSiteSettings();
+  const [settings, allCategories] = await Promise.all([getSiteSettings(), getCategories()]);
+  // La categoría se resuelve contra la base y no se escribe en el artículo:
+  // si se renombra en /admin, el enlace sigue diciendo lo correcto.
+  const category = post.categorySlug
+    ? catalogCategories(allCategories).find((c) => c.slug === post.categorySlug)
+    : undefined;
 
   return (
     <article className="mx-auto grid max-w-[760px] gap-[clamp(32px,4vw,52px)] pt-[clamp(110px,14vw,160px)] pb-[clamp(72px,10vw,130px)] px-gutter">
@@ -72,6 +77,8 @@ export default async function BlogPostPage({ params }: Props) {
           spacing={11}
           tone={post.coverTone}
           labelPosition="bottom"
+          src={post.coverImage}
+          sizes="(min-width: 800px) 760px, 100vw"
           alt={post.title}
         />
       </Curtain>
@@ -89,6 +96,19 @@ export default async function BlogPostPage({ params }: Props) {
           </Reveal>
         ))}
       </div>
+
+      {category && (
+        <Reveal>
+          <Link
+            href={`/productos/${category.slug}`}
+            className="justify-self-start border-b border-ink/40 pb-1 text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold"
+          >
+            {/* "la colección de" y no "todos los": las etiquetas mezclan
+                géneros y saldría "todos los manillas". */}
+            Ver la colección de {category.label.toLowerCase()} →
+          </Link>
+        </Reveal>
+      )}
 
       <Reveal className="mt-3 grid justify-items-start gap-3.5 bg-paper-alt p-[clamp(28px,4vw,44px)]">
         <span className="text-[10px] tracking-[0.3em] text-gold uppercase">
