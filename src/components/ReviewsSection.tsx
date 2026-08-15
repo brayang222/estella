@@ -2,12 +2,11 @@ import { ReviewForm } from "./ReviewForm";
 import { ScrollToHash } from "./ScrollToHash";
 import { ReviewStars } from "./ReviewStars";
 import { getApprovedReviews } from "@/lib/reviews/queries";
-import { getCustomer } from "@/lib/account/session";
 
 const dateFormat = new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "short", year: "numeric" });
 
 export async function ReviewsSection({ productId, slug }: { productId: string; slug: string }) {
-  const [reviews, customer] = await Promise.all([getApprovedReviews(productId), getCustomer()]);
+  const reviews = await getApprovedReviews(productId);
   const average = reviews.length
     ? reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length
     : 0;
@@ -47,7 +46,7 @@ export async function ReviewsSection({ productId, slug }: { productId: string; s
         </ul>
       )}
 
-      <ReviewForm productId={productId} slug={slug} defaultName={customer?.name} />
+      <ReviewForm productId={productId} slug={slug} />
     </section>
   );
 }

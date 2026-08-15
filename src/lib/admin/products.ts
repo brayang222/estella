@@ -96,6 +96,11 @@ function revalidateStorefront(slug?: string) {
   revalidatePath("/admin/productos");
   revalidatePath("/");
   revalidatePath("/productos");
+  // Las páginas de categoría también están prerenderizadas: sin esto, una
+  // pieza nueva o editada no aparecía en /productos/manillas hasta el
+  // siguiente despliegue. El segundo argumento es obligatorio cuando la ruta
+  // lleva un segmento dinámico.
+  revalidatePath("/productos/[categoria]", "page");
   revalidatePath("/arma-tu-cadena");
   revalidatePath("/bolsa");
   revalidatePath("/favoritos");

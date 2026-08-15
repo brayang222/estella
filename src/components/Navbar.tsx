@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { isLocalEnv } from "@/lib/env";
 import { useCart, useFavorites } from "@/lib/store";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waLink } from "@/lib/whatsapp";
@@ -16,12 +15,13 @@ const sectionLinks = [
 
 const links = [
   ...sectionLinks,
-  // Todavía no lista para clientes reales — ver src/lib/env.ts.
-  ...(isLocalEnv ? [{ href: "/arma-tu-cadena", id: "arma-tu-cadena", label: "Arma tu cadena" }] : []),
   { href: "/sobre-nosotros", id: "sobre-nosotros", label: "Estudio" },
   { href: "/blog", id: "blog", label: "Blog" },
   { href: "/contacto", id: "contacto", label: "Contacto" },
 ];
+
+/** Solo para el admin mientras se prueba: la página 404 para los demás. */
+const BUILDER_LINK = { href: "/arma-tu-cadena", id: "arma-tu-cadena", label: "Arma tu cadena" };
 
 function AccountIcon() {
   return (
@@ -86,13 +86,15 @@ function Count({ value }: { value: number }) {
 export function Navbar() {
   const settings = useSiteSettings();
   const pathname = usePathname();
-  const { status } = useSession();
+  const { data: session, status } = useSession();
   const { favorites } = useFavorites();
   const { count: bagCount } = useCart();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
   const signedIn = status === "authenticated";
+  const isAdmin = session?.user?.role === "admin";
+  const visibleLinks = isAdmin ? [...links, BUILDER_LINK] : links;
   const accountHref = signedIn ? "/cuenta" : "/login";
   // The wordmark rides the same threshold as the solid navbar background, so
   // the bar "settling" into its fixed state and the name arriving read as one
@@ -129,7 +131,7 @@ export function Navbar() {
   }, [pathname]);
 
   const isActive = (id: string) => {
-    const link = links.find((l) => l.id === id);
+    const link = visibleLinks.find((l) => l.id === id);
     if (!link) return false;
     if (sectionLinks.some((s) => s.id === id)) return pathname === "/" && activeId === id;
     return pathname.startsWith(link.href);
@@ -147,7 +149,7 @@ export function Navbar() {
       style={{ viewTransitionName: "site-header" }}
     >
       <div className="hidden items-center gap-[clamp(12px,2vw,30px)] min-[820px]:flex">
-        {links.map((link) => (
+        {visibleLinks.map((link) => (
           <Link
             key={link.href}
             href={link.href}
@@ -218,7 +220,7 @@ export function Navbar() {
 
       {open && (
         <div className="absolute top-full inset-x-0 grid gap-1 border-y border-ink/12 bg-paper/98 px-gutter pt-[18px] pb-6 backdrop-blur-[12px]">
-          {links.map((link) => (
+          {visibleLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}

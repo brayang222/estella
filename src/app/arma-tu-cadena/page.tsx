@@ -1,24 +1,25 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ChainBuilder } from "@/components/ChainBuilder";
-import { isLocalEnv } from "@/lib/env";
+import { auth } from "@/auth";
 import { getCustomizableProducts } from "@/lib/queries";
 
 export const metadata: Metadata = {
   title: "Arma tu cadena",
   description: "Elige tu cadena y combínala con los dijes que quieras para armar un collar único.",
-  alternates: { canonical: "/arma-tu-cadena" },
-  openGraph: {
-    title: "Arma tu cadena",
-    url: "/arma-tu-cadena",
-    type: "website",
-  },
+  // Herramienta interna mientras se prueba: fuera del índice y del sitemap.
+  robots: { index: false, follow: false },
 };
 
 export default async function ArmaTuCadenaPage() {
-  if (!isLocalEnv) notFound();
+  // 404 y no redirect: un redirect a /login le confirmaría a cualquiera que
+  // esta ruta existe. Para quien no es admin, simplemente no está.
+  const session = await auth();
+  if (session?.user?.role !== "admin") notFound();
 
-  const products = await getCustomizableProducts();
+  // Incluye las piezas sin publicar: la página existe hoy para poder probar
+  // el armador con el catálogo completo antes de abrirlo al público.
+  const products = await getCustomizableProducts({ includeUnpublished: true });
   const chains = products.filter((p) => p.category.slug === "cadenas");
   const charms = products.filter((p) => p.category.slug === "dijes");
 

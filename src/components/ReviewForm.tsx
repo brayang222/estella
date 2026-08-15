@@ -1,21 +1,22 @@
 "use client";
 
 import { useActionState } from "react";
+import { useSession } from "next-auth/react";
 import { submitReview, type ReviewFormState } from "@/lib/reviews/actions";
 
 const inputClass =
   "border border-ink/20 bg-transparent px-3.5 py-3 text-[14px] focus:border-ink focus:outline-none";
 const labelClass = "text-[10px] tracking-[0.15em] text-muted uppercase";
 
-export function ReviewForm({
-  productId,
-  slug,
-  defaultName,
-}: {
-  productId: string;
-  slug: string;
-  defaultName?: string | null;
-}) {
+/**
+ * El nombre se prellena desde la sesión del cliente, no del servidor. Leerla
+ * en el servidor obligaba a renderizar la ficha entera bajo demanda
+ * (cache-control: private, no-cache) por prellenar un campo — medido: hasta
+ * 2s de TTFB contra 0.3s de una página prerenderizada.
+ */
+export function ReviewForm({ productId, slug }: { productId: string; slug: string }) {
+  const { data: session } = useSession();
+  const defaultName = session?.user?.name;
   const action = submitReview.bind(null, productId, slug);
   const [state, formAction, pending] = useActionState<ReviewFormState | undefined, FormData>(
     action,

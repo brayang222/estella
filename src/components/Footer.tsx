@@ -29,6 +29,9 @@ export function Footer({ categories }: { categories: Category[] }) {
           <Link href="/contacto" className={linkClass}>
             Contacto
           </Link>
+          <Link href="/envios-y-cambios" className={linkClass}>
+            Envíos y cambios
+          </Link>
           <Link href="/blog" className={linkClass}>
             Blog
           </Link>

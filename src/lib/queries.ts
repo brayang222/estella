@@ -42,14 +42,27 @@ export function getProductBySlug(slug: string) {
   });
 }
 
+/** Piezas publicadas. Alimenta el contador de "referencias activas". */
+export function countPublishedProducts() {
+  return prisma.product.count({ where: { published: true } });
+}
+
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
 }
 
-/** Productos que aparecen en /arma-tu-cadena. */
-export function getCustomizableProducts() {
+/**
+ * Productos de /arma-tu-cadena. `includeUnpublished` solo lo usa esa página,
+ * que hoy es interna y solo ve el admin: sirve para probar el armador con el
+ * catálogo completo. Cuando se abra al público hay que dejar de pasarlo.
+ */
+export function getCustomizableProducts({ includeUnpublished = false } = {}) {
   return prisma.product.findMany({
-    where: { customizable: true, available: true, published: true },
+    where: {
+      customizable: true,
+      available: true,
+      ...(includeUnpublished ? {} : { published: true }),
+    },
     orderBy: { sortOrder: "asc" },
     include: PRODUCT_INCLUDE,
   });

@@ -1,17 +1,29 @@
 import { PlaceholderImage } from "./PlaceholderImage";
 import { Curtain, Reveal } from "./Reveal";
 import { staggerDelay } from "@/lib/stagger";
-import { getSiteSettings } from "@/lib/queries";
+import { countPublishedProducts, getSiteSettings } from "@/lib/queries";
 import { waLink } from "@/lib/whatsapp";
 
+/**
+ * "Referencias activas" ya no es un número escrito a mano: se cuenta del
+ * catálogo. Decía 36 con 13 piezas publicadas, y es una cifra que una clienta
+ * puede desmentir sola contando la colección.
+ *
+ * Los otros dos siguen fijos porque no hay de dónde calcularlos. Si no
+ * corresponden a la realidad, hay que corregirlos o quitarlos — son
+ * afirmaciones públicas de la marca.
+ */
 const stats = [
-  { value: "36", label: "Referencias activas" },
   { value: "48h", label: "Despacho promedio" },
   { value: "1.2k", label: "Clientas en el país" },
 ];
 
 export async function Studio() {
-  const settings = await getSiteSettings();
+  const [settings, activeReferences] = await Promise.all([
+    getSiteSettings(),
+    countPublishedProducts(),
+  ]);
+  const allStats = [{ value: String(activeReferences), label: "Referencias activas" }, ...stats];
 
   return (
     <section id="historia" className="border-t border-ink/12 py-section-y px-gutter">
@@ -48,7 +60,7 @@ export async function Studio() {
             delay={staggerDelay(3)}
             className="grid grid-cols-[repeat(auto-fit,minmax(120px,1fr))] gap-5 border-t border-ink/12 pt-1.5"
           >
-            {stats.map((stat) => (
+            {allStats.map((stat) => (
               <span key={stat.label} className="grid gap-1.5 pt-3.5">
                 <strong className="font-display text-[30px] font-normal">{stat.value}</strong>
                 <span className="text-[9.5px] tracking-[0.2em] text-muted uppercase">

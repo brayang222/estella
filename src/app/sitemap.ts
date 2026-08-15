@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
 import { posts } from "@/lib/blog";
-import { isLocalEnv } from "@/lib/env";
 import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
 import { SITE_URL } from "@/lib/site";
 
@@ -37,14 +36,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     },
     {
+      url: `${SITE_URL}/envios-y-cambios`,
+      changeFrequency: "monthly",
+      priority: 0.6,
+    },
+    {
       url: `${SITE_URL}/blog`,
       changeFrequency: "weekly",
       priority: 0.7,
     },
-    // Todavía no lista para clientes reales — ver src/lib/env.ts.
-    ...(isLocalEnv
-      ? [{ url: `${SITE_URL}/arma-tu-cadena`, changeFrequency: "monthly" as const, priority: 0.7 }]
-      : []),
     ...posts.map((post) => ({
       url: `${SITE_URL}/blog/${post.slug}`,
       lastModified: post.date,
