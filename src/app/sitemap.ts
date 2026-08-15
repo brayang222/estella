@@ -27,6 +27,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     })),
     {
+      url: `${SITE_URL}/sobre-nosotros`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${SITE_URL}/contacto`,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: `${SITE_URL}/blog`,
       changeFrequency: "weekly",
       priority: 0.7,

@@ -12,14 +12,15 @@ import { waLink } from "@/lib/whatsapp";
 const sectionLinks = [
   { href: "/#coleccion", id: "coleccion", label: "Colección" },
   { href: "/#lookbook", id: "lookbook", label: "Lookbook" },
-  { href: "/#historia", id: "historia", label: "Estudio" },
 ];
 
 const links = [
   ...sectionLinks,
   // Todavía no lista para clientes reales — ver src/lib/env.ts.
   ...(isLocalEnv ? [{ href: "/arma-tu-cadena", id: "arma-tu-cadena", label: "Arma tu cadena" }] : []),
+  { href: "/sobre-nosotros", id: "sobre-nosotros", label: "Estudio" },
   { href: "/blog", id: "blog", label: "Blog" },
+  { href: "/contacto", id: "contacto", label: "Contacto" },
 ];
 
 function AccountIcon() {
