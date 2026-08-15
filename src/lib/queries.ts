@@ -12,22 +12,58 @@ export const PRODUCT_INCLUDE = {
   _count: { select: { favorites: true } },
 };
 
+/**
+ * Productos de la tienda. Filtra los despublicados a propósito: es la función
+ * por la que pasan todas las páginas públicas, así que el filtro va aquí y no
+ * repetido en cada una — una página nueva no puede olvidarse de ponerlo y
+ * filtrar borradores al visitante. El admin usa `getAllProducts()`.
+ */
 export function getProducts() {
+  return prisma.product.findMany({
+    where: { published: true },
+    orderBy: { sortOrder: "asc" },
+    include: PRODUCT_INCLUDE,
+  });
+}
+
+/** Todo el catálogo, publicado o no. Solo para /admin. */
+export function getAllProducts() {
   return prisma.product.findMany({
     orderBy: { sortOrder: "asc" },
     include: PRODUCT_INCLUDE,
   });
 }
 
+/** findFirst y no findUnique: el slug es único, pero `published` no lo es. */
 export function getProductBySlug(slug: string) {
-  return prisma.product.findUnique({
-    where: { slug },
+  return prisma.product.findFirst({
+    where: { slug, published: true },
     include: PRODUCT_INCLUDE,
   });
 }
 
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
+}
+
+/** Productos que aparecen en /arma-tu-cadena. */
+export function getCustomizableProducts() {
+  return prisma.product.findMany({
+    where: { customizable: true, available: true, published: true },
+    orderBy: { sortOrder: "asc" },
+    include: PRODUCT_INCLUDE,
+  });
+}
+
+/** Cadenas y dijes sueltos son piezas de /arma-tu-cadena, no del catálogo general. */
+const BUILDER_CATEGORY_SLUGS = new Set(["cadenas", "dijes"]);
+
+export function inCatalog<T extends { category: { slug: string } }>(items: T[]): T[] {
+  return items.filter((item) => !BUILDER_CATEGORY_SLUGS.has(item.category.slug));
+}
+
+export function catalogCategories<T extends { slug: string }>(categories: T[]): T[] {
+  return categories.filter((category) => !BUILDER_CATEGORY_SLUGS.has(category.slug));
 }
 
 /**

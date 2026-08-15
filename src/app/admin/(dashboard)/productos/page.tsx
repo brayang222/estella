@@ -3,10 +3,10 @@ import { DeleteButton } from "@/components/admin/DeleteButton";
 import { OrderButtons } from "@/components/admin/OrderButtons";
 import { deleteProduct, moveProduct } from "@/lib/admin/products";
 import { formatPrice } from "@/lib/products";
-import { getProducts } from "@/lib/queries";
+import { getAllProducts } from "@/lib/queries";
 
 export default async function AdminProductsPage() {
-  const products = await getProducts();
+  const products = await getAllProducts();
 
   return (
     <div className="grid gap-6">
@@ -59,13 +59,21 @@ export default async function AdminProductsPage() {
                 </p>
               </div>
               <span className="text-[13px] whitespace-nowrap">{formatPrice(product.price)}</span>
-              <span
-                className={`text-[10px] tracking-[0.15em] uppercase ${
-                  product.available ? "text-muted" : "text-red-700"
-                }`}
-              >
-                {product.available ? "Disponible" : "Agotado"}
-              </span>
+              {/* Sin publicar manda sobre disponible/agotado: si el visitante
+                  no ve la pieza, que tenga stock o no da igual. */}
+              {product.published ? (
+                <span
+                  className={`text-[10px] tracking-[0.15em] uppercase ${
+                    product.available ? "text-muted" : "text-red-700"
+                  }`}
+                >
+                  {product.available ? "Disponible" : "Agotado"}
+                </span>
+              ) : (
+                <span className="bg-ink/8 px-2 py-1 text-[10px] tracking-[0.15em] text-ink/60 uppercase">
+                  Sin publicar
+                </span>
+              )}
               <div className="flex items-center gap-4">
                 <Link
                   href={`/admin/productos/${product.id}`}

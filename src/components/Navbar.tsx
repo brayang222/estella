@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { isLocalEnv } from "@/lib/env";
 import { useCart, useFavorites } from "@/lib/store";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waLink } from "@/lib/whatsapp";
@@ -14,7 +15,12 @@ const sectionLinks = [
   { href: "/#historia", id: "historia", label: "Estudio" },
 ];
 
-const links = [...sectionLinks, { href: "/blog", id: "blog", label: "Blog" }];
+const links = [
+  ...sectionLinks,
+  // Todavía no lista para clientes reales — ver src/lib/env.ts.
+  ...(isLocalEnv ? [{ href: "/arma-tu-cadena", id: "arma-tu-cadena", label: "Arma tu cadena" }] : []),
+  { href: "/blog", id: "blog", label: "Blog" },
+];
 
 function AccountIcon() {
   return (
@@ -121,8 +127,12 @@ export function Navbar() {
     return () => observer.disconnect();
   }, [pathname]);
 
-  const isActive = (id: string) =>
-    id === "blog" ? pathname.startsWith("/blog") : pathname === "/" && activeId === id;
+  const isActive = (id: string) => {
+    const link = links.find((l) => l.id === id);
+    if (!link) return false;
+    if (sectionLinks.some((s) => s.id === id)) return pathname === "/" && activeId === id;
+    return pathname.startsWith(link.href);
+  };
 
   return (
     <nav

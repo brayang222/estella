@@ -1,12 +1,17 @@
 export const SITE_NAME = "Estella";
 
-// Dominio real de Vercel mientras no haya un dominio propio conectado. Se
-// puede sobreescribir con NEXT_PUBLIC_SITE_URL (ej. al conectar
-// estella.com.co) sin tocar código — mismo patrón que NEXT_PUBLIC_IMAGE_BASE_URL.
-// metadataBase usa esto para armar og:image y las demás URLs absolutas: si
-// apunta a un dominio que no sirve el sitio, WhatsApp/Facebook/iMessage no
-// pueden descargar la imagen de vista previa y el link se comparte sin ella.
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "https://estella-co.vercel.app";
+/**
+ * Dominio público del sitio. Escrito en el código a propósito, sin leer
+ * NEXT_PUBLIC_SITE_URL: al ser una variable `NEXT_PUBLIC_*` su valor se
+ * incrusta durante el build, así que un despliegue con la variable mal puesta
+ * (ausente, en otro entorno, en otro proyecto o con el dominio de Vercel)
+ * congelaba el dominio equivocado en canonical, og:image y sitemap — que fue
+ * justo lo que hizo que Google rechazara las 25 URLs del sitemap.
+ *
+ * El dominio es uno solo y no cambia; si algún día cambia, se edita esta línea
+ * y listo. Con `www` porque es a donde resuelve el dominio hoy.
+ */
+export const SITE_URL = "https://www.estella.com.co";
 
 export const SITE_DESCRIPTION =
   "Accesorios hechos a mano en Colombia: manillas, collares, anillos y aretes. Asesoría personalizada por WhatsApp y envíos asegurados a todo el país.";

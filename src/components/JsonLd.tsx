@@ -20,12 +20,18 @@ export async function OrganizationJsonLd() {
     <JsonLdScript
       data={{
         "@context": "https://schema.org",
-        "@type": "Organization",
+        // OnlineStore (subtipo de Organization) en vez de Organization a secas:
+        // le dice a Google que esto es una tienda, no una entidad genérica —
+        // "estella" solo es un nombre muy disputado (ciudad, videojuego,
+        // nombre de pila), así que cada señal de qué somos cuenta.
+        "@type": "OnlineStore",
         name: SITE_NAME,
         url: SITE_URL,
+        logo: `${SITE_URL}/logo/estella-lockup.svg`,
         description: SITE_DESCRIPTION,
         sameAs: [settings.instagramUrl, settings.tiktokUrl],
         telephone: `+${settings.whatsappNumber}`,
+        areaServed: { "@type": "Country", name: "Colombia" },
       }}
     />
   );
@@ -61,13 +67,33 @@ export function ProductsJsonLd({ products }: { products: Product[] }) {
   );
 }
 
-export function ProductJsonLd({ product }: { product: Product }) {
+export function ProductJsonLd({
+  product,
+  reviews,
+}: {
+  product: Product;
+  reviews: { average: number | null; count: number };
+}) {
   return (
     <JsonLdScript
       data={{
         "@context": "https://schema.org",
         "@type": "Product",
         name: product.name,
+        // Solo cuando hay reseñas de verdad: un aggregateRating con 0 votos
+        // es dato estructurado inválido y Google lo penaliza en vez de
+        // mostrar estrellas.
+        ...(reviews.count > 0 && reviews.average !== null
+          ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: Number(reviews.average.toFixed(1)),
+                reviewCount: reviews.count,
+                bestRating: 5,
+                worstRating: 1,
+              },
+            }
+          : {}),
         description: product.description,
         category: product.category.label,
         sku: product.referenceCode,
@@ -78,9 +104,40 @@ export function ProductJsonLd({ product }: { product: Product }) {
           "@type": "Offer",
           price: product.price,
           priceCurrency: "COP",
-          availability: "https://schema.org/InStock",
+          availability: product.available
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
           url: `${SITE_URL}/producto/${product.slug}`,
         },
+      }}
+    />
+  );
+}
+
+/**
+ * Migas de la ficha de producto. Google las usa para mostrar la ruta
+ * ("Estella › Manillas › …") en vez de la URL cruda en los resultados. Debe
+ * coincidir con las migas visibles de la página — por eso la categoría apunta
+ * al catálogo filtrado y no al ancla del inicio.
+ */
+export function ProductBreadcrumbJsonLd({ product }: { product: Product }) {
+  const crumbs = [
+    { name: "Inicio", url: SITE_URL },
+    { name: product.category.label, url: `${SITE_URL}/productos/${product.category.slug}` },
+    { name: product.name, url: `${SITE_URL}/producto/${product.slug}` },
+  ];
+
+  return (
+    <JsonLdScript
+      data={{
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: crumbs.map((crumb, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          name: crumb.name,
+          item: crumb.url,
+        })),
       }}
     />
   );

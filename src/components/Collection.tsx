@@ -39,8 +39,7 @@ export function Collection({
   );
   const previewProducts = visibleProducts.slice(0, MAX_PREVIEW);
 
-  const seeAllHref =
-    category === ALL_CATEGORIES ? "/productos" : `/productos?categoria=${category}`;
+  const seeAllHref = category === ALL_CATEGORIES ? "/productos" : `/productos/${category}`;
 
   return (
     <section id="coleccion" className="grid gap-[clamp(26px,3.4vw,44px)] py-section-y px-gutter">

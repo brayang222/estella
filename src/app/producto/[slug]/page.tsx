@@ -1,11 +1,17 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ProductGallery } from "@/components/ProductGallery";
-import { ProductJsonLd } from "@/components/JsonLd";
+import { ProductBreadcrumbJsonLd, ProductJsonLd } from "@/components/JsonLd";
 import { ProductOrderPanel } from "@/components/ProductOrderPanel";
+import { RecentlyViewed } from "@/components/RecentlyViewed";
+import { RelatedPosts } from "@/components/RelatedPosts";
 import { RelatedProducts } from "@/components/RelatedProducts";
+import { ReviewsSection } from "@/components/ReviewsSection";
+import { RecordRecentlyViewed } from "@/lib/recently-viewed";
 import Link from "next/link";
 import { getProductBySlug, getProducts } from "@/lib/queries";
+import { getReviewStats } from "@/lib/reviews/queries";
+import { postsForCategory } from "@/lib/blog";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -42,6 +48,8 @@ export default async function ProductPage({ params }: Props) {
   const [product, allProducts] = await Promise.all([getProductBySlug(slug), getProducts()]);
   if (!product) notFound();
 
+  const reviews = await getReviewStats(product.id);
+
   const index = allProducts.findIndex((p) => p.slug === product.slug);
   const previous = index > 0 ? allProducts[index - 1] : undefined;
   const next = index >= 0 && index < allProducts.length - 1 ? allProducts[index + 1] : undefined;
@@ -51,7 +59,9 @@ export default async function ProductPage({ params }: Props) {
 
   return (
     <article className="grid gap-x-[clamp(40px,6vw,80px)] gap-y-[clamp(36px,5vw,56px)] pt-[clamp(120px,15vw,168px)] pb-[clamp(88px,11vw,140px)] px-gutter md:grid-cols-2 md:items-start">
-      <ProductJsonLd product={product} />
+      <ProductJsonLd product={product} reviews={reviews} />
+      <ProductBreadcrumbJsonLd product={product} />
+      <RecordRecentlyViewed slug={product.slug} />
 
       {/* No scroll-reveal wrappers here: this content is above the fold on
           arrival, and starting it at opacity 0 made the view transition morph
@@ -62,7 +72,7 @@ export default async function ProductPage({ params }: Props) {
             Inicio
           </Link>
           <span>/</span>
-          <Link href="/#coleccion" className="hover:text-gold">
+          <Link href={`/productos/${product.category.slug}`} className="hover:text-gold">
             {product.category.label}
           </Link>
           <span>/</span>
@@ -94,6 +104,9 @@ export default async function ProductPage({ params }: Props) {
       <ProductOrderPanel product={product} related={related.slice(0, 3)} />
 
       <RelatedProducts products={related} />
+      <RelatedPosts posts={postsForCategory(product.category.slug)} />
+      <ReviewsSection productId={product.id} slug={product.slug} />
+      <RecentlyViewed products={allProducts} exclude={product.slug} />
     </article>
   );
 }

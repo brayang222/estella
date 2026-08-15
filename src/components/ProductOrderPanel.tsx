@@ -4,9 +4,11 @@ import { useRef, useState } from "react";
 import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
 import { PlaceholderImage } from "./PlaceholderImage";
+import { SizeGuide } from "./SizeGuide";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { useCart } from "@/lib/store";
 import { LOW_STOCK_THRESHOLD, SOCIAL_PROOF_THRESHOLD, formatPrice, type Product } from "@/lib/products";
+import { recordRestockRequest } from "@/lib/restock";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
@@ -127,6 +129,8 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
         </div>
       )}
 
+      <SizeGuide categorySlug={product.category.slug} />
+
       <div className="h-px bg-ink/12" />
 
       {product.available ? (
@@ -244,6 +248,7 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
           href={waLink(waRestockMessage(product.name), settings.whatsappNumber)}
           target="_blank"
           rel="noopener"
+          onClick={() => recordRestockRequest(product.slug)}
           className="block bg-ink py-4 text-center text-[11px] tracking-[0.22em] text-paper uppercase transition-[background-color,transform] duration-[400ms] ease-estella hover:-translate-y-0.5 hover:bg-gold"
         >
           Avisarme cuando vuelva
@@ -299,6 +304,7 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
             href={waLink(waRestockMessage(product.name), settings.whatsappNumber)}
             target="_blank"
             rel="noopener"
+            onClick={() => recordRestockRequest(product.slug)}
             className="flex shrink-0 cursor-pointer items-center gap-2 bg-ink px-4 py-2.5 text-[10px] tracking-[0.15em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"
           >
             <WhatsAppIcon className="size-[18px] text-white" />

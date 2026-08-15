@@ -2,48 +2,101 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import path from "node:path";
+import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "./auth";
 import { slugify } from "./slugify";
+import { saveImageFile, deleteImageFile } from "./image-utils";
 
-export type ProductFormState = { error?: string };
+/** Código de error de Postgres/Prisma para violación de índice único. */
+const UNIQUE_CONSTRAINT = "P2002";
 
-const IMAGE_SLOTS = [1, 2, 3, 4] as const;
-const PRODUCTS_DIR = path.join(process.cwd(), "public", "products");
-const EXTENSION_BY_MIME: Record<string, string> = {
-  "image/webp": "webp",
-  "image/jpeg": "jpg",
-  "image/png": "png",
+function uniqueFieldConflict(error: unknown): string | null {
+  if (!(error instanceof Prisma.PrismaClientKnownRequestError) || error.code !== UNIQUE_CONSTRAINT) {
+    return null;
+  }
+  // Prisma "clásico" pone el campo en meta.target. El adapter de Neon (el que
+  // usa este proyecto) no llena target — el campo real queda anidado en
+  // meta.driverAdapterError.cause.constraint.fields, entre comillas dobles
+  // (así lo devuelve Postgres). Se prueban ambas formas por si el adapter
+  // cambia de shape en una futura versión.
+  const target = error.meta?.target;
+  if (Array.isArray(target) && target.length > 0) return String(target[0]);
+
+  const meta = error.meta as
+    | { driverAdapterError?: { cause?: { constraint?: { fields?: unknown } } } }
+    | undefined;
+  const fields = meta?.driverAdapterError?.cause?.constraint?.fields;
+  if (Array.isArray(fields) && fields.length > 0) {
+    return String(fields[0]).replace(/^"+|"+$/g, "");
+  }
+  return null;
+}
+
+/** Mensaje legible cuando falla el guardado — el real si se puede identificar, si no, el crudo de Prisma. */
+function saveErrorMessage(error: unknown, fallback: string): string {
+  const field = uniqueFieldConflict(error);
+  if (field === "referenceCode") return "Ya existe otra pieza con esa referencia.";
+  if (field === "slug") return "Ya existe otra pieza con ese nombre.";
+  if (field) return `Ya existe otra pieza con ese ${field}.`;
+  // El mensaje de Prisma trae el volcado completo del invocation (archivo,
+  // línea, snippet de código); la razón real siempre queda en la última
+  // línea no vacía, así que solo esa es la que vale la pena mostrar.
+  const raw = error instanceof Error ? error.message : String(error);
+  const lines = raw.trim().split("\n");
+  const message = lines[lines.length - 1].trim();
+  return `${fallback}: ${message}`;
+}
+
+type FormValues = {
+  name: string;
+  categoryId: string;
+  referenceCode: string;
+  price: string;
+  tag: string;
+  description: string;
+  measurements: string;
+  stock: string;
+  available: boolean;
+  published: boolean;
+  customizable: boolean;
+  maxCharms: string;
+  dropPointX: string;
+  dropPointY: string;
 };
 
-async function saveImageFile(file: File, slug: string, order: number): Promise<string> {
-  const ext = EXTENSION_BY_MIME[file.type];
-  if (!ext) throw new Error("Formato de imagen no soportado (usa WEBP, JPG o PNG).");
+export type ProductFormState = {
+  error?: string;
+  values?: FormValues;
+  attempt?: number;
+};
 
-  await mkdir(PRODUCTS_DIR, { recursive: true });
-  const filename = `${slug}-${order}-${Date.now()}.${ext}`;
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(PRODUCTS_DIR, filename), buffer);
-  return `/products/${filename}`;
+function extractFormValues(formData: FormData): FormValues {
+  return {
+    name: String(formData.get("name") ?? ""),
+    categoryId: String(formData.get("categoryId") ?? ""),
+    referenceCode: String(formData.get("referenceCode") ?? ""),
+    price: String(formData.get("price") ?? ""),
+    tag: String(formData.get("tag") ?? ""),
+    description: String(formData.get("description") ?? ""),
+    measurements: String(formData.get("measurements") ?? ""),
+    stock: String(formData.get("stock") ?? ""),
+    available: formData.get("available") === "on",
+    published: formData.get("published") === "on",
+    customizable: formData.get("customizable") === "on",
+    maxCharms: String(formData.get("maxCharms") ?? "1"),
+    dropPointX: String(formData.get("dropPointX") ?? ""),
+    dropPointY: String(formData.get("dropPointY") ?? ""),
+  };
 }
 
-async function deleteImageFile(url: string) {
-  // Only ever deletes local /public files — remote CDN URLs (once
-  // NEXT_PUBLIC_IMAGE_BASE_URL is set) have nothing on this disk to remove.
-  if (!url.startsWith("/products/")) return;
-  try {
-    await unlink(path.join(process.cwd(), "public", url));
-  } catch {
-    // Already gone — fine.
-  }
-}
+const IMAGE_SLOTS = [1, 2, 3, 4] as const;
 
 function revalidateStorefront(slug?: string) {
   revalidatePath("/admin/productos");
   revalidatePath("/");
   revalidatePath("/productos");
+  revalidatePath("/arma-tu-cadena");
   revalidatePath("/bolsa");
   revalidatePath("/favoritos");
   if (slug) revalidatePath(`/producto/${slug}`);
@@ -60,6 +113,15 @@ function readProductFields(formData: FormData) {
   const measurements = String(formData.get("measurements") ?? "").trim();
   const stockRaw = String(formData.get("stock") ?? "").trim();
   let available = formData.get("available") === "on";
+  const published = formData.get("published") === "on";
+  const customizable = formData.get("customizable") === "on";
+  const maxCharmsRaw = String(formData.get("maxCharms") ?? "").trim();
+  const maxCharms = maxCharmsRaw !== "" && Number.isInteger(Number(maxCharmsRaw)) && Number(maxCharmsRaw) >= 1
+    ? Number(maxCharmsRaw) : 1;
+  const dpXRaw = String(formData.get("dropPointX") ?? "").trim();
+  const dpYRaw = String(formData.get("dropPointY") ?? "").trim();
+  const dropPointX = dpXRaw !== "" ? Number(dpXRaw) : null;
+  const dropPointY = dpYRaw !== "" ? Number(dpYRaw) : null;
 
   if (!name || !categoryId || !referenceCode || !description) {
     return { error: "Nombre, categoría, referencia y descripción son obligatorios." } as const;
@@ -92,18 +154,25 @@ function readProductFields(formData: FormData) {
       measurements: measurements || null,
       stock,
       available,
+      published,
+      customizable,
+      maxCharms,
+      dropPointX,
+      dropPointY,
     },
   } as const;
 }
 
 export async function createProduct(
-  _prevState: ProductFormState,
+  prevState: ProductFormState,
   formData: FormData
 ): Promise<ProductFormState> {
   await requireAdmin();
 
   const fields = readProductFields(formData);
-  if ("error" in fields) return fields;
+  const values = extractFormValues(formData);
+  const attempt = (prevState.attempt ?? 0) + 1;
+  if ("error" in fields) return { ...fields, values, attempt };
 
   const slug = slugify(fields.data.name);
   const count = await prisma.product.count();
@@ -118,8 +187,8 @@ export async function createProduct(
         sortOrder: count,
       },
     });
-  } catch {
-    return { error: "Ya existe una pieza con ese nombre o esa referencia." };
+  } catch (error) {
+    return { error: saveErrorMessage(error, "No se pudo crear la pieza"), values, attempt };
   }
 
   for (const order of IMAGE_SLOTS) {
@@ -130,28 +199,30 @@ export async function createProduct(
   }
 
   revalidateStorefront();
-  redirect("/admin/productos");
+  redirect(`/admin/productos/${product.id}`);
 }
 
 export async function updateProduct(
   id: string,
-  _prevState: ProductFormState,
+  prevState: ProductFormState,
   formData: FormData
 ): Promise<ProductFormState> {
   await requireAdmin();
 
   const fields = readProductFields(formData);
-  if ("error" in fields) return fields;
+  const values = extractFormValues(formData);
+  const attempt = (prevState.attempt ?? 0) + 1;
+  if ("error" in fields) return { ...fields, values, attempt };
 
   const existing = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
-  if (!existing) return { error: "Esta pieza ya no existe." };
+  if (!existing) return { error: "Esta pieza ya no existe.", values, attempt };
 
   try {
     // Las fotos se gestionan aparte (ver addProductImage / moveProductImage),
     // porque reordenarlas no debería obligar a reenviar todo el formulario.
     await prisma.product.update({ where: { id }, data: fields.data });
-  } catch {
-    return { error: "Ya existe otra pieza con esa referencia." };
+  } catch (error) {
+    return { error: saveErrorMessage(error, "No se pudo guardar la pieza"), values, attempt };
   }
 
   revalidateStorefront(existing.slug);
@@ -222,30 +293,6 @@ async function renumberImages(orderedIds: string[]) {
   ]);
 }
 
-export async function addProductImage(productId: string, formData: FormData) {
-  await requireAdmin();
-
-  const file = formData.get("image");
-  if (!(file instanceof File) || file.size === 0) return;
-
-  const product = await prisma.product.findUnique({
-    where: { id: productId },
-    include: { images: { orderBy: { order: "asc" } } },
-  });
-  if (!product) return;
-  if (product.images.length >= IMAGE_SLOTS.length) return;
-
-  // Primer hueco libre entre 1 y 4.
-  const used = new Set(product.images.map((image) => image.order));
-  const slot = IMAGE_SLOTS.find((order) => !used.has(order));
-  if (!slot) return;
-
-  const url = await saveImageFile(file, product.slug, slot);
-  await prisma.productImage.create({ data: { productId, url, order: slot } });
-
-  revalidatePath(`/admin/productos/${productId}`);
-  revalidateStorefront(product.slug);
-}
 
 export async function removeProductImage(imageId: string) {
   await requireAdmin();

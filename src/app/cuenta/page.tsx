@@ -3,7 +3,10 @@ import Link from "next/link";
 import { signOut } from "@/auth";
 import { prisma } from "@/lib/db";
 import { requireCustomer } from "@/lib/account/session";
+import { formatPrice } from "@/lib/products";
 import { ProfileForm } from "./ProfileForm";
+
+const dateFormat = new Intl.DateTimeFormat("es-CO", { day: "2-digit", month: "short", year: "numeric" });
 
 export const metadata: Metadata = {
   title: "Mi cuenta",
@@ -15,9 +18,14 @@ const cardClass = "grid gap-2.5 border border-ink/12 p-6 transition-colors durat
 export default async function CuentaPage() {
   const customer = await requireCustomer();
 
-  const [favoriteCount, cartLines] = await Promise.all([
+  const [favoriteCount, cartLines, orders] = await Promise.all([
     prisma.favorite.count({ where: { userId: customer.id } }),
     prisma.cartItem.findMany({ where: { userId: customer.id }, select: { quantity: true } }),
+    prisma.order.findMany({
+      where: { userId: customer.id },
+      orderBy: { createdAt: "desc" },
+      include: { items: true },
+    }),
   ]);
   const bagCount = cartLines.reduce((total, line) => total + line.quantity, 0);
   const firstName = customer.name?.trim().split(" ")[0];
@@ -60,6 +68,29 @@ export default async function CuentaPage() {
           </Link>
         )}
       </div>
+
+      {orders.length > 0 && (
+        <div className="grid gap-6 border-t border-ink/12 pt-[clamp(26px,3vw,40px)]">
+          <h2 className="m-0 font-display text-[22px]">Mis pedidos</h2>
+          <div className="grid gap-4">
+            {orders.map((order) => (
+              <div key={order.id} className="grid gap-2 border border-ink/12 p-5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <span className="text-[12px] text-muted">{dateFormat.format(order.createdAt)}</span>
+                  <span className="text-[14px]">{formatPrice(order.total)}</span>
+                </div>
+                <ul className="m-0 grid list-none gap-1 p-0">
+                  {order.items.map((item) => (
+                    <li key={item.id} className="text-[13px] text-muted">
+                      {item.quantity} × {item.name}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-6 border-t border-ink/12 pt-[clamp(26px,3vw,40px)]">
         <div className="grid gap-2">
