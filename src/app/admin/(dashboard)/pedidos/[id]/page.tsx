@@ -5,7 +5,6 @@ import { OrderItemsManager } from "@/components/admin/OrderItemsManager";
 import { RequestReview } from "@/components/admin/RequestReview";
 import { deleteOrder } from "@/lib/admin/orders";
 import { prisma } from "@/lib/db";
-import { SITE_URL } from "@/lib/site";
 
 const dateFormat = new Intl.DateTimeFormat("es-CO", {
   day: "2-digit",
@@ -60,10 +59,7 @@ export default async function OrderDetailPage({ params }: Props) {
           // Sin producto vivo no hay ficha a la que enlazar: la pieza se
           // borró del catálogo y el pedido solo guarda su nombre.
           .filter((item) => item.product)
-          .map((item) => ({
-            name: item.name,
-            url: `${SITE_URL}/producto/${item.product!.slug}#resenas`,
-          }))}
+          .map((item) => ({ name: item.name, slug: item.product!.slug }))}
       />
 
       <Link

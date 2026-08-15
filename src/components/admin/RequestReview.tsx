@@ -1,5 +1,6 @@
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
-import { waLink, waReviewMessage } from "@/lib/whatsapp";
+import { SITE_URL } from "@/lib/site";
+import { reviewPageUrl, waLink, waReviewMessage } from "@/lib/whatsapp";
 
 /**
  * Botón para pedirle la reseña a la clienta por WhatsApp una vez entregado el
@@ -14,7 +15,7 @@ export function RequestReview({
 }: {
   customerName: string | null;
   phone: string | null;
-  items: { name: string; url: string }[];
+  items: { name: string; slug: string }[];
 }) {
   return (
     <div className="grid gap-2 border border-ink/12 p-5">
@@ -33,7 +34,14 @@ export function RequestReview({
       ) : (
         <>
           <a
-            href={waLink(waReviewMessage(customerName, items), phone)}
+            href={waLink(
+              waReviewMessage(
+                customerName,
+                items,
+                reviewPageUrl(SITE_URL, items.map((item) => item.slug))
+              ),
+              phone
+            )}
             target="_blank"
             rel="noopener"
             className="flex w-fit items-center gap-2.5 bg-ink px-5 py-2.5 text-[11px] tracking-[0.15em] text-paper uppercase transition-colors duration-300 ease-out hover:bg-gold"
@@ -42,8 +50,8 @@ export function RequestReview({
             Pedir reseña
           </a>
           <p className="m-0 text-[12px] text-muted">
-            Abre el chat con el mensaje listo y un enlace por pieza. Las reseñas llegan pendientes
-            de aprobación.
+            Abre el chat con el mensaje listo y un enlace que ya trae marcadas las piezas de
+            este pedido. Las reseñas llegan pendientes de aprobación.
           </p>
         </>
       )}

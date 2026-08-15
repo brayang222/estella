@@ -27,11 +27,17 @@ export function waRestockMessage(name: string) {
  */
 export function waReviewMessage(
   customerName: string | null | undefined,
-  items: { name: string; url: string }[]
+  items: { name: string }[],
+  url: string
 ) {
   const greeting = customerName ? `Hola ${customerName}` : "Hola";
-  const list = items.map((item) => `• ${item.name}\n${item.url}`).join("\n\n");
-  return `${greeting}, ¡gracias por tu compra en Estella! ✨\n\n¿Nos cuentas cómo te fue? Puedes dejar tu reseña aquí:\n\n${list}\n\nToma menos de un minuto y nos ayuda muchísimo a seguir creciendo.`;
+  const list = items.map((item) => `• ${item.name}`).join("\n");
+  return `${greeting}, ¡gracias por tu compra en Estella! ✨\n\n¿Nos cuentas cómo te fue?\n\n${list}\n\nAquí puedes calificarlas todas de una vez:\n${url}\n\nToma menos de un minuto y nos ayuda muchísimo a seguir creciendo.`;
+}
+
+/** Enlace a /calificar con las piezas del pedido ya marcadas. */
+export function reviewPageUrl(siteUrl: string, slugs: string[]) {
+  return `${siteUrl}/calificar?piezas=${encodeURIComponent(slugs.join(","))}`;
 }
 
 export function waFavoritesMessage(items: { name: string; price: string }[]) {
