@@ -45,7 +45,7 @@ export const posts: BlogPost[] = [
     coverAngle: 118,
     coverTone: 1,
     coverImage: "/lookbook/manillas-stack-detail.webp",
-    categorySlug: "manillas",
+    categorySlug: "pulseras",
     content: [
       "Las manillas artesanales se reconocen por los detalles que no salen en la foto. En una vitrina o en una pantalla, dos piezas pueden parecer idénticas: el mismo brillo, el mismo tejido, el mismo precio aproximado. La diferencia aparece al mes de uso, y para entonces ya la compraste.",
       "Mira primero el cierre. Es la parte que más se manipula y la primera que falla en una pieza mal hecha. Un broche que se siente flojo, que cuesta cerrar o que se abre solo al engancharse con la ropa no es un detalle menor: es el punto donde vas a perder la manilla. En una pieza bien armada el cierre se siente firme y hace un clic definido.",

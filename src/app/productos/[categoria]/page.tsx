@@ -1,8 +1,14 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ProductsGrid } from "@/components/ProductsGrid";
 import { ProductsJsonLd } from "@/components/JsonLd";
-import { catalogCategories, getCategories, getProducts, inCatalog } from "@/lib/queries";
+import {
+  catalogCategories,
+  getCategories,
+  getCategoryByOldSlug,
+  getProducts,
+  inCatalog,
+} from "@/lib/queries";
 import { OG_IMAGE } from "@/lib/site";
 
 type Props = {
@@ -66,7 +72,12 @@ export default async function CategoriaPage({ params }: Props) {
     getProducts(),
     getCategories(),
   ]);
-  if (!category) notFound();
+  if (!category) {
+    // Puede ser el slug anterior de una categoría renombrada.
+    const renombrada = await getCategoryByOldSlug(categoria);
+    if (renombrada) permanentRedirect(`/productos/${renombrada.slug}`);
+    notFound();
+  }
 
   const products = inCatalog(allProducts);
 

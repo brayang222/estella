@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "./auth";
+import { slugify } from "./slugify";
 
 export type CategoryFormState = { error?: string };
 
@@ -56,7 +57,27 @@ export async function updateCategory(
   if (!label) return { error: "El nombre es obligatorio." };
   if (!Number.isFinite(sortOrder)) return { error: "El orden debe ser un número." };
 
-  await prisma.category.update({ where: { id }, data: { label, sortOrder } });
+  // Igual que en productos: la URL sigue al nombre y la vieja queda archivada
+  // para redirigir, así renombrar desde el admin no rompe enlaces indexados.
+  const actual = await prisma.category.findUnique({ where: { id }, select: { slug: true } });
+  if (!actual) return { error: "Esta categoría ya no existe." };
+  const nuevoSlug = slugify(label);
+  const cambiaSlug = nuevoSlug !== actual.slug;
+
+  await prisma.$transaction(async (tx) => {
+    if (cambiaSlug) {
+      await tx.categorySlugHistory.deleteMany({ where: { slug: nuevoSlug } });
+      await tx.categorySlugHistory.upsert({
+        where: { slug: actual.slug },
+        update: { categoryId: id },
+        create: { slug: actual.slug, categoryId: id },
+      });
+    }
+    await tx.category.update({
+      where: { id },
+      data: cambiaSlug ? { label, sortOrder, slug: nuevoSlug } : { label, sortOrder },
+    });
+  });
 
   revalidateCategoryPages();
   redirect("/admin/categorias");

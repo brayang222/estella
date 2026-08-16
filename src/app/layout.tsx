@@ -34,7 +34,7 @@ export const metadata: Metadata = {
     "accesorios hechos a mano",
     "joyería artesanal Colombia",
     "accesorios artesanales",
-    "manillas para regalo",
+    "pulseras para regalo",
     "collares minimalistas",
     "anillos minimalistas",
     "accesorios Estella",

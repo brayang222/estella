@@ -55,27 +55,6 @@ const nextConfig: NextConfig = {
 
   async redirects() {
     return [
-      // Piezas renombradas a su nombre comercial real. Las URLs viejas ya
-      // estaban indexadas, así que se redirigen en vez de dejarlas en 404:
-      // el 301 le dice a Google que la página se mudó y le traspasa lo que
-      // había acumulado. Se pueden retirar cuando Search Console deje de
-      // reportar tráfico hacia ellas (meses, no semanas).
-      ...(
-        [
-          ["manilla-tenis-clasica", "collar-karina-corazon"],
-          ["manilla-tenis-corazones", "pulsera-karina-circular"],
-          ["collar-corazon-rojo", "collar-corazon"],
-          ["manilla-tenis-piedra-de-color", "pulsera-tennis"],
-          ["collar-abrazo", "collar-pareja"],
-          ["manilla-dije-corazones", "pulsera-corazones-fantasiosos"],
-          ["manilla-eslabon", "pulsera-gucci"],
-          ["manilla-cuentas-medallon", "pulsera-san-benito-tres-oros"],
-        ] as const
-      ).map(([viejo, nuevo]) => ({
-        source: `/producto/${viejo}`,
-        destination: `/producto/${nuevo}`,
-        permanent: true,
-      })),
       {
         source: "/productos",
         has: [{ type: "query", key: "categoria", value: "(?<categoria>.*)" }],

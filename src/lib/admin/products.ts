@@ -221,15 +221,37 @@ export async function updateProduct(
   const existing = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
   if (!existing) return { error: "Esta pieza ya no existe.", values, attempt };
 
+  // Al renombrar, la URL sigue al nombre y la vieja queda en el historial: la
+  // ficha la usa para redirigir en vez de dar 404. Así renombrar desde el
+  // admin nunca rompe un enlace ya indexado, sin tocar código ni desplegar.
+  const nuevoSlug = slugify(fields.data.name);
+  const cambiaSlug = nuevoSlug !== existing.slug;
+
   try {
     // Las fotos se gestionan aparte (ver addProductImage / moveProductImage),
     // porque reordenarlas no debería obligar a reenviar todo el formulario.
-    await prisma.product.update({ where: { id }, data: fields.data });
+    await prisma.$transaction(async (tx) => {
+      if (cambiaSlug) {
+        // Si el slug nuevo fue de esta u otra pieza antes, se retira del
+        // historial: si no, quedaría redirigiendo a sí mismo en bucle.
+        await tx.productSlugHistory.deleteMany({ where: { slug: nuevoSlug } });
+        await tx.productSlugHistory.upsert({
+          where: { slug: existing.slug },
+          update: { productId: id },
+          create: { slug: existing.slug, productId: id },
+        });
+      }
+      await tx.product.update({
+        where: { id },
+        data: cambiaSlug ? { ...fields.data, slug: nuevoSlug } : fields.data,
+      });
+    });
   } catch (error) {
     return { error: saveErrorMessage(error, "No se pudo guardar la pieza"), values, attempt };
   }
 
   revalidateStorefront(existing.slug);
+  if (cambiaSlug) revalidateStorefront(nuevoSlug);
   redirect("/admin/productos");
 }
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { ProductGallery } from "@/components/ProductGallery";
 import { ProductBreadcrumbJsonLd, ProductJsonLd } from "@/components/JsonLd";
 import { ProductOrderPanel } from "@/components/ProductOrderPanel";
@@ -9,7 +9,7 @@ import { RelatedProducts } from "@/components/RelatedProducts";
 import { ReviewsSection } from "@/components/ReviewsSection";
 import { RecordRecentlyViewed } from "@/lib/recently-viewed";
 import Link from "next/link";
-import { getProductBySlug, getProducts } from "@/lib/queries";
+import { getProductByOldSlug, getProductBySlug, getProducts } from "@/lib/queries";
 import { getReviewStats } from "@/lib/reviews/queries";
 import { postsForCategory } from "@/lib/blog";
 
@@ -46,7 +46,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
   const [product, allProducts] = await Promise.all([getProductBySlug(slug), getProducts()]);
-  if (!product) notFound();
+  if (!product) {
+    // Puede ser una URL vieja de una pieza renombrada: se redirige a la
+    // actual en vez de dar 404. El historial lo llena /admin al guardar.
+    const renombrada = await getProductByOldSlug(slug);
+    if (renombrada) permanentRedirect(`/producto/${renombrada.slug}`);
+    notFound();
+  }
 
   const reviews = await getReviewStats(product.id);
 

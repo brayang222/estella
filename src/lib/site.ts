@@ -14,7 +14,7 @@ export const SITE_NAME = "Estella";
 export const SITE_URL = "https://www.estella.com.co";
 
 export const SITE_DESCRIPTION =
-  "Accesorios hechos a mano en Colombia: manillas, collares, anillos y aretes. Asesoría personalizada por WhatsApp y envíos asegurados a todo el país.";
+  "Accesorios hechos a mano en Colombia: pulseras, collares, anillos y aretes. Asesoría personalizada por WhatsApp y envíos asegurados a todo el país.";
 
 // Instagram, TikTok y el número de WhatsApp ya no viven aquí: se editan en
 // /admin/ajustes. Ver src/lib/settings.ts.

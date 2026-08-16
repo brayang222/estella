@@ -92,13 +92,27 @@ model VerificationToken {
 }
 
 model Category {
-  id        String    @id @default(cuid())
-  slug      String    @unique
-  label     String
-  sortOrder Int       @default(0)
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  products  Product[]
+  id          String                @id @default(cuid())
+  slug        String                @unique
+  label       String
+  sortOrder   Int                   @default(0)
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+  products    Product[]
+  slugHistory CategorySlugHistory[]
+}
+
+/// Mismo mecanismo que ProductSlugHistory, para las páginas de categoría:
+/// renombrar "Manillas" a "Pulseras" cambia /productos/manillas por
+/// /productos/pulseras, y la vieja sigue redirigiendo sin tocar código.
+model CategorySlugHistory {
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([categoryId])
 }
 
 model Product {
@@ -126,6 +140,7 @@ model Product {
   restockRequests  RestockRequest[]
   reviews          Review[]
   orderItems       OrderItem[]
+  slugHistory      ProductSlugHistory[]
   placeholderLabel String
   sortOrder        Int              @default(0)
   /// Aparece en /arma-tu-cadena. Para cadenas guarda también el punto de caída del dije.
@@ -168,6 +183,20 @@ model CartItem {
 
   @@unique([userId, productId])
   @@index([userId])
+}
+
+/// Slugs que tuvo una pieza antes de renombrarse. La ficha los consulta para
+/// responder con una redirección permanente en vez de un 404, así una URL que
+/// Google ya indexó sigue llevando a la pieza aunque cambie de nombre. Se
+/// llena solo al guardar desde /admin — no hay que tocar código ni desplegar.
+model ProductSlugHistory {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([productId])
 }
 
 model ProductImage {

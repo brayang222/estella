@@ -7,7 +7,7 @@ import { OG_IMAGE } from "@/lib/site";
 export const metadata: Metadata = {
   title: "Todas las piezas",
   description:
-    "Catálogo completo de Estella: accesorios hechos a mano en Colombia — manillas, collares, anillos y aretes.",
+    "Catálogo completo de Estella: accesorios hechos a mano en Colombia — pulseras, collares, anillos y aretes.",
   alternates: { canonical: "/productos" },
   openGraph: {
     title: "Todas las piezas",

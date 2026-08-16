@@ -47,6 +47,27 @@ export function countPublishedProducts() {
   return prisma.product.count({ where: { published: true } });
 }
 
+/**
+ * Pieza a la que apuntaba un slug viejo, o null. Alimenta la redirección
+ * permanente de la ficha para que renombrar no rompa una URL indexada.
+ */
+export async function getProductByOldSlug(slug: string) {
+  const registro = await prisma.productSlugHistory.findUnique({
+    where: { slug },
+    select: { product: { select: { slug: true, published: true } } },
+  });
+  return registro?.product.published ? registro.product : null;
+}
+
+/** Categoría a la que apuntaba un slug viejo, o null. */
+export async function getCategoryByOldSlug(slug: string) {
+  const registro = await prisma.categorySlugHistory.findUnique({
+    where: { slug },
+    select: { category: { select: { slug: true } } },
+  });
+  return registro?.category ?? null;
+}
+
 export function getCategories() {
   return prisma.category.findMany({ orderBy: { sortOrder: "asc" } });
 }

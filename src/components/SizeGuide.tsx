@@ -3,13 +3,13 @@
 import { useRef } from "react";
 
 const GUIDES: Record<string, { title: string; steps: string[] }> = {
-  manillas: {
+  pulseras: {
     title: "Cómo medir tu muñeca",
     steps: [
-      "Rodea tu muñeca con una cinta métrica o un hilo, justo donde iría la manilla.",
+      "Rodea tu muñeca con una cinta métrica o un hilo, justo donde iría la pulsera.",
       "Marca dónde se junta el hilo con el punto de partida y mídelo con una regla.",
       "Súmale 1-1.5 cm para que caiga con soltura, no ajustada.",
-      "¿Entre dos medidas? Elige la mayor — siempre es más fácil ajustar una manilla grande que una corta.",
+      "¿Entre dos medidas? Elige la mayor — siempre es más fácil ajustar una pulsera grande que una corta.",
     ],
   },
   anillos: {
@@ -23,7 +23,7 @@ const GUIDES: Record<string, { title: string; steps: string[] }> = {
   },
 };
 
-/** Guía de tallas para categorías donde la medida importa (manillas, anillos). Null si la categoría no aplica. */
+/** Guía de tallas para categorías donde la medida importa (pulseras, anillos). Null si la categoría no aplica. */
 export function SizeGuide({ categorySlug }: { categorySlug: string }) {
   const guide = GUIDES[categorySlug];
   const dialogRef = useRef<HTMLDialogElement>(null);
