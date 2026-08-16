@@ -16,7 +16,7 @@ export function RelatedProducts({ products }: { products: Product[] }) {
       <div className="grid grid-cols-2 gap-x-[clamp(10px,1.6vw,24px)] gap-y-[clamp(16px,2.2vw,34px)] sm:grid-cols-3 lg:grid-cols-4">
         {products.map((product, index) => (
           <Reveal key={product.id} delay={staggerDelay(index)}>
-            <ProductCard product={product} />
+            <ProductCard product={product} morph={false} />
           </Reveal>
         ))}
       </div>

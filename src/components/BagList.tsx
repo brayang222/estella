@@ -8,6 +8,7 @@ import { useCart } from "@/lib/store";
 import { MAX_QUANTITY } from "@/lib/account/types";
 import { formatPrice, type Product } from "@/lib/products";
 import { setShippingDetails, useShippingDetails } from "@/lib/shipping-details";
+import { NewsletterForm } from "./NewsletterForm";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waCartMessage, waLink } from "@/lib/whatsapp";
 
@@ -49,6 +50,13 @@ export function BagList({ products }: { products: Product[] }) {
         >
           Ver las piezas
         </Link>
+
+        <div className="mt-4 grid justify-items-center gap-3 border-t border-ink/12 pt-6">
+          <p className="m-0 max-w-[38ch] text-[13px] leading-[1.7] text-muted text-pretty">
+            ¿Prefieres que te avisemos cuando lleguen piezas nuevas?
+          </p>
+          <NewsletterForm source="bolsa-vacia" />
+        </div>
       </div>
     );
   }

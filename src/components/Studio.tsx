@@ -36,6 +36,7 @@ export async function Studio() {
             tone={3}
             src="/lookbook/estudio-detalle.webp"
             alt="estudio — detalle de pieza"
+            sizes="(min-width: 660px) 50vw, 100vw"
           />
         </Curtain>
         <div className="grid gap-[clamp(18px,2.4vw,28px)]">

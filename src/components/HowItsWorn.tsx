@@ -47,6 +47,7 @@ export function HowItsWorn() {
                   tone={3}
                   src={step.src}
                   alt={step.label}
+                  sizes="(min-width: 820px) 33vw, (min-width: 560px) 50vw, 100vw"
                 />
               </div>
               <span className="text-[10px] tracking-[0.3em] text-gold">0{index + 1}</span>

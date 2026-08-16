@@ -224,6 +224,19 @@ model ProductImage {
   @@index([productId])
 }
 
+/// Contacto dejado por una visitante para enterarse de piezas nuevas. Es la
+/// captura de baja fricción: un campo, sin cuenta ni contraseña. La difusión
+/// se hace por WhatsApp, que es como Estella ya se comunica.
+model NewsletterSignup {
+  id        String   @id @default(cuid())
+  /// Solo dígitos, con indicativo. Único para no acumular duplicados.
+  phone     String   @unique
+  name      String?
+  /// Desde dónde se suscribió: sirve para saber qué punto del sitio capta.
+  source    String
+  createdAt DateTime @default(now())
+}
+
 /// Clic en "Avisarme cuando vuelva" de una pieza agotada. El pedido en sí
 /// sigue siendo por WhatsApp — esto solo le da al admin visibilidad de qué
 /// tanto se está pidiendo cada pieza sin depender de revisar los chats.

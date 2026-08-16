@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { NewsletterForm } from "./NewsletterForm";
 import { ProductCard } from "./ProductCard";
 import { Reveal } from "./Reveal";
 import { useFavorites } from "@/lib/store";
@@ -35,6 +36,13 @@ export function FavoritesList({ products }: { products: Product[] }) {
         >
           Ver las piezas
         </Link>
+
+        <div className="mt-4 grid justify-items-center gap-3 border-t border-ink/12 pt-6">
+          <p className="m-0 max-w-[38ch] text-[13px] leading-[1.7] text-muted text-pretty">
+            ¿Prefieres que te avisemos cuando lleguen piezas nuevas?
+          </p>
+          <NewsletterForm source="favoritos-vacios" />
+        </div>
       </div>
     );
   }

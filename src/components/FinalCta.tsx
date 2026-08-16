@@ -1,7 +1,18 @@
+import { NewsletterForm } from "./NewsletterForm";
 import { Reveal } from "./Reveal";
 import { staggerDelay } from "@/lib/stagger";
 import { getSiteSettings } from "@/lib/queries";
 import { waLink } from "@/lib/whatsapp";
+
+/** Una URL sirve como enlace social solo si apunta a una cuenta, no al dominio. */
+function esPerfil(url: string | null | undefined): boolean {
+  if (!url) return false;
+  try {
+    return new URL(url).pathname.replace(/\/+$/, "").length > 0;
+  } catch {
+    return false;
+  }
+}
 
 export async function FinalCta() {
   const settings = await getSiteSettings();
@@ -34,23 +45,38 @@ export async function FinalCta() {
           Escribir por WhatsApp
         </a>
       </Reveal>
-      <Reveal delay={staggerDelay(4)} className="mt-1.5 flex gap-[22px]">
-        <a
-          href={settings.instagramUrl}
-          target="_blank"
-          rel="noopener"
-          className="text-[10px] tracking-[0.2em] text-muted uppercase hover:text-gold"
-        >
-          Instagram
-        </a>
-        <a
-          href={settings.tiktokUrl}
-          target="_blank"
-          rel="noopener"
-          className="text-[10px] tracking-[0.2em] text-muted uppercase hover:text-gold"
-        >
-          TikTok
-        </a>
+      {/* Alternativa para quien todavía no quiere abrir un chat: deja el
+          número y la conversación empieza cuando haya algo que mostrar. */}
+      <Reveal delay={staggerDelay(4)} className="mt-4 grid justify-items-center gap-3 border-t border-ink/12 pt-8">
+        <span className="text-[10px] tracking-[0.3em] text-muted uppercase">
+          ¿Aún no te decides?
+        </span>
+        <NewsletterForm source="portada" />
+      </Reveal>
+
+      <Reveal delay={staggerDelay(5)} className="mt-1.5 flex gap-[22px]">
+        {esPerfil(settings.instagramUrl) && (
+          <a
+            href={settings.instagramUrl}
+            target="_blank"
+            rel="noopener"
+            className="text-[10px] tracking-[0.2em] text-muted uppercase hover:text-gold"
+          >
+            Instagram
+          </a>
+        )}
+        {/* Solo si hay perfil: un href vacío enlaza a la página actual, y el
+            dominio suelto ("https://tiktok.com") no lleva a ninguna cuenta. */}
+        {esPerfil(settings.tiktokUrl) && (
+          <a
+            href={settings.tiktokUrl}
+            target="_blank"
+            rel="noopener"
+            className="text-[10px] tracking-[0.2em] text-muted uppercase hover:text-gold"
+          >
+            TikTok
+          </a>
+        )}
       </Reveal>
     </section>
   );

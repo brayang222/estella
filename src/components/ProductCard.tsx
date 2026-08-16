@@ -10,7 +10,16 @@ import { waLink, waProductMessage, waRestockMessage } from "@/lib/whatsapp";
 
 const AUTOPLAY_MS = 1500;
 
-export function ProductCard({ product }: { product: Product }) {
+/**
+ * `morph` controla si la tarjeta comparte el nombre de transición con la
+ * galería de la ficha. Solo puede hacerlo una tarjeta por pieza y por página:
+ * las secciones secundarias de la propia ficha (relacionados, vistos
+ * recientemente) muestran piezas que pueden ser la que se está dejando, y dos
+ * elementos con el mismo nombre montados a la vez hacen que View Transitions
+ * aborte la animación — que es justo lo que se sentía como lentitud al hacer
+ * clic.
+ */
+export function ProductCard({ product, morph = true }: { product: Product; morph?: boolean }) {
   const settings = useSiteSettings();
   const images = product.images;
   const lowStock =
@@ -54,9 +63,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   const renderedImages = primed ? images : images.slice(0, 1);
 
-  return (
-    <div className="grid gap-3.5">
-      <ViewTransition name={`product-image-${product.slug}`} share="morph">
+  const galeria = (
       <div
         className="group relative aspect-[4/5] overflow-hidden bg-img-1"
         onMouseEnter={handleEnter}
@@ -156,7 +163,17 @@ export function ProductCard({ product }: { product: Product }) {
           </a>
         </div>
       </div>
-      </ViewTransition>
+  );
+
+  return (
+    <div className="grid gap-3.5">
+      {morph ? (
+        <ViewTransition name={`product-image-${product.slug}`} share="morph">
+          {galeria}
+        </ViewTransition>
+      ) : (
+        galeria
+      )}
 
       <div className="flex items-baseline justify-between gap-2.5 border-t border-ink/12 pt-0.5">
         <Link href={`/producto/${product.slug}`}>
