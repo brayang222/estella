@@ -14,6 +14,7 @@ export type SiteSettings = {
   tiktokUrl: string;
   marqueeItems: string;
   productNote: string;
+  freeShippingFrom: number;
 };
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
@@ -33,6 +34,7 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   ].join("\n"),
   productNote:
     "Accesorios hechos a mano en Colombia. Empaque de regalo incluido, envío asegurado a todo el país.",
+  freeShippingFrom: 150000,
 };
 
 /** Una frase por línea, sin vacías. */

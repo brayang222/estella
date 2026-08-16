@@ -19,10 +19,3 @@ export const SOCIAL_PROOF_THRESHOLD = 3;
 
 /** A partir de cuántas unidades restantes se muestra el aviso de urgencia. */
 export const LOW_STOCK_THRESHOLD = 5;
-
-/**
- * Compra desde la que el envío deja de cobrarse. Vive aquí y no en cada
- * página porque lo usan la bolsa y /envios-y-cambios: dos números sueltos se
- * desincronizan en cuanto cambie la política.
- */
-export const FREE_SHIPPING_FROM = 150000;

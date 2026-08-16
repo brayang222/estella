@@ -3,7 +3,7 @@ import { Reveal } from "@/components/Reveal";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { getSiteSettings } from "@/lib/queries";
 import { OG_IMAGE } from "@/lib/site";
-import { FREE_SHIPPING_FROM, formatPrice } from "@/lib/products";
+import { formatPrice } from "@/lib/products";
 import { waLink } from "@/lib/whatsapp";
 
 const TITLE = "Envíos y cambios";
@@ -52,7 +52,7 @@ export default async function EnviosYCambiosPage() {
         </p>
         <p className={pClass}>
           <strong className="font-normal text-ink">
-            En compras desde {formatPrice(FREE_SHIPPING_FROM)} el envío va por nuestra cuenta.
+            En compras desde {formatPrice(settings.freeShippingFrom)} el envío va por nuestra cuenta.
           </strong>
         </p>
       </Reveal>

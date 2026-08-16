@@ -3,8 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { getCustomer } from "@/lib/account/session";
+import { superaElCupo } from "@/lib/rate-limit";
 
 export type ReviewFormState = { error?: string; ok?: boolean };
+
+/** Escribir reseñas es público: 5 envíos por IP cada 10 minutos alcanzan de sobra. */
+const CUPO_RESENAS = { limite: 5, ventanaMs: 10 * 60 * 1000 };
+const MENSAJE_CUPO = "Recibimos varias reseñas tuyas seguidas. Espera un momento y vuelve a intentar.";
 
 /** Mismas reglas para el formulario de la ficha y el de /calificar. */
 function validate(authorName: string, rating: number, comment: string): string | null {
@@ -32,6 +37,8 @@ export async function submitMultiReview(
   _prevState: ReviewFormState | undefined,
   formData: FormData
 ): Promise<ReviewFormState> {
+  if (await superaElCupo("resenas", CUPO_RESENAS)) return { error: MENSAJE_CUPO };
+
   const customer = await getCustomer();
   const authorName = String(formData.get("authorName") ?? "").trim();
   const rating = Number(formData.get("rating"));
@@ -71,6 +78,8 @@ export async function submitReview(
   _prevState: ReviewFormState | undefined,
   formData: FormData
 ): Promise<ReviewFormState> {
+  if (await superaElCupo("resenas", CUPO_RESENAS)) return { error: MENSAJE_CUPO };
+
   const customer = await getCustomer();
   const authorName = String(formData.get("authorName") ?? "").trim();
   const rating = Number(formData.get("rating"));

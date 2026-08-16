@@ -32,6 +32,8 @@ export async function updateSiteSettings(
   const productNote = String(formData.get("productNote") ?? "").trim();
   const instagramUrl = readUrl(formData.get("instagramUrl"));
   const tiktokUrl = readUrl(formData.get("tiktokUrl"));
+  const freeShippingRaw = String(formData.get("freeShippingFrom") ?? "").replace(/\D/g, "");
+  const freeShippingFrom = Number(freeShippingRaw);
 
   // Indicativo + número: 10 dígitos ya es un celular local sin indicativo, y
   // 15 es el máximo que admite el estándar internacional.
@@ -45,6 +47,10 @@ export async function updateSiteSettings(
   if (tiktokUrl === undefined) return { error: "El enlace de TikTok no es una URL válida." };
   if (!marqueeItems) return { error: "Escribe al menos una frase para el letrero." };
   if (!productNote) return { error: "Escribe la nota que aparece en cada ficha." };
+  // 0 vale: significa envío gratis siempre.
+  if (!Number.isInteger(freeShippingFrom) || freeShippingFrom < 0) {
+    return { error: "El umbral de envío gratis debe ser un número de 0 en adelante." };
+  }
 
   const data = {
     whatsappNumber,
@@ -53,6 +59,7 @@ export async function updateSiteSettings(
     tiktokUrl,
     marqueeItems,
     productNote,
+    freeShippingFrom,
   };
 
   await prisma.siteSetting.upsert({

@@ -65,7 +65,7 @@ const products: SeedProduct[] = [
     tag: "Clásico",
     description:
       "Collar tipo tenis con eslabones circulares y circonias engastadas una a una, en acabado espejo. Disponible en dorado y en rodio. Una pieza de brillo continuo, hecha a mano en Colombia, que funciona sola o combinada en capas.",
-    measurements: "Largo: 17 cm + 2 cm de extensor. Ajustable a la mayoría de muñecas.",
+    measurements: "",
     images: ["/products/manilla-tenis-clasica.webp"],
     placeholderLabel: "collar karina corazón",
     sortOrder: 1,

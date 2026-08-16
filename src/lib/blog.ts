@@ -22,6 +22,12 @@ export type BlogPost = {
    */
   categorySlug?: string;
   /**
+   * URLs anteriores del artículo. La página las usa para redirigir en vez de
+   * dar 404 cuando se renombra algo ya indexado — mismo criterio que el
+   * historial de slugs de productos y categorías.
+   */
+  previousSlugs?: string[];
+  /**
    * Sirve para cualquier pieza (cuidado, estilo), así que se usa de relleno en
    * la ficha de producto cuando la categoría no tiene artículos propios. Lo
    * que no lleve esta marca ni `categorySlug` —el contenido para mayoristas,
@@ -34,10 +40,11 @@ export type BlogPost = {
 // antiguo para que lo nuevo quede arriba.
 export const posts: BlogPost[] = [
   {
-    slug: "manillas-artesanales-como-reconocer-una-bien-hecha",
-    title: "Manillas artesanales: cómo reconocer una bien hecha",
+    slug: "pulseras-artesanales-como-reconocer-una-bien-hecha",
+    previousSlugs: ["manillas-artesanales-como-reconocer-una-bien-hecha"],
+    title: "Pulseras artesanales: cómo reconocer una bien hecha",
     excerpt:
-      "Dos manillas pueden verse iguales en una foto y durar cosas muy distintas. Estos son los detalles que separan una pieza artesanal de una que se daña en un mes.",
+      "Dos pulseras pueden verse iguales en una foto y durar cosas muy distintas. Estos son los detalles que separan una pieza artesanal de una que se daña en un mes.",
     date: "2026-08-14",
     readTime: "4 min",
     category: "Guía",
@@ -47,11 +54,11 @@ export const posts: BlogPost[] = [
     coverImage: "/lookbook/manillas-stack-detail.webp",
     categorySlug: "pulseras",
     content: [
-      "Las manillas artesanales se reconocen por los detalles que no salen en la foto. En una vitrina o en una pantalla, dos piezas pueden parecer idénticas: el mismo brillo, el mismo tejido, el mismo precio aproximado. La diferencia aparece al mes de uso, y para entonces ya la compraste.",
-      "Mira primero el cierre. Es la parte que más se manipula y la primera que falla en una pieza mal hecha. Un broche que se siente flojo, que cuesta cerrar o que se abre solo al engancharse con la ropa no es un detalle menor: es el punto donde vas a perder la manilla. En una pieza bien armada el cierre se siente firme y hace un clic definido.",
-      "Revisa los remates. En una manilla tejida o de eslabones, los extremos son donde se nota el trabajo manual. Deben estar cerrados de forma pareja, sin puntas que raspen ni hilos sueltos. Pasar el dedo por todo el contorno es la prueba más simple que existe y casi nadie la hace.",
+      "Las pulseras artesanales se reconocen por los detalles que no salen en la foto. En una vitrina o en una pantalla, dos piezas pueden parecer idénticas: el mismo brillo, el mismo tejido, el mismo precio aproximado. La diferencia aparece al mes de uso, y para entonces ya la compraste.",
+      "Mira primero el cierre. Es la parte que más se manipula y la primera que falla en una pieza mal hecha. Un broche que se siente flojo, que cuesta cerrar o que se abre solo al engancharse con la ropa no es un detalle menor: es el punto donde vas a perder la pulsera. En una pieza bien armada el cierre se siente firme y hace un clic definido.",
+      "Revisa los remates. En una pulsera tejida o de eslabones, los extremos son donde se nota el trabajo manual. Deben estar cerrados de forma pareja, sin puntas que raspen ni hilos sueltos. Pasar el dedo por todo el contorno es la prueba más simple que existe y casi nadie la hace.",
       "Pregunta por el material del baño. No es lo mismo una pieza bañada en rodio que una con un recubrimiento genérico sin especificar. El rodio es más duro, resiste mejor el rayón y mantiene el brillo por más tiempo — pero cuesta más, y por eso quien lo usa lo dice. Si no está escrito en ninguna parte, vale la pena preguntar antes de comprar.",
-      "Fíjate en el peso. Una manilla artesanal bien hecha tiene un peso que se siente al ponérsela, sin llegar a incomodar. Las piezas demasiado livianas suelen ser huecas o de lámina muy delgada, y son las que se deforman con un golpe cotidiano contra una mesa o el borde del carro.",
+      "Fíjate en el peso. Una pulsera artesanal bien hecha tiene un peso que se siente al ponérsela, sin llegar a incomodar. Las piezas demasiado livianas suelen ser huecas o de lámina muy delgada, y son las que se deforman con un golpe cotidiano contra una mesa o el borde del carro.",
       "Ninguno de estos puntos requiere ser experta: son cosas que se ven y se sienten en treinta segundos con la pieza en la mano. Si vas a comprar en línea y no puedes tenerla, pide fotos del cierre y de los remates de cerca — nosotras las mandamos por WhatsApp sin problema, y de la pieza real, no del catálogo.",
     ],
   },
@@ -90,7 +97,7 @@ export const posts: BlogPost[] = [
     coverTone: 3,
     categorySlug: "anillos",
     content: [
-      "Los anillos artesanales tienen un problema que no tienen las manillas ni los collares: si la talla falla, la pieza no se usa. Y medirla mal es más fácil de lo que parece, porque casi todos los métodos caseros que circulan tienen el mismo error de fondo.",
+      "Los anillos artesanales tienen un problema que no tienen las pulseras ni los collares: si la talla falla, la pieza no se usa. Y medirla mal es más fácil de lo que parece, porque casi todos los métodos caseros que circulan tienen el mismo error de fondo.",
       "El método que sí funciona: toma un hilo o una tira de papel delgada, dale la vuelta al dedo sin apretar y marca el punto exacto donde se cruza. Estira la tira sobre una regla y mide los milímetros. Ese número es la circunferencia de tu dedo, y con él te decimos la talla — no hace falta que la interpretes tú.",
       "El error más común es medir apretando. La tira debe quedar ceñida pero deslizarse; si la ajustas hasta que marque la piel, vas a terminar con un anillo que entra a la fuerza y que no sale cuando el dedo se hincha. Mejor que sobre un poco a que falte.",
       "El segundo error es medir a la hora equivocada. Los dedos cambian de tamaño durante el día: en la mañana están más delgados y al final del día, con calor o después de ejercicio, se hinchan. Mide en la tarde, con el cuerpo en temperatura normal. Esa es la medida que te va a servir la mayor parte del tiempo.",
@@ -148,7 +155,7 @@ export const posts: BlogPost[] = [
     date: "2026-06-12",
     readTime: "4 min",
     category: "Cuidado",
-    coverLabel: "detalle — limpieza de manilla",
+    coverLabel: "detalle — limpieza de pulsera",
     coverAngle: 100,
     coverTone: 2,
     coverImage: "/lookbook/medallon-detalle.webp",
@@ -178,8 +185,8 @@ export const posts: BlogPost[] = [
     content: [
       "La joyería no tiene que ser una decisión de todo o nada. Estas tres formas de combinarla son las que más vemos funcionar entre quienes ya llevan Estella, y cada una tiene su momento.",
       "En capas es la más versátil: dos o tres largos distintos de collar, uno pegado al cuello y otro más largo con dije, crean profundidad sin necesitar una pieza statement. Funciona con cuello redondo, con camisa abierta, con vestido escotado.",
-      "Apiladas es para la muñeca: mezclar grosores en vez de repetir la misma manilla. Una plana, una tejida, una con broche pequeño. El contraste de texturas hace el trabajo que antes hacía una sola pieza grande.",
-      "Una sola pieza es la más difícil de acertar y la que más impacta cuando funciona: un arete escultural, sin collar, sin manillas, con el resto del look en silencio. Es la opción para cuando la joya es el punto focal, no el acompañamiento.",
+      "Apiladas es para la muñeca: mezclar grosores en vez de repetir la misma pulsera. Una plana, una tejida, una con broche pequeño. El contraste de texturas hace el trabajo que antes hacía una sola pieza grande.",
+      "Una sola pieza es la más difícil de acertar y la que más impacta cuando funciona: un arete escultural, sin collar, sin pulseras, con el resto del look en silencio. Es la opción para cuando la joya es el punto focal, no el acompañamiento.",
       "Ninguna de las tres es más correcta que otra — depende del día, de la ocasión y de qué tan protagonista quieras que sea la pieza. Si no sabes por dónde empezar, cuéntanos qué tienes y qué buscas por WhatsApp; armamos la combinación contigo.",
     ],
   },
@@ -189,11 +196,16 @@ export function getPostBySlug(slug: string): BlogPost | undefined {
   return posts.find((post) => post.slug === slug);
 }
 
+/** Artículo al que apuntaba una URL anterior, para redirigir en vez de 404. */
+export function getPostByOldSlug(slug: string): BlogPost | undefined {
+  return posts.find((post) => post.previousSlugs?.includes(slug));
+}
+
 /**
  * Artículos para la ficha de un producto: primero los de su categoría y luego
  * los que sirven para cualquier pieza, hasta completar `limit`. Un artículo de
  * otra categoría nunca entra — la guía de tallas de anillos no pinta nada en
- * una manilla.
+ * una pulsera.
  */
 export function postsForCategory(categorySlug: string, limit = 2): BlogPost[] {
   const own = posts.filter((post) => post.categorySlug === categorySlug);

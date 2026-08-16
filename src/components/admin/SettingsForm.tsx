@@ -126,6 +126,22 @@ export function SettingsForm({ settings }: { settings: SiteSettings }) {
             Aparece después de la referencia: envíos, empaque, series limitadas…
           </span>
         </label>
+
+      <label className="grid gap-1.5">
+        <span className={labelClass}>Envío gratis desde (COP)</span>
+        <input
+          type="text"
+          inputMode="numeric"
+          name="freeShippingFrom"
+          defaultValue={settings.freeShippingFrom}
+          className={inputClass}
+        />
+        <span className="text-[11px] text-muted">
+          La bolsa le dice a la clienta cuánto le falta para alcanzarlo. Si el umbral queda muy por
+          encima del pedido típico, el mensaje desanima en vez de animar. Usa 0 para envío siempre
+          gratis.
+        </span>
+      </label>
       </fieldset>
 
       <button

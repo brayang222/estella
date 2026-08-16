@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { PlaceholderImage } from "@/components/PlaceholderImage";
 import { Curtain, Reveal } from "@/components/Reveal";
 import { BlogPostingJsonLd } from "@/components/JsonLd";
-import { getPostBySlug, posts } from "@/lib/blog";
+import { getPostByOldSlug, getPostBySlug, posts } from "@/lib/blog";
 import { formatPostDate } from "@/lib/blog-date";
 import { staggerDelay } from "@/lib/stagger";
 import { catalogCategories, getCategories, getSiteSettings } from "@/lib/queries";
@@ -42,7 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function BlogPostPage({ params }: Props) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
-  if (!post) notFound();
+  if (!post) {
+    // URL anterior de un artículo renombrado.
+    const renombrado = getPostByOldSlug(slug);
+    if (renombrado) permanentRedirect(`/blog/${renombrado.slug}`);
+    notFound();
+  }
   const [settings, allCategories] = await Promise.all([getSiteSettings(), getCategories()]);
   // La categoría se resuelve contra la base y no se escribe en el artículo:
   // si se renombra en /admin, el enlace sigue diciendo lo correcto.
@@ -106,7 +111,7 @@ export default async function BlogPostPage({ params }: Props) {
             className="justify-self-start border-b border-ink/40 pb-1 text-[10.5px] tracking-[0.22em] uppercase transition-[border-color] duration-[350ms] ease-out hover:border-gold hover:text-gold"
           >
             {/* "la colección de" y no "todos los": las etiquetas mezclan
-                géneros y saldría "todos los manillas". */}
+                géneros y saldría "todos los aretes" con artículo femenino. */}
             Ver la colección de {category.label.toLowerCase()} →
           </Link>
         </Reveal>

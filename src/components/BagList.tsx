@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { useCart } from "@/lib/store";
 import { MAX_QUANTITY } from "@/lib/account/types";
-import { FREE_SHIPPING_FROM, formatPrice, type Product } from "@/lib/products";
+import { formatPrice, type Product } from "@/lib/products";
+import { setShippingDetails, useShippingDetails } from "@/lib/shipping-details";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waCartMessage, waLink } from "@/lib/whatsapp";
 
@@ -17,33 +17,11 @@ const fieldClass =
 const stepperClass =
   "h-9 w-9 cursor-pointer border border-ink/20 text-[15px] leading-none transition-colors duration-300 ease-out hover:border-ink disabled:cursor-default disabled:opacity-40";
 
-/** Datos de envío recordados entre visitas: nadie quiere reescribir su ciudad. */
-const SHIPPING_KEY = "estella:envio";
-
 export function BagList({ products }: { products: Product[] }) {
   const settings = useSiteSettings();
   const { lines, setQuantity, remove, clear, ready, authenticated } = useCart();
   const { data: session } = useSession();
-  const [name, setName] = useState("");
-  const [city, setCity] = useState("");
-
-  useEffect(() => {
-    try {
-      const saved = JSON.parse(window.localStorage.getItem(SHIPPING_KEY) ?? "{}");
-      if (typeof saved.name === "string") setName(saved.name);
-      if (typeof saved.city === "string") setCity(saved.city);
-    } catch {
-      // Dato corrupto o almacenamiento bloqueado: se empieza en blanco.
-    }
-  }, []);
-
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(SHIPPING_KEY, JSON.stringify({ name, city }));
-    } catch {
-      // Modo privado o cuota llena: no vale romper la bolsa por recordar esto.
-    }
-  }, [name, city]);
+  const { name, city } = useShippingDetails();
 
   const bySlug = new Map(products.map((product) => [product.slug, product]));
   // A piece deleted from the catalogue after being added simply drops out.
@@ -52,7 +30,7 @@ export function BagList({ products }: { products: Product[] }) {
     .filter((item): item is { product: Product; quantity: number } => Boolean(item.product));
 
   const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
-  const faltaParaEnvioGratis = Math.max(0, FREE_SHIPPING_FROM - total);
+  const faltaParaEnvioGratis = Math.max(0, settings.freeShippingFrom - total);
 
   if (!ready) {
     return <p className="m-0 text-[13px] text-muted">Cargando tu bolsa…</p>;
@@ -205,7 +183,7 @@ export function BagList({ products }: { products: Product[] }) {
             <input
               type="text"
               value={name}
-              onChange={(event) => setName(event.target.value)}
+              onChange={(event) => setShippingDetails({ name: event.target.value, city })}
               autoComplete="name"
               maxLength={60}
               placeholder={session?.user?.name ?? "Como quieres que te llamemos"}
@@ -219,7 +197,7 @@ export function BagList({ products }: { products: Product[] }) {
             <input
               type="text"
               value={city}
-              onChange={(event) => setCity(event.target.value)}
+              onChange={(event) => setShippingDetails({ name, city: event.target.value })}
               autoComplete="address-level2"
               maxLength={60}
               placeholder="Ej. Medellín"

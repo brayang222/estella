@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { signIn } from "@/auth";
 import { prisma } from "@/lib/db";
+import { superaElCupo } from "@/lib/rate-limit";
 
 export type RegisterFormState = { error?: string };
 
@@ -18,10 +19,17 @@ function safeCallback(value: FormDataEntryValue | null) {
   return raw.startsWith("/") && !raw.startsWith("//") ? raw : "/cuenta";
 }
 
+/** Crear cuentas es público: 5 intentos por IP cada 15 minutos. */
+const CUPO_REGISTRO = { limite: 5, ventanaMs: 15 * 60 * 1000 };
+
 export async function registerCustomer(
   _prevState: RegisterFormState | undefined,
   formData: FormData
 ): Promise<RegisterFormState> {
+  if (await superaElCupo("registro", CUPO_REGISTRO)) {
+    return { error: "Demasiados intentos seguidos. Espera unos minutos y vuelve a intentar." };
+  }
+
   const name = String(formData.get("name") ?? "").trim();
   const email = String(formData.get("email") ?? "")
     .trim()

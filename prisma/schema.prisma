@@ -28,6 +28,10 @@ model SiteSetting {
   marqueeItems     String
   /// Nota al pie de cada ficha de producto (envíos, empaque, series).
   productNote      String
+  /// Compra desde la que el envío deja de cobrarse. Editable porque es una
+  /// decisión comercial que se ajusta con los precios: un umbral inalcanzable
+  /// convierte el aviso de la bolsa en un desánimo en vez de un incentivo.
+  freeShippingFrom Int      @default(150000)
   updatedAt        DateTime @updatedAt
 }
 

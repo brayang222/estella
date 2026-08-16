@@ -116,6 +116,8 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
       tiktokUrl: row.tiktokUrl || DEFAULT_SITE_SETTINGS.tiktokUrl,
       marqueeItems: row.marqueeItems || DEFAULT_SITE_SETTINGS.marqueeItems,
       productNote: row.productNote || DEFAULT_SITE_SETTINGS.productNote,
+      // 0 es un valor legítimo (envío siempre gratis), así que no sirve `||`.
+      freeShippingFrom: row.freeShippingFrom ?? DEFAULT_SITE_SETTINGS.freeShippingFrom,
     };
   } catch (error) {
     // Se avisa en el log: caer a los valores por defecto sin decir nada
