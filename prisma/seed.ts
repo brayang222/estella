@@ -45,7 +45,7 @@ const products: SeedProduct[] = [
     referenceCode: "COL-001",
     name: "Collar Margarita",
     categorySlug: "collares",
-    price: 129000,
+    price: 22900,
     available: true,
     tag: "Nuevo",
     description:
@@ -56,11 +56,11 @@ const products: SeedProduct[] = [
     sortOrder: 0,
   },
   {
-    slug: "manilla-tenis-clasica",
+    slug: "collar-karina-corazon",
     referenceCode: "MAN-001",
-    name: "Manilla Tenis Clásica",
+    name: "Collar Karina Corazón",
     categorySlug: "manillas",
-    price: 199000,
+    price: 84900,
     available: true,
     tag: "Clásico",
     description:
@@ -75,7 +75,7 @@ const products: SeedProduct[] = [
     referenceCode: "COL-002",
     name: "Collar Girasol",
     categorySlug: "collares",
-    price: 149000,
+    price: 22900,
     available: true,
     tag: "Nuevo",
     description:
@@ -86,11 +86,11 @@ const products: SeedProduct[] = [
     sortOrder: 2,
   },
   {
-    slug: "manilla-tenis-corazones",
+    slug: "pulsera-karina-circular",
     referenceCode: "MAN-002",
-    name: "Manilla Tenis Corazones",
+    name: "Pulsera Karina Circular",
     categorySlug: "manillas",
-    price: 209000,
+    price: 54900,
     available: true,
     tag: "Nuevo",
     description:
@@ -101,11 +101,11 @@ const products: SeedProduct[] = [
     sortOrder: 3,
   },
   {
-    slug: "collar-corazon-rojo",
+    slug: "collar-corazon",
     referenceCode: "COL-003",
     name: "Collar Corazón",
     categorySlug: "collares",
-    price: 119000,
+    price: 22900,
     available: true,
     tag: "Serie 01",
     description:
@@ -116,11 +116,11 @@ const products: SeedProduct[] = [
     sortOrder: 4,
   },
   {
-    slug: "manilla-tenis-piedra-de-color",
+    slug: "pulsera-tennis",
     referenceCode: "MAN-003",
-    name: "Manilla Tenis Piedra de Color",
+    name: "Pulsera Tennis",
     categorySlug: "manillas",
-    price: 219000,
+    price: 22900,
     available: true,
     tag: "Últimas",
     description:
@@ -131,11 +131,11 @@ const products: SeedProduct[] = [
     sortOrder: 5,
   },
   {
-    slug: "collar-abrazo",
+    slug: "collar-pareja",
     referenceCode: "COL-004",
-    name: "Collar Abrazo",
+    name: "Collar Pareja",
     categorySlug: "collares",
-    price: 169000,
+    price: 29900,
     available: true,
     tag: "Serie 01",
     description:
@@ -146,11 +146,11 @@ const products: SeedProduct[] = [
     sortOrder: 6,
   },
   {
-    slug: "manilla-dije-corazones",
+    slug: "pulsera-corazones-fantasiosos",
     referenceCode: "MAN-004",
-    name: "Manilla Dije Corazones",
+    name: "Pulsera Corazones Fantasiosos",
     categorySlug: "manillas",
-    price: 149000,
+    price: 18900,
     available: true,
     tag: "Serie 01",
     description:
@@ -165,7 +165,7 @@ const products: SeedProduct[] = [
     referenceCode: "COL-005",
     name: "Collar Eres Mi Mundo",
     categorySlug: "collares",
-    price: 179000,
+    price: 22900,
     available: true,
     tag: "Serie 02",
     description:
@@ -176,11 +176,11 @@ const products: SeedProduct[] = [
     sortOrder: 8,
   },
   {
-    slug: "manilla-eslabon",
+    slug: "pulsera-gucci",
     referenceCode: "MAN-005",
-    name: "Manilla Eslabón",
+    name: "Pulsera Gucci",
     categorySlug: "manillas",
-    price: 139000,
+    price: 18900,
     available: true,
     tag: "Serie 02",
     description:
@@ -195,7 +195,7 @@ const products: SeedProduct[] = [
     referenceCode: "COL-006",
     name: "Collar Pareja Alas de Ángel",
     categorySlug: "collares",
-    price: 239000,
+    price: 22900,
     available: true,
     tag: "Set x2",
     description:
@@ -206,11 +206,11 @@ const products: SeedProduct[] = [
     sortOrder: 10,
   },
   {
-    slug: "manilla-cuentas-medallon",
+    slug: "pulsera-san-benito-tres-oros",
     referenceCode: "MAN-006",
-    name: "Manilla Cuentas Medallón",
+    name: "Pulsera San Benito Tres Oros",
     categorySlug: "manillas",
-    price: 159000,
+    price: 24900,
     available: true,
     tag: "Nuevo",
     description:
@@ -225,7 +225,7 @@ const products: SeedProduct[] = [
     referenceCode: "COL-007",
     name: "Collar Inicial Personalizada",
     categorySlug: "collares",
-    price: 159000,
+    price: 14900,
     available: true,
     tag: "Personalizado",
     description:
@@ -237,43 +237,59 @@ const products: SeedProduct[] = [
   },
 ];
 
+/**
+ * El seed SOLO crea lo que falta. Nunca pisa una fila existente.
+ *
+ * Antes hacía `upsert` con `update: { ...product }`, así que cada corrida
+ * reescribía precio, nombre, descripción y stock con los valores de este
+ * archivo. El 2026-08-02 a las 03:28 UTC eso borró de un golpe los precios
+ * reales que se habían cargado desde /admin, y nadie se enteró hasta trece
+ * días después — la base no guarda historial de lo que había antes.
+ *
+ * Un seed puebla una base vacía. Los datos vivos son del admin, no de este
+ * archivo. Si alguna vez hace falta reescribir a propósito, que sea un script
+ * aparte y con nombre explícito, no un efecto secundario de `migrate`.
+ */
 async function main() {
   const categoryIdBySlug = new Map<string, string>();
+  let nuevasCategorias = 0;
+  let nuevosProductos = 0;
+  let respetados = 0;
 
   for (const category of categories) {
-    const row = await prisma.category.upsert({
+    const existente = await prisma.category.findUnique({
       where: { slug: category.slug },
-      update: category,
-      create: category,
+      select: { id: true, slug: true },
     });
+    const row = existente ?? (await prisma.category.create({ data: category }));
+    if (!existente) nuevasCategorias++;
     categoryIdBySlug.set(row.slug, row.id);
   }
-  console.log(`Seeded ${categories.length} categories.`);
+  console.log(`Categorías: ${nuevasCategorias} creadas, ${categories.length - nuevasCategorias} ya existían (intactas).`);
 
   for (const { categorySlug, images, ...product } of products) {
     const categoryId = categoryIdBySlug.get(categorySlug);
     if (!categoryId) throw new Error(`Unknown category slug: ${categorySlug}`);
-    const row = await prisma.product.upsert({
-      where: { slug: product.slug },
-      update: { ...product, categoryId },
-      create: { ...product, categoryId },
-    });
 
-    const orderedImages = images.slice(0, 4);
-    for (const [index, url] of orderedImages.entries()) {
-      const order = index + 1;
-      await prisma.productImage.upsert({
-        where: { productId_order: { productId: row.id, order } },
-        update: { url },
-        create: { productId: row.id, url, order },
-      });
-    }
-    // Keep re-runs idempotent: drop any images beyond what this seed now lists.
-    await prisma.productImage.deleteMany({
-      where: { productId: row.id, order: { gt: orderedImages.length } },
+    const existente = await prisma.product.findUnique({
+      where: { slug: product.slug },
+      select: { id: true },
     });
+    if (existente) {
+      respetados++;
+      continue;
+    }
+
+    const row = await prisma.product.create({ data: { ...product, categoryId } });
+    nuevosProductos++;
+
+    // Solo para la pieza recién creada: nunca se tocan las fotos de una que ya
+    // existía, que pueden haberse subido desde el admin.
+    for (const [index, url] of images.slice(0, 4).entries()) {
+      await prisma.productImage.create({ data: { productId: row.id, url, order: index + 1 } });
+    }
   }
-  console.log(`Seeded ${products.length} products.`);
+  console.log(`Productos: ${nuevosProductos} creados, ${respetados} ya existían (intactos, con sus precios y fotos).`);
 }
 
 main()

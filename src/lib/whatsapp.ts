@@ -52,11 +52,22 @@ export function waFavoritesMessage(items: { name: string; price: string }[]) {
 export function waCartMessage(
   items: { name: string; reference: string; price: string; quantity: number }[],
   total: string,
-  customerName?: string | null
+  customerName?: string | null,
+  city?: string | null
 ) {
   const list = items
     .map((item) => `- ${item.quantity} × ${item.name} (ref. ${item.reference}) — ${item.price}`)
     .join("\n");
-  const greeting = customerName ? `Hola Estella, soy ${customerName}.` : "Hola Estella.";
-  return `${greeting} Quiero hacer este pedido:\n${list}\n\nTotal: ${total}\n¿Me confirmas disponibilidad y envío?`;
+  // Se quita el punto final del nombre: mucha gente escribe su apellido
+  // abreviado ("Valentina R.") y quedaba "soy Valentina R..".
+  const nombre = customerName?.trim().replace(/\.+$/, "");
+  const greeting = nombre ? `Hola Estella, soy ${nombre}.` : "Hola Estella.";
+  // La ciudad va en el mensaje para que la primera respuesta ya pueda traer el
+  // costo del envío, que depende del destino. Sin ella hacen falta dos o tres
+  // mensajes más antes de poder cotizar.
+  const destino = city ? `\nEnvío a: ${city}` : "";
+  const cierre = city
+    ? "¿Me confirmas disponibilidad y el costo del envío?"
+    : "¿Me confirmas disponibilidad y envío?";
+  return `${greeting} Quiero hacer este pedido:\n${list}\n\nTotal: ${total}${destino}\n${cierre}`;
 }

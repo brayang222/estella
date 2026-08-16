@@ -1,22 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { useCart } from "@/lib/store";
 import { MAX_QUANTITY } from "@/lib/account/types";
-import { formatPrice, type Product } from "@/lib/products";
+import { FREE_SHIPPING_FROM, formatPrice, type Product } from "@/lib/products";
 import { useSiteSettings } from "@/lib/settings-context";
 import { waCartMessage, waLink } from "@/lib/whatsapp";
 
+const fieldClass =
+  "border border-ink/20 bg-transparent px-3 py-2.5 text-[13.5px] placeholder:text-ink/25 focus:border-ink focus:outline-none";
+
 const stepperClass =
   "h-9 w-9 cursor-pointer border border-ink/20 text-[15px] leading-none transition-colors duration-300 ease-out hover:border-ink disabled:cursor-default disabled:opacity-40";
+
+/** Datos de envío recordados entre visitas: nadie quiere reescribir su ciudad. */
+const SHIPPING_KEY = "estella:envio";
 
 export function BagList({ products }: { products: Product[] }) {
   const settings = useSiteSettings();
   const { lines, setQuantity, remove, clear, ready, authenticated } = useCart();
   const { data: session } = useSession();
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(SHIPPING_KEY) ?? "{}");
+      if (typeof saved.name === "string") setName(saved.name);
+      if (typeof saved.city === "string") setCity(saved.city);
+    } catch {
+      // Dato corrupto o almacenamiento bloqueado: se empieza en blanco.
+    }
+  }, []);
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SHIPPING_KEY, JSON.stringify({ name, city }));
+    } catch {
+      // Modo privado o cuota llena: no vale romper la bolsa por recordar esto.
+    }
+  }, [name, city]);
 
   const bySlug = new Map(products.map((product) => [product.slug, product]));
   // A piece deleted from the catalogue after being added simply drops out.
@@ -25,6 +52,7 @@ export function BagList({ products }: { products: Product[] }) {
     .filter((item): item is { product: Product; quantity: number } => Boolean(item.product));
 
   const total = items.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
+  const faltaParaEnvioGratis = Math.max(0, FREE_SHIPPING_FROM - total);
 
   if (!ready) {
     return <p className="m-0 text-[13px] text-muted">Cargando tu bolsa…</p>;
@@ -55,7 +83,8 @@ export function BagList({ products }: { products: Product[] }) {
       quantity: item.quantity,
     })),
     formatPrice(total),
-    session?.user?.name
+    name.trim() || session?.user?.name,
+    city.trim() || null
   );
 
   return (
@@ -154,6 +183,51 @@ export function BagList({ products }: { products: Product[] }) {
           <span className="text-[10px] tracking-[0.2em] text-muted uppercase">Total</span>
           <span className="font-display text-[26px] tabular-nums">{formatPrice(total)}</span>
         </div>
+
+        {/* Cuánto falta para el envío gratis. Es la única parte de la bolsa
+            que puede subir el valor del pedido, así que va pegada al total. */}
+        {faltaParaEnvioGratis > 0 ? (
+          <p className="m-0 max-w-[46ch] text-[12.5px] leading-[1.7] text-ink sm:text-right">
+            Agrega <strong className="font-normal">{formatPrice(faltaParaEnvioGratis)}</strong> más
+            y el envío va por nuestra cuenta.
+          </p>
+        ) : (
+          <p className="m-0 max-w-[46ch] text-[12.5px] leading-[1.7] text-gold sm:text-right">
+            ¡Tu pedido ya tiene envío gratis!
+          </p>
+        )}
+        {/* Nombre y ciudad viajan dentro del mensaje. El envío se cotiza por
+            destino, así que con la ciudad la primera respuesta ya puede traer
+            el costo en vez de abrir otra ronda de mensajes. */}
+        <div className="grid w-full gap-3 border-t border-ink/12 pt-5 sm:max-w-[380px]">
+          <label className="grid gap-1.5">
+            <span className="text-[10px] tracking-[0.15em] text-muted uppercase">Tu nombre</span>
+            <input
+              type="text"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+              autoComplete="name"
+              maxLength={60}
+              placeholder={session?.user?.name ?? "Como quieres que te llamemos"}
+              className={fieldClass}
+            />
+          </label>
+          <label className="grid gap-1.5">
+            <span className="text-[10px] tracking-[0.15em] text-muted uppercase">
+              Ciudad de envío
+            </span>
+            <input
+              type="text"
+              value={city}
+              onChange={(event) => setCity(event.target.value)}
+              autoComplete="address-level2"
+              maxLength={60}
+              placeholder="Ej. Medellín"
+              className={fieldClass}
+            />
+          </label>
+        </div>
+
         <p className="m-0 max-w-[46ch] text-[12px] leading-[1.7] text-muted sm:text-right">
           El pedido se confirma por WhatsApp: allí acordamos el envío y el medio de pago.
         </p>

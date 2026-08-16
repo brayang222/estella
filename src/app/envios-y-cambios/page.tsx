@@ -3,15 +3,12 @@ import { Reveal } from "@/components/Reveal";
 import { WhatsAppIcon } from "@/components/WhatsAppIcon";
 import { getSiteSettings } from "@/lib/queries";
 import { OG_IMAGE } from "@/lib/site";
-import { formatPrice } from "@/lib/products";
+import { FREE_SHIPPING_FROM, formatPrice } from "@/lib/products";
 import { waLink } from "@/lib/whatsapp";
 
 const TITLE = "Envíos y cambios";
 const DESCRIPTION =
   "Cómo funcionan los envíos de Estella a todo Colombia, cuándo el envío es gratis y cómo pedir un cambio o reportar una pieza con daño de fábrica.";
-
-/** Compra desde la que el envío deja de cobrarse. */
-const FREE_SHIPPING_FROM = 150000;
 
 export const metadata: Metadata = {
   title: TITLE,

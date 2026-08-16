@@ -71,7 +71,12 @@ export async function toggleFavorite(slug: unknown): Promise<StoreState> {
   const customer = await getCustomer();
   if (!customer || typeof slug !== "string") return EMPTY_STORE;
 
-  const product = await prisma.product.findUnique({ where: { slug }, select: { id: true } });
+  // published: sin este filtro se podía guardar en favoritos o en la bolsa
+  // una pieza sin publicar conociendo su slug.
+  const product = await prisma.product.findFirst({
+    where: { slug, published: true },
+    select: { id: true },
+  });
   if (!product) return getStoreState(customer.id);
 
   const where = { userId_productId: { userId: customer.id, productId: product.id } };
@@ -90,7 +95,12 @@ export async function setCartQuantity(slug: unknown, quantity: unknown): Promise
   const customer = await getCustomer();
   if (!customer || typeof slug !== "string") return EMPTY_STORE;
 
-  const product = await prisma.product.findUnique({ where: { slug }, select: { id: true } });
+  // published: sin este filtro se podía guardar en favoritos o en la bolsa
+  // una pieza sin publicar conociendo su slug.
+  const product = await prisma.product.findFirst({
+    where: { slug, published: true },
+    select: { id: true },
+  });
   if (!product) return getStoreState(customer.id);
 
   const where = { userId_productId: { userId: customer.id, productId: product.id } };

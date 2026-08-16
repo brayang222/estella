@@ -6,7 +6,7 @@ import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "./auth";
 import { slugify } from "./slugify";
-import { saveImageFile, deleteImageFile } from "./image-utils";
+import { saveProductImage, deleteImageFile } from "./image-utils";
 
 /** Código de error de Postgres/Prisma para violación de índice único. */
 const UNIQUE_CONSTRAINT = "P2002";
@@ -199,8 +199,7 @@ export async function createProduct(
   for (const order of IMAGE_SLOTS) {
     const file = formData.get(`image${order}`);
     if (!(file instanceof File) || file.size === 0) continue;
-    const url = await saveImageFile(file, slug, order);
-    await prisma.productImage.create({ data: { productId: product.id, url, order } });
+    await saveProductImage(file, product.id, order);
   }
 
   revalidateStorefront();

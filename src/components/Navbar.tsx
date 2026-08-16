@@ -77,7 +77,7 @@ function BagIcon() {
 function Count({ value }: { value: number }) {
   if (value <= 0) return null;
   return (
-    <span className="absolute -top-1.5 -right-2 grid h-[15px] min-w-[15px] place-items-center rounded-full bg-ink px-1 text-[9px] leading-none text-paper tabular-nums">
+    <span className="absolute top-1 right-0.5 grid h-[15px] min-w-[15px] place-items-center rounded-full bg-ink px-1 text-[9px] leading-none text-paper tabular-nums">
       {value > 99 ? "99+" : value}
     </span>
   );
@@ -174,7 +174,7 @@ export function Navbar() {
         Estella
       </Link>
 
-      <div className="flex items-center justify-end gap-[clamp(12px,2vw,22px)]">
+      <div className="flex items-center justify-end gap-[clamp(2px,1vw,14px)]">
         <a
           href={waLink(settings.whatsappGreeting, settings.whatsappNumber)}
           target="_blank"
@@ -186,7 +186,7 @@ export function Navbar() {
         <Link
           href="/favoritos"
           aria-label={`Favoritos${favorites.length > 0 ? ` (${favorites.length})` : ""}`}
-          className="relative flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+          className="relative flex items-center p-2.5 text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
         >
           <HeartIcon filled={favorites.length > 0} />
           <Count value={favorites.length} />
@@ -194,7 +194,7 @@ export function Navbar() {
         <Link
           href="/bolsa"
           aria-label={`Mi bolsa${bagCount > 0 ? ` (${bagCount})` : ""}`}
-          className="relative flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+          className="relative flex items-center p-2.5 text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
         >
           <BagIcon />
           <Count value={bagCount} />
@@ -202,13 +202,13 @@ export function Navbar() {
         <Link
           href={accountHref}
           aria-label={signedIn ? "Mi cuenta" : "Iniciar sesión"}
-          className="flex items-center text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
+          className="flex items-center p-2.5 text-ink/70 transition-colors duration-300 ease-out hover:text-gold"
         >
           <AccountIcon />
         </Link>
         <button
           type="button"
-          className="grid w-[22px] cursor-pointer justify-items-end gap-[5px] border-0 bg-transparent py-1.5 min-[820px]:hidden"
+          className="grid w-[42px] cursor-pointer justify-items-end gap-[5px] border-0 bg-transparent px-2.5 py-[13px] min-[820px]:hidden"
           aria-label={open ? "Cerrar menú" : "Abrir menú"}
           aria-expanded={open}
           onClick={() => setOpen((value) => !value)}

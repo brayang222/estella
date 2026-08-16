@@ -174,7 +174,16 @@ model ProductImage {
   id        String   @id @default(cuid())
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  /// Dónde vive la foto. Para las que llegaron en el repo es una ruta de
+  /// /public ("/products/x.webp"); para las subidas desde el admin es
+  /// "/api/imagen/<id>", servida desde `data`.
   url       String
+  /// Bytes de la foto, solo para las subidas desde el admin. El disco no
+  /// sirve en producción: en Vercel es de solo lectura en ejecución y, aunque
+  /// no lo fuera, /public se sirve desde la salida del build y un archivo
+  /// escrito en caliente no estaría ahí. Ver src/lib/admin/image-utils.ts.
+  data      Bytes?
+  mimeType  String?
   order     Int
   createdAt DateTime @default(now())
 
