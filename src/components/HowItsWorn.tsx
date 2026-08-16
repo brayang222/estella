@@ -12,7 +12,7 @@ const steps = [
   },
   {
     angle: 45,
-    label: "manillas apiladas",
+    label: "pulseras apiladas",
     title: "Apiladas",
     text: "Mezcla grosores en la misma muñeca: una plana, una tejida, una con broche.",
     src: "/lookbook/manillas-stack-detail.webp",

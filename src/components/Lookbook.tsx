@@ -38,7 +38,7 @@ const blocks = [
     ratio: "aspect-[2/1]",
     tone: 2 as const,
     angle: 152,
-    label: "lifestyle — manillas apiladas",
+    label: "lifestyle — pulseras apiladas",
     src: "/lookbook/manillas-stack-wide.webp",
     // toca arriba con A/B y a la izquierda con C
     // touchBorder: "border-t-2 border-l-2 border-black",

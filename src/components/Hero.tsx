@@ -23,13 +23,13 @@ const frames = [
   },
   {
     name: "Niebla",
-    slot: "[ campaña — manillas apiladas, luz de tarde ]",
+    slot: "[ campaña — pulseras apiladas, luz de tarde ]",
     src: "/lookbook/hero-manillas.webp",
     srcMobile: "/lookbook/hero-manillas-mobile.webp",
   },
   {
     name: "Isla",
-    slot: "[ campaña — manilla de cuentas, fondo menta ]",
+    slot: "[ campaña — pulsera de cuentas, fondo menta ]",
     src: "/lookbook/hero-menta.webp",
     srcMobile: "/lookbook/hero-menta-mobile.webp",
   },

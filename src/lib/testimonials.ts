@@ -11,7 +11,7 @@ export const testimonials: Testimonial[] = [
     city: "Medellín",
     stars: "★★★★★",
     quote:
-      "Pedí la manilla Aurora para un matrimonio y llegó impecable. Se ve mejor que en las fotos.",
+      "Pedí la pulsera Aurora para un matrimonio y llegó impecable. Se ve mejor que en las fotos.",
   },
   {
     name: "Daniela M.",

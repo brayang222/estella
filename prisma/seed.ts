@@ -49,7 +49,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Nuevo",
     description:
-      "Collar en rodio con dije de margarita en esmalte blanco y centro dorado, montado sobre cadena veneciana de caída media. Una pieza fresca y femenina para uso diario que no se opaca ni mancha la piel. Ideal para llevar sola o en capas con otros collares Estella.",
+      "Collar artesanal en rodio con dije de margarita en esmalte blanco y centro dorado, sobre cadena veneciana de caída media. Hecho a mano en Colombia, no se opaca ni mancha la piel. Ideal para uso diario, solo o en capas con otros collares Estella.",
     measurements: "Cadena: 42 cm + 5 cm de extensor. Dije: 1.2 cm.",
     images: ["/products/collar-margarita.webp"],
     placeholderLabel: "collar margarita",
@@ -59,15 +59,15 @@ const products: SeedProduct[] = [
     slug: "collar-karina-corazon",
     referenceCode: "MAN-001",
     name: "Collar Karina Corazón",
-    categorySlug: "pulseras",
+    categorySlug: "collares",
     price: 84900,
     available: true,
     tag: "Clásico",
     description:
-      "Manilla tenis clásica en rodio con línea continua de circonias talla brillante engastadas una a una. El acabado espejo mantiene el brillo con el uso diario y el broche de seguridad evita pérdidas. La pulsera más versátil de la colección: va con jean y con vestido de fiesta.",
+      "Collar tipo tenis con eslabones circulares y circonias engastadas una a una, en acabado espejo. Disponible en dorado y en rodio. Una pieza de brillo continuo, hecha a mano en Colombia, que funciona sola o combinada en capas.",
     measurements: "Largo: 17 cm + 2 cm de extensor. Ajustable a la mayoría de muñecas.",
     images: ["/products/manilla-tenis-clasica.webp"],
-    placeholderLabel: "manilla tenis clásica",
+    placeholderLabel: "collar karina corazón",
     sortOrder: 1,
   },
   {
@@ -79,7 +79,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Nuevo",
     description:
-      "Collar en rodio con dije de girasol tallado en relieve y cadena veneciana delgada. Un símbolo de energía y buena suerte, en una pieza pequeña que se lleva todos los días. Perfecto como regalo de cumpleaños o detalle de agradecimiento.",
+      "Collar artesanal en rodio con dije de girasol tallado en relieve y cadena veneciana delgada. Símbolo de energía y buena suerte, hecho a mano en Colombia. Un collar minimalista perfecto como regalo de cumpleaños o detalle de agradecimiento.",
     measurements: "Cadena: 42 cm + 5 cm de extensor. Dije: 1.3 cm.",
     images: ["/products/collar-girasol.webp"],
     placeholderLabel: "collar girasol",
@@ -94,10 +94,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Nuevo",
     description:
-      "Manilla tenis en rodio con corazones alternados entre circonias, en acabado dorado espejo. Combina el brillo de una tenis clásica con un detalle romántico y discreto. Excelente regalo de aniversario o de San Valentín.",
+      "Pulsera artesanal de eslabones circulares con circonias, en acabado espejo. Hecha a mano en Colombia, con broche de seguridad y extensor. Se lleva sola o apilada con otras pulseras Estella.",
     measurements: "Largo: 17 cm + 2 cm de extensor.",
     images: ["/products/manilla-tenis-corazones.webp"],
-    placeholderLabel: "manilla tenis corazones",
+    placeholderLabel: "pulsera karina circular",
     sortOrder: 3,
   },
   {
@@ -109,7 +109,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Serie 01",
     description:
-      "Collar en rodio con medallón circular en esmalte blanco y corazón rojo pintado a mano. Una pieza de la Serie 01, en tiraje corto y numerado. Su tamaño moderado lo hace cómodo para uso diario y fácil de combinar en capas.",
+      "Collar artesanal en rodio con medallón circular en esmalte blanco y corazón rojo pintado a mano. Serie 01, en tiraje corto y numerado. Hecho a mano en Colombia, cómodo para uso diario y fácil de combinar en capas.",
     measurements: "Cadena: 40 cm + 5 cm de extensor. Medallón: 1.5 cm de diámetro.",
     images: ["/products/collar-corazon-rojo.webp"],
     placeholderLabel: "collar corazón rojo",
@@ -124,10 +124,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Últimas",
     description:
-      "Manilla tenis en rodio con piedras de color engastadas en línea continua, disponible en tonos verde y cristal. Últimas unidades de esta referencia de serie corta. Aporta un acento de color a un look neutro sin recargarlo.",
+      "Pulsera tennis artesanal con circonias engastadas en línea continua, disponible en verde y cristal. Hecha a mano en Colombia, con broche de seguridad. Aporta un acento de brillo a un look neutro sin recargarlo.",
     measurements: "Largo: 17 cm + 2 cm de extensor.",
     images: ["/products/manilla-tenis-piedra-de-color.webp"],
-    placeholderLabel: "manilla tenis piedra de color",
+    placeholderLabel: "pulsera tennis",
     sortOrder: 5,
   },
   {
@@ -139,10 +139,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Serie 01",
     description:
-      "Collar en rodio con dije de pareja abrazada, esculpido en volumen sobre cadena veneciana. Una pieza simbólica de la Serie 01, pensada para regalar a quien te acompaña. Acabado espejo hipoalergénico apto para piel sensible.",
+      "Collar artesanal en rodio con dije de pareja abrazada, esculpido en volumen sobre cadena veneciana. Serie 01, hecho a mano en Colombia. Una pieza simbólica para regalar, con acabado espejo apto para piel sensible.",
     measurements: "Cadena: 45 cm + 5 cm de extensor. Dije: 2.5 cm de alto.",
     images: ["/products/collar-abrazo.webp"],
-    placeholderLabel: "collar abrazo",
+    placeholderLabel: "collar pareja",
     sortOrder: 6,
   },
   {
@@ -154,10 +154,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Serie 01",
     description:
-      "Manilla en rodio de eslabón plano con dijes de corazón colgantes que se mueven con la muñeca. Pieza de la Serie 01 en tiraje limitado. Se ve espectacular apilada con una manilla tenis del mismo tono.",
+      "Pulsera artesanal de eslabón plano con dijes de corazón colgantes que se mueven con la muñeca. Serie 01 en tiraje limitado, hecha a mano en Colombia. Se ve espectacular apilada con una pulsera tennis del mismo tono.",
     measurements: "Largo: 16 cm + 3 cm de extensor.",
     images: ["/products/manilla-dije-corazones.webp"],
-    placeholderLabel: "manilla dije corazones",
+    placeholderLabel: "pulsera corazones fantasiosos",
     sortOrder: 7,
   },
   {
@@ -169,7 +169,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Serie 02",
     description:
-      "Collar en rodio con dije de corazón calado y figura de madre e hijo en el centro, con circonias en el contorno. Una pieza cargada de significado, ideal como regalo del Día de la Madre. Serie 02, en tiraje corto y numerado.",
+      "Collar artesanal en rodio con dije de corazón calado y figura de madre e hijo, con circonias en el contorno. Serie 02, hecho a mano en Colombia. Una pieza cargada de significado, ideal como regalo del Día de la Madre.",
     measurements: "Cadena: 42 cm + 5 cm de extensor. Dije: 2 cm.",
     images: ["/products/collar-eres-mi-mundo.webp"],
     placeholderLabel: "collar eres mi mundo",
@@ -184,10 +184,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Serie 02",
     description:
-      "Manilla en rodio de eslabón grueso tipo cadena, con broche reforzado y acabado espejo. Una pieza de carácter que funciona sola como declaración o apilada con piezas más delgadas. Serie 02, en cantidad limitada.",
+      "Pulsera artesanal de cadena eslabón mariner en acabado dorado espejo, con broche reforzado. Hecha a mano en Colombia. Delgada y versátil: se lleva sola o apilada con otras pulseras Estella.",
     measurements: "Largo: 18 cm + 2 cm de extensor.",
     images: ["/products/manilla-eslabon.webp"],
-    placeholderLabel: "manilla eslabón",
+    placeholderLabel: "pulsera gucci",
     sortOrder: 9,
   },
   {
@@ -199,7 +199,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Set x2",
     description:
-      "Set de dos collares en rodio con alas de ángel complementarias: una en plata envejecida y otra en dorado con circonias. Al unirlas forman un corazón completo, pensado para parejas, madre e hija o mejores amigas. Incluye las dos cadenas venecianas y empaque de regalo.",
+      "Set de dos collares artesanales en rodio con alas de ángel complementarias, una en plata envejecida y otra en dorado con circonias. Al unirlas forman un corazón. Hechos a mano en Colombia, con empaque de regalo incluido.",
     measurements: "Cadena: 40 cm cada una + 5 cm de extensor. Dije: 1.8 cm por mitad.",
     images: ["/products/collar-pareja-alas-de-angel.webp"],
     placeholderLabel: "collar pareja alas de ángel",
@@ -214,10 +214,10 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Nuevo",
     description:
-      "Manilla en rodio de cuentas facetadas en tonos mixtos con medallón de San Benito. Combina el brillo de las cuentas con un dije de protección tradicional. Cierre ajustable con extensión, se adapta a la mayoría de muñecas.",
+      "Pulsera artesanal de cuentas facetadas en tres tonos —dorado, oro rosa y plata— con medallas de San Benito. Hecha a mano en Colombia, con cierre ajustable y extensor. Una pieza de protección para uso diario.",
     measurements: "Largo: 16 cm + 4 cm de extensor.",
     images: ["/products/manilla-cuentas-medallon.webp"],
-    placeholderLabel: "manilla cuentas con medallón",
+    placeholderLabel: "pulsera san benito tres oros",
     sortOrder: 11,
   },
   {
@@ -229,7 +229,7 @@ const products: SeedProduct[] = [
     available: true,
     tag: "Personalizado",
     description:
-      "Collar en rodio con la inicial que elijas, en tipografía script sobre cadena veneciana delgada. Se produce bajo pedido con la letra que nos indiques por WhatsApp. El regalo personalizado más pedido de Estella: entrega en 2 a 4 días hábiles.",
+      "Collar artesanal en rodio con la inicial que elijas, en tipografía script sobre cadena veneciana delgada. Hecho a mano en Colombia bajo pedido. El regalo personalizado más pedido de Estella: entrega en 2 a 4 días hábiles.",
     measurements: "Cadena: 40 cm + 5 cm de extensor. Inicial: 1 cm de alto aprox.",
     images: ["/products/collar-inicial-personalizada.webp"],
     placeholderLabel: "collar inicial personalizada",
