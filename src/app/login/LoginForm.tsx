@@ -3,6 +3,8 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { getSession, signIn } from "next-auth/react";
+import { useSiteSettings } from "@/lib/settings-context";
+import { waLink } from "@/lib/whatsapp";
 
 function GoogleIcon() {
   return (
@@ -38,6 +40,7 @@ export function LoginForm({
   callbackUrl?: string;
   initialError?: string;
 }) {
+  const settings = useSiteSettings();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(initialError ?? null);
@@ -104,6 +107,21 @@ export function LoginForm({
             className={inputClass}
           />
         </label>
+
+        {/* No hay flujo de restablecimiento: el sitio no tiene envío de correo
+            configurado. Se deriva al canal que la tienda sí atiende, WhatsApp,
+            en vez de dejar a quien olvidó su contraseña sin salida. */}
+        <a
+          href={waLink(
+            "Hola Estella, olvidé la contraseña de mi cuenta y no puedo entrar. ¿Me ayudan?",
+            settings.whatsappNumber
+          )}
+          target="_blank"
+          rel="noopener"
+          className="justify-self-start text-[11px] text-muted underline underline-offset-4 hover:text-ink"
+        >
+          ¿Olvidaste tu contraseña?
+        </a>
         {error && (
           <p className="m-0 text-[12px] leading-[1.6] text-red-700" role="alert">
             {error}

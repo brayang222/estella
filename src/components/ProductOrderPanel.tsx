@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FavoriteButton } from "./FavoriteButton";
 import { PlaceholderImage } from "./PlaceholderImage";
 import { SizeGuide } from "./SizeGuide";
+import { ShareButton } from "./ShareButton";
 import { WhatsAppIcon } from "./WhatsAppIcon";
 import { useCart } from "@/lib/store";
 import { LOW_STOCK_THRESHOLD, SOCIAL_PROOF_THRESHOLD, formatPrice, type Product } from "@/lib/products";
@@ -73,8 +74,9 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
       document.body.appendChild(input);
       input.select();
       try {
-        document.execCommand("copy");
-        flash();
+        // Se comprueba el resultado: avisar "copiada" sin haber copiado deja a
+        // la clienta pegando algo que no está en su portapapeles.
+        if (document.execCommand("copy")) flash();
       } finally {
         document.body.removeChild(input);
       }
@@ -168,7 +170,7 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
               {added ? "Añadida a tu bolsa" : "Agregar a la bolsa"}
             </button>
             <a
-              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity), settings.whatsappNumber)}
+              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity, formatPrice(product.price * quantity)), settings.whatsappNumber)}
               target="_blank"
               rel="noopener"
               className="block border border-ink/25 py-4 text-center text-[11px] tracking-[0.22em] uppercase transition-colors duration-[400ms] ease-estella hover:border-ink hover:bg-paper-alt"
@@ -263,6 +265,11 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
         {copied ? "¡Referencia copiada!" : `Copiar referencia ${product.referenceCode}`}
       </button>
 
+      <ShareButton
+        name={product.name}
+        className="cursor-pointer justify-self-start border-b border-ink/30 pb-1 text-[10px] tracking-[0.2em] text-muted uppercase transition-colors duration-300 ease-out hover:border-gold hover:text-gold"
+      />
+
       <p className="m-0 text-[12px] leading-[1.8] text-muted">
         Referencia {product.referenceCode} · {settings.productNote}
       </p>
@@ -289,7 +296,7 @@ export function ProductOrderPanel({ product, related = [] }: { product: Product;
               {added ? "Añadida" : "Agregar"}
             </button>
             <a
-              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity), settings.whatsappNumber)}
+              href={waLink(waProductMessage(product.name, formatPrice(product.price), quantity, formatPrice(product.price * quantity)), settings.whatsappNumber)}
               target="_blank"
               rel="noopener"
               aria-label="Consultar por WhatsApp"

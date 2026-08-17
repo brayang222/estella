@@ -10,9 +10,29 @@ export function waLink(message: string, number: string) {
   return `https://wa.me/${normalizeWhatsappNumber(number)}?text=${encodeURIComponent(message)}`;
 }
 
-export function waProductMessage(name: string, price: string, quantity = 1) {
-  const piece = quantity > 1 ? `${quantity} unidades de la ${name}` : `la ${name}`;
-  return `Hola Estella, me interesa ${piece} (${price}). ¿Está disponible?`;
+/**
+ * Consulta por una pieza. Dos cosas que parecen detalle y no lo son:
+ *
+ * El precio se etiqueta "c/u" y se suma el total cuando hay más de una unidad.
+ * Antes decía "3 unidades de la Collar Margarita ($22.900)", donde ese valor
+ * es el unitario pero se lee como el total — una ambigüedad de precio justo al
+ * abrir la conversación de venta.
+ *
+ * Y la pieza va en una línea propia, sin artículo: los nombres mezclan géneros
+ * ("el Collar", "la Pulsera") y cualquier artículo fijo se equivoca en la mitad
+ * del catálogo.
+ */
+export function waProductMessage(
+  name: string,
+  unitPrice: string,
+  quantity = 1,
+  total?: string
+) {
+  const detalle =
+    quantity > 1
+      ? `• ${quantity} × ${name} — ${unitPrice} c/u${total ? ` (total ${total})` : ""}`
+      : `• ${name} — ${unitPrice}`;
+  return `Hola Estella, me interesa esta pieza:\n${detalle}\n\n¿Está disponible?`;
 }
 
 export function waRestockMessage(name: string) {

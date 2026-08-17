@@ -2,6 +2,7 @@
 
 import { useState, ViewTransition } from "react";
 import { PlaceholderImage } from "./PlaceholderImage";
+import { ZoomLens } from "./ZoomLens";
 import type { ProductImage } from "@/lib/products";
 
 type Props = {
@@ -33,7 +34,11 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
           sizes="(min-width: 768px) 50vw, 100vw"
           priority
         />
-        <span className="pointer-events-none absolute top-3 right-3 z-[1] bg-paper px-[9px] py-[5px] text-[9px] tracking-[0.2em] text-muted uppercase">
+        {/* Solo cuando hay foto real: sobre el placeholder rayado no hay
+            detalle que ampliar. */}
+        {active?.url && <ZoomLens key={`zoom-${active.id}`} src={active.url} alt={alt} />}
+
+        <span className="pointer-events-none absolute top-3 right-3 z-[3] bg-paper px-[9px] py-[5px] text-[9px] tracking-[0.2em] text-muted uppercase">
           {tag}
         </span>
 
@@ -43,7 +48,7 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
               type="button"
               onClick={() => setActiveIndex((i) => (i - 1 + images.length) % images.length)}
               aria-label="Foto anterior"
-              className="absolute top-1/2 left-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
+              className="absolute top-1/2 left-2.5 z-[3] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
             >
               ‹
             </button>
@@ -51,7 +56,7 @@ export function ProductGallery({ images, slug, alt, tag, placeholderLabel }: Pro
               type="button"
               onClick={() => setActiveIndex((i) => (i + 1) % images.length)}
               aria-label="Foto siguiente"
-              className="absolute top-1/2 right-2.5 z-[1] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
+              className="absolute top-1/2 right-2.5 z-[3] flex h-9 w-9 -translate-y-1/2 cursor-pointer items-center justify-center bg-paper/90 text-[15px] transition-colors duration-300 ease-out hover:bg-paper"
             >
               ›
             </button>
